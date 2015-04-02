@@ -1,0 +1,11 @@
+# bagofpopcorn
+
+Convenciones:
+
+- Los nombres de los .h y .cpp se escriben todos en minuscula
+- Los include de clases propias se hacen de la manera #include "XXX.h"
+
+Properties:
+
+- Ir a Properties of bsgofpopcorn -> C/C++ Build -> Settings -> Include Paths(-l) -> ../workspace/bagofpopcorn/include/
+(Para que incluya todo los headers de nuestras clases)
