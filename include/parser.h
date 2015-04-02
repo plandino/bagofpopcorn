@@ -18,6 +18,7 @@ public:
 
 	BagOfWords* parsearReviews(string nombreArchivo);
 	void generarTSV();
+	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
 };
 
 #endif /* PARSER_H_ */

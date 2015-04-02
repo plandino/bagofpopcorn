@@ -25,11 +25,11 @@ public:
 	virtual ~BagOfWords();
 
 	void agregar(string key, int sentiment);
+	void agregar(string key, int frecPos, int frecNeg);
 	int frecuencia(string key, int sentiment);
 	bool estaEnBag(string key);
 	int posicionEnBag(string key);
 
-	int getContador();
 	vector<int>* getFrecuencias(int sentiment);
 	vector<string>* getWords();
 };
