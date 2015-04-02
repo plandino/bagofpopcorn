@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream> //files
 #include <sstream> //stringstream
-#include <algorithm> //toLower
+#include <algorithm> //toLower y remove
 #include <map>
 #include <vector>
 #include "string.h"
@@ -12,6 +12,10 @@
 using namespace std;
 
 class BagOfWords {
+
+// Un bow seria un diccionario que guarda word:elemarray
+// siendo elemarray la posicion en donde se guardara la frecuencia
+// en el feature vector generado en este proceso
 
 private:
 	map<string,int>* bag;

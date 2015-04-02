@@ -10,6 +10,10 @@ BagOfWords::BagOfWords() {
 
 BagOfWords::~BagOfWords() {
 	//TODO: Delete de vectores y map?
+	delete this->bag;
+	delete this->frecuenciasNegativas;
+	delete this->frecuenciasPositivas;
+	delete this->words;
 }
 
 // Agrega una nueva key al bag, mismo caso que bow simple
@@ -31,6 +35,8 @@ void BagOfWords::agregar(string key, int sentiment) {
 	}
 }
 
+// Agrega una nueva key al bag, con una frecuencia positiva y otra negativa.
+// Sirve pàra cuando se levantan las palabras directamente desde el TSV.
 void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	bag->insert(pair<string, int>(key, contador));
 	this->frecuenciasNegativas->push_back(frecNeg);
@@ -39,6 +45,7 @@ void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	contador++;
 }
 
+// Devuelve la frecuencia con la que aparece una key
 int BagOfWords::frecuencia(string key, int sentiment) {
 	if ( this->estaEnBag(key) ){
 		if (sentiment == 0) return this->frecuenciasNegativas->at( this->bag->at(key) );
@@ -46,15 +53,18 @@ int BagOfWords::frecuencia(string key, int sentiment) {
 	} else return 0;
 }
 
+// Devuelve true si la key esta en el bag
 bool BagOfWords::estaEnBag(string key) {
 	return (this->bag->count(key) > 0);
 }
 
+// Devuelve la posicion del vector de frecuencias en la que se encuentra la key
 int BagOfWords::posicionEnBag(string key) {
 	if ( estaEnBag(key) ) return bag->at(key);
 		else return -1;
 }
 
+// Devuelve el vector con las frecuencias
 vector<int>* BagOfWords::getFrecuencias(int sentiment) {
 	if (sentiment == 0) return this->frecuenciasNegativas;
 		else return this->frecuenciasPositivas;
