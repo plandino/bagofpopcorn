@@ -31,12 +31,16 @@ bool Parser::esStopWord(string word) {
 void Parser::limpiarReview(string review, int sentiment) {
 	review.erase(0,2); // Elimino comillas y tab del comienzo
 	review.erase(review.length()-1, 1); // Elimino comillas del final
-	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios
+	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios TODO: Esto se puede sacar para evitar las urls en las reviews, pero asi en caso de que se haya olvidado el espacio despues del punto se separa como 2 palabras, que me parece mas importante
+	replace(review.begin(), review.end(), '-', ' ');
+	replace(review.begin(), review.end(), ',', ' ');
+	replace(review.begin(), review.end(), '?', ' ');
+	replace(review.begin(), review.end(), '!', ' ');
 	transform(review.begin(), review.end(), review.begin(), ::tolower);
 	istringstream iss(review);
 	string word;
 	bool anteriorEsSaltoDeLinea = false;
-	char chars[] = "ºª!|\"@·#$%&¬/()='?¡¿[]^*ç`'\\{},;.:-_<>";
+//	char chars[] = "ºª!|\"@·#$%&¬/()='?¡¿[]^*ç`'\\{},;.:-_<>";
 	while(iss >> word) {
 		//TODO: Limpiar palabra por palabra e ir agregándolas a la lista del bag
 
@@ -48,7 +52,7 @@ void Parser::limpiarReview(string review, int sentiment) {
 			} else {
 				anteriorEsSaltoDeLinea = false;
 				char saltoDeLinea[] = "\>";
-				for (int i = 0; i < strlen(saltoDeLinea); ++i){
+				for (unsigned int i = 0; i < strlen(saltoDeLinea); ++i){
 					word.erase ( remove(word.begin(), word.end(), saltoDeLinea[i]), word.end() );
 				}
 			}
@@ -74,15 +78,22 @@ void Parser::limpiarReview(string review, int sentiment) {
 		if (https == "https://") continue;
 		if (www == "www.") continue;
 
-		//Elimino caracteres especiales
-		for (int i = 0; i < strlen(chars); ++i){
-			word.erase ( remove(word.begin(), word.end(), chars[i]), word.end() );
+		string word1 = "";
+		unsigned int length = word.length();
+		for (unsigned int i = 0; i < length; i++){
+			if ( (word[i] >= 'a') and (word[i] <= 'z') ) word1 = word1 + word[i];
 		}
+//		//Elimino caracteres especiales
+//		for (int i = 0; i < strlen(chars); ++i){
+//			word.erase ( remove(word.begin(), word.end(), chars[i]), word.end() );
+//		}
 
-		//TODO: Estas garompas 
+		//TODO: Estas garompas  -> Con el cambio que hice ya se sacan.
 
-		if ( esStopWord(word) ) continue;
-		bag->agregar(word, sentiment);
+		//TODO: Algun algoritmo para que, por ejemplo, considere palabras terminadas en s, ed, ing, ly sean lo mismo. Ejemplo: terrible, terribled, terribly, terribles (?
+
+		if ( esStopWord(word1) ) continue;
+		bag->agregar(word1, sentiment);
 	}
 }
 
