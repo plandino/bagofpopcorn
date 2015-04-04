@@ -3,9 +3,9 @@
 
 #include "bagofwords.h"
 
-const string NOMBRE_ARCHIVO_FRECUENCIAS = "data/frecuencias.tsv";
-const string NOMBRE_ARCHIVO_STOPWORDS1 = "data/stopwordsdictionary1.txt";
-const string NOMBRE_ARCHIVO_STOPWORDS2 = "data/stopwordsdictionary2.txt";
+const string NOMBRE_ARCHIVO_FRECUENCIAS = "data/dataout/frecuencias.tsv";
+const string NOMBRE_ARCHIVO_STOPWORDS1 = "data/datain/stopwordsdictionary1.txt";
+const string NOMBRE_ARCHIVO_STOPWORDS2 = "data/datain/stopwordsdictionary2.txt";
 
 class Parser {
 

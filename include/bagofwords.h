@@ -30,6 +30,12 @@ public:
 
 	void agregar(string key, int sentiment);
 	void agregar(string key, int frecPos, int frecNeg);
+	// Devuelve cuantas palabras solo aparecen en reviews positivas o negativas.
+	// Si hay igual frecuencia en las dos, no cuenta para ninguna.
+	int cantidadDePalabrasPositivas();
+	int cantidadDePalabrasNegativas();
+	int cantidadDePalabrasConFrecuenciaIgualPosyNeg();
+	int cantidadDePalabrasTotales();
 	int frecuencia(string key, int sentiment);
 	bool estaEnBag(string key);
 	int posicionEnBag(string key);

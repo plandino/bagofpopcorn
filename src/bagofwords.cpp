@@ -73,3 +73,41 @@ vector<int>* BagOfWords::getFrecuencias(int sentiment) {
 vector<string>* BagOfWords::getWords() {
 	return this->words;
 }
+
+int BagOfWords::cantidadDePalabrasNegativas() {
+
+	return (bag->size() - this->cantidadDePalabrasPositivas() - this->cantidadDePalabrasConFrecuenciaIgualPosyNeg());
+}
+
+int BagOfWords::cantidadDePalabrasPositivas() {
+
+	int contadorPositivas = 0;
+	for( int i = 0; i < frecuenciasNegativas->size() ; i++)
+	{
+		if((*frecuenciasNegativas)[i] < (*frecuenciasPositivas)[i])
+		{
+					contadorPositivas++;
+		}
+	}
+	return contadorPositivas;
+}
+
+int BagOfWords::cantidadDePalabrasConFrecuenciaIgualPosyNeg() {
+
+	int contadorIguales = 0;
+	for( int i = 0; i < frecuenciasNegativas->size() ; i++)
+	{
+		if((*frecuenciasNegativas)[i] == (*frecuenciasPositivas)[i])
+		{
+			contadorIguales++;
+		}
+	}
+	return contadorIguales;
+}
+
+int BagOfWords::cantidadDePalabrasTotales() {
+	return bag->size();
+}
+
+
+
