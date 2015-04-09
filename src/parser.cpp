@@ -50,7 +50,7 @@ void Parser::limpiarReview(string review, int sentiment) {
 			} else {
 				anteriorEsSaltoDeLinea = false;
 				word.erase (word.begin(), word.begin()+2);
-//				char saltoDeLinea[] = "\>";
+//				char saltoDeLinea[] = "/>";
 //				for (unsigned int i = 0; i < strlen(saltoDeLinea); ++i){
 //					word.erase ( remove(word.begin(), word.end(), saltoDeLinea[i]), word.end() );
 //				}
@@ -71,21 +71,27 @@ void Parser::limpiarReview(string review, int sentiment) {
 		}
 
 		//Si empieza con http:// o https:// o www.
-		string http = word.substr(0,7);
-		string https = word.substr(0,8);
-		string www = word.substr(0,4);
+		unsigned int length = word.length();
+		string wordSinURL = "";
+		for (unsigned int i = 0; i < length; i++){
+			if ( (word[i] != '<') and (word[i] != '(') and (word[i] != ')') ) wordSinURL = wordSinURL + word[i];
+		}
+
+		string http = wordSinURL.substr(0,7);
+		string https = wordSinURL.substr(0,8);
+		string www = wordSinURL.substr(0,4);
 		if (http == "http://") continue;
 		if (https == "https://") continue;
 		if (www == "www.") continue;
 
-		string word1 = "";
+		string wordSoloLetras = "";
 		vector<string> words;
-		unsigned int length = word.length();
+		length = wordSinURL.length();
 		for (unsigned int i = 0; i < length; i++){
-			if ( (word[i] >= 'a') and (word[i] <= 'z') ) word1 = word1 + word[i];
+			if ( (wordSinURL[i] >= 'a') and (wordSinURL[i] <= 'z') ) wordSoloLetras = wordSoloLetras + wordSinURL[i];
 				else {
-					words.push_back(word1);
-					word1 = "";
+					words.push_back(wordSoloLetras);
+					wordSoloLetras = "";
 				}
 		}
 //		//Elimino caracteres especiales
