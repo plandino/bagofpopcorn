@@ -56,7 +56,7 @@ void Parser::limpiarReview(string review, int sentiment) {
 //				}
 			}
 		}
-		if (not anteriorEsSaltoDeLinea){
+		if (not anteriorEsSaltoDeLinea) {
 			if (word == "<br"){
 				anteriorEsSaltoDeLinea = true;
 				continue;
@@ -71,29 +71,23 @@ void Parser::limpiarReview(string review, int sentiment) {
 		}
 
 		//Si empieza con http:// o https:// o www.
-		unsigned int length = word.length();
-		string wordSinURL = "";
-		for (unsigned int i = 0; i < length; i++){
-			if ( (word[i] != '<') and (word[i] != '(') and (word[i] != ')') ) wordSinURL = wordSinURL + word[i];
-		}
+		bool continuar = false;
+		string wordSinURL = eliminarURL(word, continuar);
+		if (continuar) continue;
 
-		string http = wordSinURL.substr(0,7);
-		string https = wordSinURL.substr(0,8);
-		string www = wordSinURL.substr(0,4);
-		if (http == "http://") continue;
-		if (https == "https://") continue;
-		if (www == "www.") continue;
+		//Separo en todas las palabras que estan incluidas en la word y las dejo solo con letras
+		vector<string> words = soloLetras(wordSinURL);
+//		string wordSoloLetras = "";
+//		unsigned int length = wordSinURL.length();
+//		for (unsigned int i = 0; i < length; i++){
+//			if ( (wordSinURL[i] >= 'a') and (wordSinURL[i] <= 'z') ) wordSoloLetras = wordSoloLetras + wordSinURL[i];
+//				else {
+//					words.push_back(wordSoloLetras);
+//					wordSoloLetras = "";
+//				}
+//		}
 
-		string wordSoloLetras = "";
-		vector<string> words;
-		length = wordSinURL.length();
-		for (unsigned int i = 0; i < length; i++){
-			if ( (wordSinURL[i] >= 'a') and (wordSinURL[i] <= 'z') ) wordSoloLetras = wordSoloLetras + wordSinURL[i];
-				else {
-					words.push_back(wordSoloLetras);
-					wordSoloLetras = "";
-				}
-		}
+
 //		//Elimino caracteres especiales
 //		for (int i = 0; i < strlen(chars); ++i){
 //			word.erase ( remove(word.begin(), word.end(), chars[i]), word.end() );
@@ -157,4 +151,35 @@ BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
 	}
 	archivo.close();
 	return bag;
+}
+
+string Parser::eliminarURL(string word, bool &continuar) {
+	unsigned int length = word.length();
+	string wordSinURL = "";
+	for (unsigned int i = 0; i < length; i++){
+		if ( (word[i] != '<') and (word[i] != '(') and (word[i] != ')') ) wordSinURL = wordSinURL + word[i];
+	}
+
+	string http = wordSinURL.substr(0,7);
+	string https = wordSinURL.substr(0,8);
+	string www = wordSinURL.substr(0,4);
+	if (http == "http://") continuar = true;
+	if (https == "https://") continuar = true;
+	if (www == "www.") continuar = true;
+
+	return wordSinURL;
+}
+
+vector<string> Parser::soloLetras(string word) {
+	string wordSoloLetras = "";
+	unsigned int length = word.length();
+	vector<string> words;
+	for (unsigned int i = 0; i < length; i++){
+		if ( (word[i] >= 'a') and (word[i] <= 'z') ) wordSoloLetras = wordSoloLetras + word[i];
+			else {
+				words.push_back(wordSoloLetras);
+				wordSoloLetras = "";
+			}
+	}
+	return words;
 }
