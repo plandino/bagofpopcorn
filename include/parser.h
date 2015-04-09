@@ -15,6 +15,8 @@ private:
 	void cargarDiccionarioStopWords(string nombreArchivo);
 	void limpiarReview(string review, int sentiment);
 	bool esStopWord(string word);
+	string eliminarURL(string word, bool &continuar);
+	vector<string> soloLetras(string word);
 	map<string, int> stopWords;
 	BagOfWords* bag;
 
