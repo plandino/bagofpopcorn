@@ -7,6 +7,8 @@ const string NOMBRE_ARCHIVO_FRECUENCIAS = "data/dataout/frecuencias.tsv";
 const string NOMBRE_ARCHIVO_STOPWORDS1 = "data/datain/stopwordsdictionary1.txt";
 const string NOMBRE_ARCHIVO_STOPWORDS2 = "data/datain/stopwordsdictionary2.txt";
 
+const int CANTIDAD_REVIEWS_A_CONSIDERAR = 25000;
+
 class Parser {
 
 private:

@@ -1,7 +1,5 @@
 #include "parser.h"
 
-const int CANTIDAD_REVIEWS_A_CONSIDERAR = 15000;
-
 Parser::Parser() {
 	bag = new BagOfWords();
 	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS1);
@@ -31,11 +29,11 @@ bool Parser::esStopWord(string word) {
 void Parser::limpiarReview(string review, int sentiment) {
 	review.erase(0,2); // Elimino comillas y tab del comienzo
 	review.erase(review.length()-1, 1); // Elimino comillas del final
-	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios TODO: Esto se puede sacar para evitar las urls en las reviews, pero asi en caso de que se haya olvidado el espacio despues del punto se separa como 2 palabras, que me parece mas importante
-	replace(review.begin(), review.end(), '-', ' ');
-	replace(review.begin(), review.end(), ',', ' ');
-	replace(review.begin(), review.end(), '?', ' ');
-	replace(review.begin(), review.end(), '!', ' ');
+//	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios TODO: Esto se puede sacar para evitar las urls en las reviews, pero asi en caso de que se haya olvidado el espacio despues del punto se separa como 2 palabras, que me parece mas importante
+//	replace(review.begin(), review.end(), '-', ' ');
+//	replace(review.begin(), review.end(), ',', ' ');
+//	replace(review.begin(), review.end(), '?', ' ');
+//	replace(review.begin(), review.end(), '!', ' ');
 	transform(review.begin(), review.end(), review.begin(), ::tolower);
 	istringstream iss(review);
 	string word;
@@ -79,9 +77,14 @@ void Parser::limpiarReview(string review, int sentiment) {
 		if (www == "www.") continue;
 
 		string word1 = "";
+		vector<string> words;
 		unsigned int length = word.length();
 		for (unsigned int i = 0; i < length; i++){
 			if ( (word[i] >= 'a') and (word[i] <= 'z') ) word1 = word1 + word[i];
+				else {
+					words.push_back(word1);
+					word1 = "";
+				}
 		}
 //		//Elimino caracteres especiales
 //		for (int i = 0; i < strlen(chars); ++i){
@@ -91,9 +94,13 @@ void Parser::limpiarReview(string review, int sentiment) {
 		//TODO: Estas garompas  -> Con el cambio que hice ya se sacan.
 
 		//TODO: Algun algoritmo para que, por ejemplo, considere palabras terminadas en s, ed, ing, ly sean lo mismo. Ejemplo: terrible, terribled, terribly, terribles (?
-
-		if ( esStopWord(word1) ) continue;
-		bag->agregar(word1, sentiment);
+		vector<string>::iterator iterador = words.begin();
+		for ( ; iterador != words.end() ; iterador++){
+			string wordAAgregar = (*iterador);
+			if ( esStopWord(wordAAgregar) ) continue;
+			if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
+			bag->agregar(wordAAgregar, sentiment);
+		}
 	}
 }
 
