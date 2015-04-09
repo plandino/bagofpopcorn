@@ -49,12 +49,14 @@ void Parser::limpiarReview(string review, int sentiment) {
 				continue;
 			} else {
 				anteriorEsSaltoDeLinea = false;
-				char saltoDeLinea[] = "\>";
-				for (unsigned int i = 0; i < strlen(saltoDeLinea); ++i){
-					word.erase ( remove(word.begin(), word.end(), saltoDeLinea[i]), word.end() );
-				}
+				word.erase (word.begin(), word.begin()+2);
+//				char saltoDeLinea[] = "\>";
+//				for (unsigned int i = 0; i < strlen(saltoDeLinea); ++i){
+//					word.erase ( remove(word.begin(), word.end(), saltoDeLinea[i]), word.end() );
+//				}
 			}
-		} else {
+		}
+		if (not anteriorEsSaltoDeLinea){
 			if (word == "<br"){
 				anteriorEsSaltoDeLinea = true;
 				continue;
