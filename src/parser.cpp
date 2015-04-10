@@ -26,7 +26,8 @@ bool Parser::esStopWord(string word) {
 	return ( stopWords.count(word) > 0 );
 }
 
-void Parser::limpiarReview(string review, int sentiment) {
+vector<string> Parser::limpiarReview(string review, int sentiment) {
+	vector<string> palabrasReview;
 	review.erase(0,2); // Elimino comillas y tab del comienzo
 	review.erase(review.length()-1, 1); // Elimino comillas del final
 //	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios TODO: Esto se puede sacar para evitar las urls en las reviews, pero asi en caso de que se haya olvidado el espacio despues del punto se separa como 2 palabras, que me parece mas importante
@@ -102,8 +103,10 @@ void Parser::limpiarReview(string review, int sentiment) {
 			if ( esStopWord(wordAAgregar) ) continue;
 			if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
 			bag->agregar(wordAAgregar, sentiment);
+			palabrasReview.push_back(wordAAgregar);
 		}
 	}
+	return palabrasReview;
 }
 
 BagOfWords* Parser::parsearReviews(string nombreArchivo) {
@@ -121,6 +124,7 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo) {
 			i++;
 		}
 	}
+	cout << "Se terminaron de parsear las palabras." << endl << endl;
 	archivo.close();
 	return bag;
 }
@@ -137,6 +141,7 @@ void Parser::generarTSV() {
 			archivo << words->at(i) << "\t" << frecPos->at(i) << "\t" << frecNeg->at(i) << "\n";
 		}
 	}
+	archivo.close();
 }
 
 BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
@@ -149,6 +154,25 @@ BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
 			bag->agregar(word, frecPos, frecNeg);
 		}
 	}
+	cout << "Se cargo el archivo de palabras y frecuencias." << endl;
+	archivo.close();
+	return bag;
+}
+
+BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo) {
+	ifstream archivo(nombreArchivo.c_str());
+	if ( archivo.is_open() ){
+		string word, header, linea;
+		int frecPos, frecNeg;
+		getline(archivo,header); // Leo el header
+		while ( getline(archivo,linea) ){ //Leo palabra y frecuencias
+			replace(linea.begin(), linea.end(), ',', ' ');
+			istringstream iss(linea);
+			iss >> frecNeg >> frecPos >> word;
+			bag->agregar(word, frecPos, frecNeg);
+		}
+	}
+	cout << "Se cargo el archivo de palabras y frecuencias generado en python." << endl;
 	archivo.close();
 	return bag;
 }
@@ -183,3 +207,32 @@ vector<string> Parser::soloLetras(string word) {
 	}
 	return words;
 }
+
+vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde) {
+	ifstream archivo(nombreArchivo.c_str());
+	vector< Review >* reviews = new vector< Review >();
+	if ( archivo.is_open() ){
+		string id, header;
+		int sentimiento;
+		int i = 0;
+		getline(archivo,header); // Leo el header
+		while ( archivo >> id >> sentimiento ){ //Leo id y sentimiento
+			if ( i < desde ) { //Saco las primeras que no me interesan
+				string review_str;
+				getline(archivo,review_str); //Leo review
+				i++;
+				continue;
+			}
+			if( (i+1-CANTIDAD_REVIEWS_A_CONSIDERAR) % 1000 == 0 )cout <<  "Review " << (i+1-CANTIDAD_REVIEWS_A_CONSIDERAR) << " de " << 25000-desde << endl;
+			string review_str;
+			getline(archivo,review_str); //Leo review
+			vector<string> palabrasReview = limpiarReview(review_str, sentimiento);
+			Review review(id, palabrasReview, sentimiento);
+			reviews->push_back(review);
+			i++;
+		}
+	}
+	archivo.close();
+	return reviews;
+}
+

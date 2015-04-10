@@ -2,18 +2,20 @@
 #define PARSER_H_
 
 #include "bagofwords.h"
+#include "review.h"
 
 const string NOMBRE_ARCHIVO_FRECUENCIAS = "data/dataout/frecuencias.tsv";
 const string NOMBRE_ARCHIVO_STOPWORDS1 = "data/datain/stopwordsdictionary1.txt";
 const string NOMBRE_ARCHIVO_STOPWORDS2 = "data/datain/stopwordsdictionary2.txt";
+const string NOMBRE_ARCHIVO_REVIEWS = "data/datain/labeledTrainData.tsv";
 
-const int CANTIDAD_REVIEWS_A_CONSIDERAR = 25000;
+const int CANTIDAD_REVIEWS_A_CONSIDERAR = 15000;
 
 class Parser {
 
 private:
 	void cargarDiccionarioStopWords(string nombreArchivo);
-	void limpiarReview(string review, int sentiment);
+	vector<string> limpiarReview(string review, int sentiment);
 	bool esStopWord(string word);
 	string eliminarURL(string word, bool &continuar);
 	vector<string> soloLetras(string word);
@@ -25,8 +27,10 @@ public:
 	virtual ~Parser();
 
 	BagOfWords* parsearReviews(string nombreArchivo);
+	vector<Review>* parsearReviewsAPredecir(string nombreArchivo, int desde);
 	void generarTSV();
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
+	BagOfWords* leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo);
 };
 
 #endif /* PARSER_H_ */
