@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
 	masMenosUno->realizarPrediccion(bag, parser);
 //	masMenosUno->generarCSV();
 
-	cout << "Palabras totales: " << bag->cantidadDePalabrasTotales() << endl;
+//	cout << "Palabras totales: " << bag->cantidadDePalabrasTotales() << endl;
 //	cout << "Palabras Positivas: " << bag->cantidadDePalabrasPositivas() << endl;
 //	cout << "Palabras Negativas: " << bag->cantidadDePalabrasNegativas() << endl;
 //	cout << "Palabras Iguales: " << bag->cantidadDePalabrasConFrecuenciaIgualPosyNeg() << endl;

@@ -7,7 +7,7 @@
 class MasMenosUno {
 
 private:
-	bool predecir(Review& review, BagOfWords* bag);
+	bool predecir(Review& review, BagOfWords* bag, float k);
 
 public:
 	MasMenosUno();
