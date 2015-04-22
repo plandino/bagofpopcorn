@@ -2,8 +2,9 @@
 
 Parser::Parser() {
 	bag = new BagOfWords();
-	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS1);
-	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS2);
+//	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS1);
+//	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS2);
+	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS_PYHTON);
 }
 
 Parser::~Parser() {
@@ -26,7 +27,7 @@ bool Parser::esStopWord(string word) {
 	return ( stopWords.count(word) > 0 );
 }
 
-vector<string> Parser::limpiarReview(string review, int sentiment) {
+vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar) {
 	vector<string> palabrasReview;
 	review.erase(0,2); // Elimino comillas y tab del comienzo
 	review.erase(review.length()-1, 1); // Elimino comillas del final
@@ -102,7 +103,7 @@ vector<string> Parser::limpiarReview(string review, int sentiment) {
 			string wordAAgregar = (*iterador);
 			if ( esStopWord(wordAAgregar) ) continue;
 			if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
-			bag->agregar(wordAAgregar, sentiment);
+			if (agregar) bag->agregar(wordAAgregar, sentiment);
 			palabrasReview.push_back(wordAAgregar);
 		}
 	}
@@ -116,15 +117,17 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo) {
 		int sentimiento;
 		int i = 0;
 		getline(archivo,header); // Leo el header
-		while ( (archivo >> id >> sentimiento) and (i < CANTIDAD_REVIEWS_A_CONSIDERAR) ){ //Leo id y sentimiento
-			if( (i+1) % 1000 == 0 )cout <<  "Review " << (i+1) << " de " << CANTIDAD_REVIEWS_A_CONSIDERAR << endl;
+		while ( (archivo >> id >> sentimiento) and (i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) ){ //Leo id y sentimiento
+			if (i == 0) cout << "Primer review a parsear para entrenamiento: " << id << endl;
+			if( (i+1) % 1000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
 			string review;
 			getline(archivo,review); //Leo review
-			limpiarReview(review, sentimiento);
+			limpiarReview(review, sentimiento, true);
 			i++;
+			if (i == CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) cout << "Ultima review a parsear para entrenamiento: " << id << endl;
 		}
 	}
-	cout << "Se terminaron de parsear las palabras." << endl << endl;
+	cout << "Se terminaron de parsear las palabras para el entrenamiento." << endl << endl;
 	archivo.close();
 	return bag;
 }
@@ -146,15 +149,17 @@ void Parser::generarTSV() {
 
 BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
 	ifstream archivo(nombreArchivo.c_str());
+	int i = 0;
 	if ( archivo.is_open() ){
 		string word, header;
 		int frecPos, frecNeg;
 		getline(archivo,header); // Leo el header
 		while ( archivo >> word >> frecPos >> frecNeg ){ //Leo palabra y frecuencias
 			bag->agregar(word, frecPos, frecNeg);
+			i++;
 		}
 	}
-	cout << "Se cargo el archivo de palabras y frecuencias." << endl;
+	cout << "Se cargo el archivo de palabras y frecuencias, con un total de " << i << " | "<< bag->cantidadDePalabrasTotales() << " palabras." << endl;
 	archivo.close();
 	return bag;
 }
@@ -205,6 +210,8 @@ vector<string> Parser::soloLetras(string word) {
 				wordSoloLetras = "";
 			}
 	}
+	//Con esto agrego la ultima (o unica) palabra
+	words.push_back(wordSoloLetras);
 	return words;
 }
 
@@ -223,15 +230,18 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 				i++;
 				continue;
 			}
-			if( (i+1-CANTIDAD_REVIEWS_A_CONSIDERAR) % 1000 == 0 )cout <<  "Review " << (i+1-CANTIDAD_REVIEWS_A_CONSIDERAR) << " de " << 25000-desde << endl;
+			if (i == desde) cout << "Primer review a parsear para predecir: " << id << endl;
+			if( (i+1-desde) % 1000 == 0 ) cout <<  "Se parsearon " << (i+1-desde) << " reviews a predecir de " << 25000-desde << endl;
 			string review_str;
 			getline(archivo,review_str); //Leo review
-			vector<string> palabrasReview = limpiarReview(review_str, sentimiento);
+			vector<string> palabrasReview = limpiarReview(review_str, sentimiento, false);
 			Review review(id, palabrasReview, sentimiento);
 			reviews->push_back(review);
 			i++;
+			if (i == 25000) cout << "Ultima review a parsear para predecir: " << review.getId() << endl;
 		}
 	}
+	cout << "Se terminaron de parsear las reviews para predecir." << endl << endl;
 	archivo.close();
 	return reviews;
 }

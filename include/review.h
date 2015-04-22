@@ -30,6 +30,10 @@ public:
 	vector<string> getPalabras() {
 		return palabras;
 	}
+
+	string getId() {
+		return id;
+	}
 };
 
 #endif /* REVIEW_H_ */
