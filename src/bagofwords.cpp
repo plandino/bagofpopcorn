@@ -6,6 +6,8 @@ BagOfWords::BagOfWords() {
 	this->frecuenciasNegativas = new vector<int>();
 	this->pesosPositivos = new vector<int>();
 	this->pesosNegativos = new vector<int>();
+	this->probabilidadesPositivas = new vector<numeroReal>();
+	this->probabilidadesNegativas = new vector<numeroReal>();
 	this->words = new vector<string>();
 	this->contador = 0;
 }
@@ -17,6 +19,8 @@ BagOfWords::~BagOfWords() {
 	delete this->bag;
 	delete this->frecuenciasNegativas;
 	delete this->frecuenciasPositivas;
+	delete this->probabilidadesPositivas;
+	delete this->probabilidadesNegativas;
 	delete this->words;
 }
 
@@ -127,6 +131,30 @@ int BagOfWords::cantidadDePalabrasTotales() {
 
 bool pred(const int a, const int b) {
 	return a < b;
+}
+
+void BagOfWords::crearVectorConProbabilidades() {
+	int lenght = this->cantidadDePalabrasTotales();
+	numeroReal probabilidadPositiva;
+	numeroReal probabilidadNegativa;
+	numeroReal frecPositiva;
+	numeroReal frecNegativa;
+	numeroReal frecTotal;
+	for(int i = 0; i < lenght; i++){
+		frecPositiva = (*frecuenciasPositivas)[i] + 1;
+		frecNegativa = (*frecuenciasNegativas)[i] + 1;
+		frecTotal = frecPositiva + frecNegativa;
+		probabilidadesPositivas->push_back(log(frecPositiva / frecTotal));
+		probabilidadesNegativas->push_back(log(frecNegativa / frecTotal));
+	}
+}
+
+vector<numeroReal>* BagOfWords::getProbabilidadesPositivas() {
+	return probabilidadesPositivas;
+}
+
+vector<numeroReal>* BagOfWords::getProbabilidadesNegativas() {
+	return probabilidadesNegativas;
 }
 
 void BagOfWords::pesarBag() {

@@ -4,11 +4,6 @@
 #include "bagofwords.h"
 #include "review.h"
 
-
-// Esto lo hago para cambiar entre double y float por la precision en la multiciplicacion
-// de probabilidades menores a 1
-typedef double numeroReal;
-
 const string NOMBRE_ARCHIVO_FRECUENCIAS = "data/dataout/frecuencias.tsv";
 const string NOMBRE_ARCHIVO_STOPWORDS1 = "data/datain/stopwordsdictionary1.txt";
 const string NOMBRE_ARCHIVO_STOPWORDS2 = "data/datain/stopwordsdictionary2.txt";

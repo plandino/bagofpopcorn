@@ -183,6 +183,7 @@ BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
 	}
 	cout << "Se cargo el archivo de palabras y frecuencias, con un total de " << i << " | "<< bag->cantidadDePalabrasTotales() << " palabras." << endl;
 	archivo.close();
+	bag->crearVectorConProbabilidades();
 	return bag;
 }
 
@@ -201,6 +202,7 @@ BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo)
 	}
 	cout << "Se cargo el archivo de palabras y frecuencias generado en python." << endl;
 	archivo.close();
+	bag->crearVectorConProbabilidades();
 	return bag;
 }
 
