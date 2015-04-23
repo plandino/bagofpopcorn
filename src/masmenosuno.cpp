@@ -36,7 +36,7 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 	float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
 
 	cout << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
-	cout << "Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
+	cout << "MaseMenosUno sin ponderacion: Dando un porcentaje de acertar de %" << porcentaje << "." << endl << endl;
 
 //		archivoSalida << "K = " << k << endl;
 //		archivoSalida << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
@@ -47,10 +47,6 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 //	archivoSalida << endl << endl << "El mejor resultado fueron " << resultadoMayor << " sobre 10000 reviews";
 //	archivoSalida.close();
 	delete reviewsAPredecir;
-}
-
-void MasMenosUno::generarCSV() {
-
 }
 
 double MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
