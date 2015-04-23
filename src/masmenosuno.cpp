@@ -23,7 +23,11 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 	for ( ; iterador != reviewsAPredecir->end() ; iterador++){
 		Review reviewAPredecir = (*iterador);
 		if (i == 0) cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
-		if ( predecir(reviewAPredecir, bag, k) ) contador++;
+
+		double probabilidadPositiva = predecir(reviewAPredecir, bag, k);
+		//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
+		if ( ( (probabilidadPositiva > 0.5) and (reviewAPredecir.getSentiment() == 1) ) or ( (probabilidadPositiva < 0.5) and (reviewAPredecir.getSentiment() == 0) ) ) contador++;
+
 		if ( (i+1) % 1000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << endl;
 		i++;
 		if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
@@ -49,8 +53,9 @@ void MasMenosUno::generarCSV() {
 
 }
 
-bool MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
-	int puntuacion = 0;
+double MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
+	int puntuacionPos = 0;
+	int puntuacionNeg = 0;
 	vector<string> palabras = review.getPalabras();
 
 	vector<string>::iterator iterador = palabras.begin();
@@ -63,13 +68,11 @@ bool MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 
 			int porcentaje = frecTotal*k;
 //			cout << "La palabra " << palabra << " esta en la bag, con frecPos: " << frecPos << "| frecNeg: " << frecNeg << ", sobre un porcentaje de " << porcentaje << endl;
-
-			if ( frecPos > porcentaje ) puntuacion++;
-			else if ( frecNeg > porcentaje ) puntuacion--;
+			if ( frecPos > porcentaje ) puntuacionPos += ( ( bag->getPesosPositivos() )->at( bag->posicionEnBag(palabra) ) );
+			else if ( frecNeg > porcentaje ) puntuacionNeg += ( ( bag->getPesosNegativos() )->at( bag->posicionEnBag(palabra) ) );
 		}
 	}
 
-	//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
-	if ( ( (puntuacion >= 0) and (review.getSentiment() == 1) ) or ( (puntuacion <= 0) and (review.getSentiment() == 0) ) ) return true;
-	else return false;
+	double probabilidad = ((puntuacionPos*1.0)/(puntuacionPos + puntuacionNeg));
+	return probabilidad;
 }

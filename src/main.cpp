@@ -6,18 +6,20 @@ int main(int argc, char* argv[]){
 	MasMenosUno* masMenosUno = new MasMenosUno();
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_REVIEWS);
-	parser->generarTSV();
+//	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_REVIEWS);
+//	parser->generarTSV();
 
 //	Con esto genero el TSV desde el CSV de salida de python -> Solo sirve si se usan 15000 para entrenar y 10000 para predecir
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeCSVPython("data/dataout/Bag_of_Words_model.csv");
 //	parser->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
-//	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV("data/dataout/frecuencias.tsv");
+	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV("data/dataout/frecuencias.tsv");
 
 //	Con esto leo frecuencias desde el TSV generado a partir del CSV de python -> Solo sirve si se usan 15000 para entrenar y 10000 para predecir
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV("data/dataout/frecuencias_python.tsv");
+
+	bag->pesarBag();
 
 	masMenosUno->realizarPrediccion(bag, parser);
 //	masMenosUno->generarCSV();

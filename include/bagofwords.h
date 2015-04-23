@@ -21,6 +21,8 @@ private:
 	map<string,int>* bag;
 	vector<int>* frecuenciasPositivas;
 	vector<int>* frecuenciasNegativas;
+	vector<int>* pesosPositivos;
+	vector<int>* pesosNegativos;
 	vector<string>* words;
 	int contador;
 
@@ -41,7 +43,11 @@ public:
 	int posicionEnBag(string key);
 
 	vector<int>* getFrecuencias(int sentiment);
+	vector<int>* getPesosPositivos();
+	vector<int>* getPesosNegativos();
 	vector<string>* getWords();
+
+	void pesarBag();
 };
 
 #endif /* BAGOFWORDS_H_ */

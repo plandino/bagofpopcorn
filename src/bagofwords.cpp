@@ -4,12 +4,16 @@ BagOfWords::BagOfWords() {
 	this->bag = new map<string,int>();
 	this->frecuenciasPositivas = new vector<int>();
 	this->frecuenciasNegativas = new vector<int>();
+	this->pesosPositivos = new vector<int>();
+	this->pesosNegativos = new vector<int>();
 	this->words = new vector<string>();
 	this->contador = 0;
 }
 
 BagOfWords::~BagOfWords() {
 	//TODO: Delete de vectores y map?
+	delete this->pesosPositivos;
+	delete this->pesosNegativos;
 	delete this->bag;
 	delete this->frecuenciasNegativas;
 	delete this->frecuenciasPositivas;
@@ -30,6 +34,8 @@ void BagOfWords::agregar(string key, int sentiment) {
 			this->frecuenciasNegativas->push_back(0);
 			this->frecuenciasPositivas->push_back(1);
 		}
+		this->pesosPositivos->push_back(1);
+		this->pesosNegativos->push_back(1);
 		this->words->push_back(key);
 		contador++;
 	}
@@ -41,6 +47,8 @@ void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	bag->insert(pair<string, int>(key, contador));
 	this->frecuenciasNegativas->push_back(frecNeg);
 	this->frecuenciasPositivas->push_back(frecPos);
+	this->pesosPositivos->push_back(1);
+	this->pesosNegativos->push_back(1);
 	this->words->push_back(key);
 	contador++;
 }
@@ -70,6 +78,14 @@ vector<int>* BagOfWords::getFrecuencias(int sentiment) {
 		else return this->frecuenciasPositivas;
 }
 
+vector<int>* BagOfWords::getPesosPositivos() {
+	return this->pesosPositivos;
+}
+
+vector<int>* BagOfWords::getPesosNegativos() {
+	return this->pesosNegativos;
+}
+
 vector<string>* BagOfWords::getWords() {
 	return this->words;
 }
@@ -82,7 +98,7 @@ int BagOfWords::cantidadDePalabrasNegativas() {
 int BagOfWords::cantidadDePalabrasPositivas() {
 
 	int contadorPositivas = 0;
-	for( int i = 0; i < frecuenciasNegativas->size() ; i++)
+	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++)
 	{
 		if((*frecuenciasNegativas)[i] < (*frecuenciasPositivas)[i])
 		{
@@ -95,7 +111,7 @@ int BagOfWords::cantidadDePalabrasPositivas() {
 int BagOfWords::cantidadDePalabrasConFrecuenciaIgualPosyNeg() {
 
 	int contadorIguales = 0;
-	for( int i = 0; i < frecuenciasNegativas->size() ; i++)
+	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++)
 	{
 		if((*frecuenciasNegativas)[i] == (*frecuenciasPositivas)[i])
 		{
@@ -109,5 +125,37 @@ int BagOfWords::cantidadDePalabrasTotales() {
 	return bag->size();
 }
 
+bool pred(const int a, const int b) {
+	return a < b;
+}
 
+void BagOfWords::pesarBag() {
+	int maxPos = (*max_element(frecuenciasPositivas->begin(), frecuenciasPositivas->end(), pred));
+	int maxNeg = (*max_element(frecuenciasNegativas->begin(), frecuenciasNegativas->end(), pred));
 
+	vector<int>::iterator iteradorPos = frecuenciasPositivas->begin();
+	int i = 0;
+	for ( ; iteradorPos != frecuenciasPositivas->end() ; iteradorPos++, i++){
+		int frecuencia = (*iteradorPos);
+		float paso = 0.1;
+		for (float j = 0; j < 1; j+=paso){
+			if ((j*maxPos < frecuencia) and ((j+paso)*maxPos >= frecuencia)) {
+				pesosPositivos->at(i) = ((j+paso)/paso);
+				break;
+			}
+		}
+	}
+
+	vector<int>::iterator iteradorNeg = frecuenciasNegativas->begin();
+	i = 0;
+	for ( ; iteradorNeg != frecuenciasNegativas->end() ; iteradorNeg++, i++){
+		int frecuencia = (*iteradorNeg);
+		float paso = 0.1;
+		for (float j = 0; j < 1; j+=paso){
+			if ((j*maxNeg < frecuencia) and ((j+paso)*maxNeg >= frecuencia)) {
+				pesosNegativos->at(i) = ((j+paso)/paso);
+				break;
+			}
+		}
+	}
+}
