@@ -4,10 +4,6 @@
 #include "parser.h"
 #include <math.h>
 
-// Esto lo hago para cambiar entre double y float por la precision en la multiciplicacion
-// de probabilidades menores a 1
-typedef double numeroReal;
-
 class Bayes{
 private:
 	bool predecir(Review& review, BagOfWords* bag, float k, numeroReal *probabilidadPositiva);

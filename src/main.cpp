@@ -32,5 +32,6 @@ int main(int argc, char* argv[]){
 //	cout << "Palabras Iguales: " << bag->cantidadDePalabrasConFrecuenciaIgualPosyNeg() << endl;
 	delete parser;
 	delete masMenosUno;
+	delete bayes;
 	return 0;
 }

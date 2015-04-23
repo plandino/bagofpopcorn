@@ -147,7 +147,7 @@ void Parser::generarTSV() {
 	archivo.close();
 }
 
-void Parser::agregarAlCSV(string *id, double *vectorProbabilidades){
+void Parser::agregarAlCSV(string *id, numeroReal *vectorProbabilidades){
 	ofstream archivo(NOMBRE_ARCHIVO_CSV_PROBABILIDADES.c_str());
 	if ( archivo.is_open() ){
 		archivo << "id,probabilidad" << "\n";
