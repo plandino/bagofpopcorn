@@ -10,13 +10,12 @@ typedef double numeroReal;
 
 class Bayes{
 private:
-	bool predecir(Review& review, BagOfWords* bag, float k);
+	bool predecir(Review& review, BagOfWords* bag, float k, numeroReal *probabilidadPositiva);
 
 public:
 	Bayes();
 	~Bayes();
 	void realizarPrediccion(BagOfWords* bag, Parser* parser);
-	void generarCSV();
 };
 
 #endif /*BAYES_H_*/

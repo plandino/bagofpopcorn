@@ -14,7 +14,6 @@ public:
 	virtual ~MasMenosUno();
 
 	void realizarPrediccion(BagOfWords* bag, Parser* parser);
-	void generarCSV();
 };
 
 #endif /* MASMENOSUNO_H_ */

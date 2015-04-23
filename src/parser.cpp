@@ -147,6 +147,28 @@ void Parser::generarTSV() {
 	archivo.close();
 }
 
+void Parser::agregarAlCSV(string *id, double *vectorProbabilidades){
+	ofstream archivo(NOMBRE_ARCHIVO_CSV_PROBABILIDADES.c_str());
+	if ( archivo.is_open() ){
+		archivo << "id,probabilidad" << "\n";
+		for (int i = 0; i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO; i++){
+			archivo << id[i].c_str() << "," << vectorProbabilidades[i] << "\n";
+		}
+	}
+	archivo.close();
+}
+
+void Parser::agregarAlCSV(string *id, int *vectorMasMenosUnos){
+	ofstream archivo(NOMBRE_ARCHIVO_CSV_MASMENOSUNO.c_str());
+	if ( archivo.is_open() ){
+		archivo << "id,probabilidad" << "\n";
+		for (int i = 0; i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO; i++){
+			archivo << id[i].c_str() << "," << vectorMasMenosUnos[i] << "\n";
+		}
+	}
+	archivo.close();
+}
+
 BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
 	ifstream archivo(nombreArchivo.c_str());
 	int i = 0;

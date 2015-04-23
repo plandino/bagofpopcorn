@@ -9,6 +9,8 @@ const string NOMBRE_ARCHIVO_STOPWORDS1 = "data/datain/stopwordsdictionary1.txt";
 const string NOMBRE_ARCHIVO_STOPWORDS2 = "data/datain/stopwordsdictionary2.txt";
 const string NOMBRE_ARCHIVO_STOPWORDS_PYHTON = "data/datain/stopwords_english_python_nltk.txt";
 const string NOMBRE_ARCHIVO_REVIEWS = "data/datain/labeledTrainData.tsv";
+const string NOMBRE_ARCHIVO_CSV_PROBABILIDADES = "data/dataout/csvProbas.csv";
+const string NOMBRE_ARCHIVO_CSV_MASMENOSUNO = "data/dataout/csvMasMenosUno.csv";
 
 const int CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO = 15000;
 
@@ -29,7 +31,12 @@ public:
 
 	BagOfWords* parsearReviews(string nombreArchivo);
 	vector<Review>* parsearReviewsAPredecir(string nombreArchivo, int desde);
+
+
 	void generarTSV();
+	void agregarAlCSV(string *id, double *probabilidad);
+	void agregarAlCSV(string *id, int *masMenosUno);
+
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
 	BagOfWords* leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo);
 };

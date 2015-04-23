@@ -45,10 +45,6 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 	delete reviewsAPredecir;
 }
 
-void MasMenosUno::generarCSV() {
-
-}
-
 bool MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 	int puntuacion = 0;
 	vector<string> palabras = review.getPalabras();

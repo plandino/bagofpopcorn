@@ -23,7 +23,6 @@ int main(int argc, char* argv[]){
 
 	masMenosUno->realizarPrediccion(bag, parser);
 	bayes->realizarPrediccion(bag, parser);
-//	masMenosUno->generarCSV();
 
 //	cout << "Palabras totales: " << bag->cantidadDePalabrasTotales() << endl;
 //	cout << "Palabras Positivas: " << bag->cantidadDePalabrasPositivas() << endl;

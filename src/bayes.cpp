@@ -16,13 +16,20 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 
 //	for (k = 0.3; k <= 1; k+=0.01){
 	int contador = 0; // Cuenta la cantidad que coincidieron
+	numeroReal probabilidadPositiva;
+	string vectorIds[CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO];
+	numeroReal vectorProbabilidades[CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO];
 	vector<Review>::iterator iterador = reviewsAPredecir->begin();
 	unsigned int i = 0;
 //	cout << "K = " << k << endl;
 	for ( ; iterador != reviewsAPredecir->end() ; iterador++){
 		Review reviewAPredecir = (*iterador);
 		if (i == 0) cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
-		if ( predecir(reviewAPredecir, bag, k) ) contador++;
+		if ( predecir(reviewAPredecir, bag, k, &probabilidadPositiva) ) contador++;
+
+		vectorIds[i] = reviewAPredecir.getId();
+		vectorProbabilidades[i] = probabilidadPositiva;
+
 		if ( (i+1) % 1000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << endl;
 		i++;
 		if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
@@ -32,23 +39,11 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 
 	cout << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
 	cout << "Bayes: Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
-
-//		archivoSalida << "K = " << k << endl;
-//		archivoSalida << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
-//		archivoSalida << "Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
-//		archivoSalida << endl << "--------------------------------------------------------------------------------------------------------------------" << endl;
-//		if (resultadoMayor < contador) resultadoMayor = contador;
-//	}
-//	archivoSalida << endl << endl << "El mejor resultado fueron " << resultadoMayor << " sobre 10000 reviews";
-//	archivoSalida.close();
+	parser->agregarAlCSV(vectorIds, vectorProbabilidades);
 	delete reviewsAPredecir;
 }
 
-void Bayes::generarCSV() {
-
-}
-
-bool Bayes::predecir(Review& review, BagOfWords* bag, float k) {
+bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal *probabilidadPositiva) {
 	int puntuacion = 0;
 	float acumuladorProbaPositiva = 1.0;
 	float acumuladorProbaNegativa = 1.0;
@@ -62,8 +57,8 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k) {
 			int frecPos = ( bag->getFrecuencias(1) )->at( bag->posicionEnBag(palabra) );
 			int frecNeg = ( bag->getFrecuencias(0) )->at( bag->posicionEnBag(palabra) );
 			int frecTotal = frecPos + frecNeg;
-			numeroReal probaPositiva = 0.0000001;
-			numeroReal probaNegativa = 0.0000001;
+			numeroReal probaPositiva = 0.1;
+			numeroReal probaNegativa = 0.1;
 
 			// Casteo ambos para que devuelva float
 			// La probabilidad de que la palabra venga de la bag positiva
@@ -87,20 +82,11 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k) {
 			//if(probaPositiva == 0)
 			acumuladorProbaNegativa = acumuladorProbaNegativa + probaNegativa;
 			acumuladorProbaPositiva = acumuladorProbaPositiva + probaPositiva;
-
-		/*
-			int porcentaje = frecTotal*k;
-//			cout << "La palabra " << palabra << " esta en la bag, con frecPos: " << frecPos << "| frecNeg: " << frecNeg << ", sobre un porcentaje de " << porcentaje << endl;
-
-
-			if ( frecPos > porcentaje ) puntuacion++;
-			else if ( frecNeg > porcentaje ) puntuacion--;
-		*/
 		}
 	}
 
 	float probaReviewPositiva = acumuladorProbaPositiva - (acumuladorProbaPositiva + acumuladorProbaNegativa);
-	float probaReviewNegativa = acumuladorProbaNegativa - (acumuladorProbaNegativa + acumuladorProbaPositiva);
+	float probaReviewNegativa = acumuladorProbaNegativa - (acumuladorProbaPositiva + acumuladorProbaNegativa);
 //	float v1 = rand() % 100;
 //	if(v1 < 50)
 //	{
@@ -108,6 +94,7 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k) {
 //		cout << "Proba review Negativas" << probaReviewNegativa << endl;
 //	}
 
+	*probabilidadPositiva = exp(-probaReviewPositiva);
 	//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
 	if ( ( (probaReviewPositiva >= probaReviewNegativa) and (review.getSentiment() == 1) ) or ( (probaReviewPositiva < probaReviewNegativa) and (review.getSentiment() == 0) ) ) return true;
 	else return false;
