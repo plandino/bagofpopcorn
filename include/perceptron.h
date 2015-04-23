@@ -22,7 +22,7 @@ class Perceptron {
         int* pesos ; //Array de 2 ** 25 posiciones. Tamanio copiado del de python. REVISAR NUMERO
         BagOfWords* bag; //En lugar de funcion de hashing, usar la bag directamente. Colisiones == 0!!.
         Parser* parser;
-        int productoInterno(int pesos[], vector<string> features);
+        int productoInterno(vector<string> features);
         int toleranciaErrores;
         int numeroPasadas;
         float learningRate;

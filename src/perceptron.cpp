@@ -15,7 +15,17 @@ Perceptron::~Perceptron() {
 	delete [] pesos;
 }
 
-int Perceptron::productoInterno(int* pesos, vector<string> features) { }
+int Perceptron::productoInterno(vector<string> features) {
+	int productoInterno = 0;
+	vector<string>::iterator iterador = features.begin();
+	for ( ; iterador != features.end(); iterador++ ) {
+		string palabra = *iterador;
+		int indice = bag->posicionEnBag(palabra);
+		int pesoPalabra = pesos[indice];
+		productoInterno += pesoPalabra * 1; // ver
+	}
+	return productoInterno;
+}
 
 int* Perceptron::entrenar() {
 
@@ -30,7 +40,7 @@ int* Perceptron::entrenar() {
 		for ( ; iterador != reviews->end() ; iterador++){
 			Review rev = (*iterador);
 			vector<string> features = rev.getPalabras();
-			productoInterno = this->productoInterno(pesos, features) > 0.5;
+			productoInterno = this->productoInterno(features) > 0.5;
 			error = rev.getSentiment() - productoInterno;
 
 			if (error != 0) {
@@ -55,6 +65,9 @@ int* Perceptron::entrenar() {
 }
 
 
+bool comparador_pred(prediccion a, prediccion b) {
+	return a.productoInterno < b.productoInterno;
+}
 
 
 vector<prediccion> Perceptron::predecir() {
@@ -71,25 +84,27 @@ vector<prediccion> Perceptron::predecir() {
 	for ( ; iterador != reviews->end() ; iterador++) {
 		Review rev = (*iterador);
 		vector<string> features = rev.getPalabras();
-		productoInterno = this->productoInterno(pesos, features);
+		productoInterno = this->productoInterno(features);
 		posONeg = productoInterno > 0.5;
 		prediccion pred;
 		pred.id = rev.getId();
 		pred.productoInterno = productoInterno;
-		// normalizar
-
 		preds.push_back(pred);
 
 		if ( ( rev.getSentiment()- posONeg)!= 0) {
 			contadorError += 1;
 		}
-
-	cout << contadorError << "\t" << endl;
-
-
 	}
+	cout << contadorError << "\t" << endl;
+	int maxProd = (*max_element(preds.begin(), preds.end(), comparador_pred)).productoInterno;
+	int minProd = (*min_element(preds.begin(), preds.end(), comparador_pred)).productoInterno;
+	int divisor = maxProd - minProd;
+
+	vector<prediccion>::iterator it = preds.begin();
+	for ( ; it != preds.end(); it++) {
+		prediccion p = *it;
+		p.productoInternoNormalizado = ( (p.productoInterno - minProd) / divisor );
+	}
+
 	return preds;
 }
-
-
-
