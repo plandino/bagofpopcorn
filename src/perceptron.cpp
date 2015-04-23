@@ -1,9 +1,13 @@
 #include "perceptron.h"
 
+
 Perceptron::Perceptron(BagOfWords* bag, Parser* parser)  {
 	this->bag = bag;
 	this->parser = parser;
 	this->pesos = new int[VEC_SIZE];
+	for (int i=0; i < VEC_SIZE; i++) {
+		pesos[i] = 0;
+	}
 	//Inicializo el vector de pesos en 0.
 	numeroPasadas = 80;
 	toleranciaErrores = 0;
@@ -15,6 +19,7 @@ Perceptron::~Perceptron() {
 	delete [] pesos;
 }
 
+
 int Perceptron::productoInterno(vector<string> features) {
 	int productoInterno = 0;
 	vector<string>::iterator iterador = features.begin();
@@ -24,24 +29,31 @@ int Perceptron::productoInterno(vector<string> features) {
 		int pesoPalabra = pesos[indice];
 		productoInterno += pesoPalabra * 1; // ver
 	}
+	cout << "DEBUG: " << productoInterno << endl;
 	return productoInterno;
 }
 
-int* Perceptron::entrenar() {
 
+int* Perceptron::entrenar() {
+	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/labeledTrainData.tsv", 0);
 	cout << "\nPass\t\tErrors\t\tNr. Samples\tSince Start" << endl;
 	for (int pasada = 0; pasada < numeroPasadas; pasada++) {
 		int contadorError = 0;
 		bool productoInterno;
 		int error = 0;
 
-		vector<Review>* reviews = parser->parsearReviewsAPredecir("labeledTrainData.tsv", 0);
+		int dotp;
 		vector<Review>::iterator iterador = reviews->begin();
-		for ( ; iterador != reviews->end() ; iterador++){
+		for ( ; iterador != reviews->end() ; iterador++) {
+			//cout << "ENTRANDO EN EL SEGUNDO FOR" << endl; //DEBUG
 			Review rev = (*iterador);
 			vector<string> features = rev.getPalabras();
 			productoInterno = this->productoInterno(features) > 0.5;
-			error = rev.getSentiment() - productoInterno;
+			if (productoInterno)
+				dotp = 1; 
+			else 
+				dotp = 0;
+			error = rev.getSentiment() - dotp;
 
 			if (error != 0) {
 				contadorError += 1;
@@ -58,7 +70,7 @@ int* Perceptron::entrenar() {
 		cout << pasada << "\t" << contadorError << "\t" << reviews->size() << endl;
 
 		if ((contadorError == 0) or (contadorError < toleranciaErrores)) {
-			cout << contadorError << "errores encontrados en el entrenamiento. Detenido." << endl;
+			cout << contadorError << " errores encontrados en el entrenamiento. Detenido." << endl;
 		}
 	}
 	return pesos;
@@ -78,7 +90,7 @@ vector<prediccion> Perceptron::predecir() {
 	int productoInterno;
 	vector<prediccion> preds;
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir("testData.tsv", 0);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/testData.tsv", 0);
 	vector<Review>::iterator iterador = reviews->begin();
 
 	for ( ; iterador != reviews->end() ; iterador++) {
@@ -107,4 +119,19 @@ vector<prediccion> Perceptron::predecir() {
 	}
 
 	return preds;
+}
+
+
+void Perceptron::tirarACSV(vector<prediccion> predicciones) {
+
+	ofstream archivo("data/dataout/perceptron.csv");
+	if ( archivo.is_open() ) {
+		archivo << "id,sentiment" << "\n";
+		vector<prediccion>::iterator it = predicciones.begin();
+		for ( ; it != predicciones.end(); it++) {
+			prediccion p = *it;
+			archivo << p.id.c_str() << "," << p.productoInternoNormalizado << "\n";
+		}
+	}
+	archivo.close();
 }

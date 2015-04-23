@@ -31,4 +31,5 @@ class Perceptron {
         vector<prediccion> predecir();
         Perceptron(BagOfWords* bag, Parser* parser);
         virtual ~Perceptron();
+        void tirarACSV(vector<prediccion> predicciones);
 };
