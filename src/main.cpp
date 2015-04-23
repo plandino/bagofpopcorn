@@ -1,9 +1,11 @@
 #include "masmenosuno.h"
+#include "bayes.h"
 
 
 int main(int argc, char* argv[]){
 	Parser* parser = new Parser();
 	MasMenosUno* masMenosUno = new MasMenosUno();
+	Bayes* bayes = new Bayes();
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
 	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_REVIEWS);
@@ -20,6 +22,7 @@ int main(int argc, char* argv[]){
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV("data/dataout/frecuencias_python.tsv");
 
 	masMenosUno->realizarPrediccion(bag, parser);
+	bayes->realizarPrediccion(bag, parser);
 //	masMenosUno->generarCSV();
 
 //	cout << "Palabras totales: " << bag->cantidadDePalabrasTotales() << endl;

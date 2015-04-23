@@ -1,15 +1,14 @@
+#include "bayes.h"
 
-#include "masmenosuno.h"
-
-MasMenosUno::MasMenosUno() {
-
-}
-
-MasMenosUno::~MasMenosUno() {
+Bayes::Bayes(){
 
 }
 
-void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
+Bayes::~Bayes(){
+
+}
+
+void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
 	float k = 0.7;
 //	ofstream archivoSalida("data/dataout/distintosKFino.txt");
@@ -32,7 +31,7 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 	float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
 
 	cout << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
-	cout << "MaseMenosUno sin ponderacion: Dando un porcentaje de acertar de %" << porcentaje << "." << endl << endl;
+	cout << "Bayes: Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
 
 //		archivoSalida << "K = " << k << endl;
 //		archivoSalida << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
@@ -45,14 +44,17 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 	delete reviewsAPredecir;
 }
 
-void MasMenosUno::generarCSV() {
+void Bayes::generarCSV() {
 
 }
 
-bool MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
+bool Bayes::predecir(Review& review, BagOfWords* bag, float k) {
 	int puntuacion = 0;
+	float acumuladorProbaPositiva = 1.0;
+	float acumuladorProbaNegativa = 1.0;
 	vector<string> palabras = review.getPalabras();
 
+	bool inicio = true;
 	vector<string>::iterator iterador = palabras.begin();
 	for ( ; iterador != palabras.end() ; iterador++){
 		string palabra = (*iterador);
@@ -60,16 +62,53 @@ bool MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 			int frecPos = ( bag->getFrecuencias(1) )->at( bag->posicionEnBag(palabra) );
 			int frecNeg = ( bag->getFrecuencias(0) )->at( bag->posicionEnBag(palabra) );
 			int frecTotal = frecPos + frecNeg;
+			numeroReal probaPositiva = 0.0000001;
+			numeroReal probaNegativa = 0.0000001;
 
+			// Casteo ambos para que devuelva float
+			// La probabilidad de que la palabra venga de la bag positiva
+			if(frecPos > 0) {
+				probaPositiva = (1.0 * frecPos) / frecTotal;
+				probaPositiva = log(probaPositiva);
+			}
+
+			// La probabilidad de que la palabra venga de la bag negativa
+			if(frecNeg > 0) {
+				probaNegativa = (1.0 * frecNeg) / frecTotal;
+				probaNegativa = log(probaNegativa);
+			}
+
+//				if(inicio)
+//				{
+//					cout << "Proba pos: " << probaPositiva << endl;
+//					cout << "Proba neg: " << probaNegativa << endl;
+//					inicio = false;
+//				}
+			//if(probaPositiva == 0)
+			acumuladorProbaNegativa = acumuladorProbaNegativa + probaNegativa;
+			acumuladorProbaPositiva = acumuladorProbaPositiva + probaPositiva;
+
+		/*
 			int porcentaje = frecTotal*k;
 //			cout << "La palabra " << palabra << " esta en la bag, con frecPos: " << frecPos << "| frecNeg: " << frecNeg << ", sobre un porcentaje de " << porcentaje << endl;
 
+
 			if ( frecPos > porcentaje ) puntuacion++;
 			else if ( frecNeg > porcentaje ) puntuacion--;
+		*/
 		}
 	}
 
+	float probaReviewPositiva = acumuladorProbaPositiva - (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	float probaReviewNegativa = acumuladorProbaNegativa - (acumuladorProbaNegativa + acumuladorProbaPositiva);
+//	float v1 = rand() % 100;
+//	if(v1 < 50)
+//	{
+//		cout << "Proba review Positiva" << probaReviewPositiva << endl;
+//		cout << "Proba review Negativas" << probaReviewNegativa << endl;
+//	}
+
 	//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
-	if ( ( (puntuacion >= 0) and (review.getSentiment() == 1) ) or ( (puntuacion <= 0) and (review.getSentiment() == 0) ) ) return true;
+	if ( ( (probaReviewPositiva >= probaReviewNegativa) and (review.getSentiment() == 1) ) or ( (probaReviewPositiva < probaReviewNegativa) and (review.getSentiment() == 0) ) ) return true;
 	else return false;
 }
