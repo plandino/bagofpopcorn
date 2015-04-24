@@ -45,8 +45,8 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 
 bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal *probabilidadPositiva) {
 	int puntuacion = 0;
-	float acumuladorProbaPositiva = 1.0;
-	float acumuladorProbaNegativa = 1.0;
+	numeroReal acumuladorProbaPositiva = 0;
+	numeroReal acumuladorProbaNegativa = 0;
 	vector<string> palabras = review.getPalabras();
 
 	bool inicio = true;
@@ -54,47 +54,51 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal *proba
 	for ( ; iterador != palabras.end() ; iterador++){
 		string palabra = (*iterador);
 		if ( bag->estaEnBag(palabra) ){
-			int frecPos = ( bag->getFrecuencias(1) )->at( bag->posicionEnBag(palabra) );
-			int frecNeg = ( bag->getFrecuencias(0) )->at( bag->posicionEnBag(palabra) );
-			int frecTotal = frecPos + frecNeg;
-			numeroReal probaPositiva = 0.1;
-			numeroReal probaNegativa = 0.1;
+		//	int frecPos = ( bag->getFrecuencias(1) )->at( bag->posicionEnBag(palabra) );
+		//	int frecNeg = ( bag->getFrecuencias(0) )->at( bag->posicionEnBag(palabra) );
+		//	int frecTotal = frecPos + frecNeg;
+			numeroReal probaPositiva = bag->getProbabilidadesPositivas() -> at( bag->posicionEnBag(palabra));
+			numeroReal probaNegativa = bag->getProbabilidadesNegativas() -> at( bag->posicionEnBag(palabra));
+			//probaPositiva = (probaPositiva);
+			//probaNegativa = log(probaNegativa);
 
-			// Casteo ambos para que devuelva float
-			// La probabilidad de que la palabra venga de la bag positiva
-			if(frecPos > 0) {
-				probaPositiva = (1.0 * frecPos) / frecTotal;
-				probaPositiva = log(probaPositiva);
-			}
-
-			// La probabilidad de que la palabra venga de la bag negativa
-			if(frecNeg > 0) {
-				probaNegativa = (1.0 * frecNeg) / frecTotal;
-				probaNegativa = log(probaNegativa);
-			}
-
+//			// Casteo ambos para que devuelva float
+//			// La probabilidad de que la palabra venga de la bag positiva
+//			if(frecPos > 0) {
+//				probaPositiva = (1.0 * frecPos) / frecTotal;
+//				probaPositiva = log(probaPositiva);
+//			}
+//
+//			// La probabilidad de que la palabra venga de la bag negativa
+//			if(frecNeg > 0) {
+//				probaNegativa = (1.0 * frecNeg) / frecTotal;
+//				probaNegativa = log(probaNegativa);
+//			}
+//
 //				if(inicio)
 //				{
 //					cout << "Proba pos: " << probaPositiva << endl;
 //					cout << "Proba neg: " << probaNegativa << endl;
 //					inicio = false;
 //				}
-			//if(probaPositiva == 0)
+//			//if(probaPositiva == 0)
 			acumuladorProbaNegativa = acumuladorProbaNegativa + probaNegativa;
 			acumuladorProbaPositiva = acumuladorProbaPositiva + probaPositiva;
 		}
 	}
+	acumuladorProbaPositiva = exp(acumuladorProbaPositiva);
+	acumuladorProbaNegativa = exp(acumuladorProbaNegativa);
 
-	float probaReviewPositiva = acumuladorProbaPositiva - (acumuladorProbaPositiva + acumuladorProbaNegativa);
-	float probaReviewNegativa = acumuladorProbaNegativa - (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	numeroReal probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	numeroReal probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
 //	float v1 = rand() % 100;
-//	if(v1 < 50)
+//	if(v1 < 30)
 //	{
 //		cout << "Proba review Positiva" << probaReviewPositiva << endl;
 //		cout << "Proba review Negativas" << probaReviewNegativa << endl;
 //	}
 
-	*probabilidadPositiva = exp(-probaReviewPositiva);
+	*probabilidadPositiva = probaReviewPositiva;
 	//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
 	if ( ( (probaReviewPositiva >= probaReviewNegativa) and (review.getSentiment() == 1) ) or ( (probaReviewPositiva < probaReviewNegativa) and (review.getSentiment() == 0) ) ) return true;
 	else return false;

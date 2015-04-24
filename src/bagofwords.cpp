@@ -6,6 +6,8 @@ BagOfWords::BagOfWords() {
 	this->frecuenciasNegativas = new vector<int>();
 	this->pesosPositivos = new vector<int>();
 	this->pesosNegativos = new vector<int>();
+	this->probabilidadesPositivas = new vector<numeroReal>();
+	this->probabilidadesNegativas = new vector<numeroReal>();
 	this->words = new vector<string>();
 	this->contador = 0;
 }
@@ -17,6 +19,8 @@ BagOfWords::~BagOfWords() {
 	delete this->bag;
 	delete this->frecuenciasNegativas;
 	delete this->frecuenciasPositivas;
+	delete this->probabilidadesPositivas;
+	delete this->probabilidadesNegativas;
 	delete this->words;
 }
 
@@ -129,7 +133,31 @@ bool pred(const int a, const int b) {
 	return a < b;
 }
 
-void BagOfWords::pesarBag() {
+void BagOfWords::crearVectorConProbabilidades() {
+	int lenght = this->cantidadDePalabrasTotales();
+	numeroReal probabilidadPositiva;
+	numeroReal probabilidadNegativa;
+	numeroReal frecPositiva;
+	numeroReal frecNegativa;
+	numeroReal frecTotal;
+	for(int i = 0; i < lenght; i++){
+		frecPositiva = (*frecuenciasPositivas)[i] + 1;
+		frecNegativa = (*frecuenciasNegativas)[i] + 1;
+		frecTotal = frecPositiva + frecNegativa;
+		probabilidadesPositivas->push_back(log(frecPositiva / frecTotal));
+		probabilidadesNegativas->push_back(log(frecNegativa / frecTotal));
+	}
+}
+
+vector<numeroReal>* BagOfWords::getProbabilidadesPositivas() {
+	return probabilidadesPositivas;
+}
+
+vector<numeroReal>* BagOfWords::getProbabilidadesNegativas() {
+	return probabilidadesNegativas;
+}
+
+void BagOfWords::pesarBag(float paso, float potencia) {
 	int maxPos = (*max_element(frecuenciasPositivas->begin(), frecuenciasPositivas->end(), pred));
 	int maxNeg = (*max_element(frecuenciasNegativas->begin(), frecuenciasNegativas->end(), pred));
 
@@ -137,9 +165,8 @@ void BagOfWords::pesarBag() {
 	int i = 0;
 	for ( ; iteradorPos != frecuenciasPositivas->end() ; iteradorPos++, i++){
 		int frecuencia = (*iteradorPos);
-		float paso = 0.1;
 		for (float j = 0; j < 1; j+=paso){
-			if ((j*maxPos < frecuencia) and ((j+paso)*maxPos >= frecuencia)) {
+			if ((pow(j, potencia)*maxPos < frecuencia) and (pow((j+paso), potencia)*maxPos >= frecuencia)) {
 				pesosPositivos->at(i) = ((j+paso)/paso);
 				break;
 			}
@@ -150,9 +177,8 @@ void BagOfWords::pesarBag() {
 	i = 0;
 	for ( ; iteradorNeg != frecuenciasNegativas->end() ; iteradorNeg++, i++){
 		int frecuencia = (*iteradorNeg);
-		float paso = 0.1;
 		for (float j = 0; j < 1; j+=paso){
-			if ((j*maxNeg < frecuencia) and ((j+paso)*maxNeg >= frecuencia)) {
+			if ((pow(j, potencia)*maxNeg < frecuencia) and (pow((j+paso), potencia)*maxNeg >= frecuencia)) {
 				pesosNegativos->at(i) = ((j+paso)/paso);
 				break;
 			}

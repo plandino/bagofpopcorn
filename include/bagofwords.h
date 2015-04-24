@@ -7,7 +7,13 @@
 #include <algorithm> //toLower y remove
 #include <map>
 #include <vector>
+#include <math.h>
 #include "string.h"
+#include <cmath>
+
+// Esto lo hago para cambiar entre double y float por la precision en la multiciplicacion
+// de probabilidades menores a 1
+typedef long double numeroReal;
 
 using namespace std;
 
@@ -23,6 +29,8 @@ private:
 	vector<int>* frecuenciasNegativas;
 	vector<int>* pesosPositivos;
 	vector<int>* pesosNegativos;
+	vector<numeroReal>* probabilidadesPositivas;
+	vector<numeroReal>* probabilidadesNegativas;
 	vector<string>* words;
 	int contador;
 
@@ -42,12 +50,16 @@ public:
 	bool estaEnBag(string key);
 	int posicionEnBag(string key);
 
+	void crearVectorConProbabilidades();
+
 	vector<int>* getFrecuencias(int sentiment);
 	vector<int>* getPesosPositivos();
 	vector<int>* getPesosNegativos();
+	vector<numeroReal>* getProbabilidadesPositivas();
+	vector<numeroReal>* getProbabilidadesNegativas();
 	vector<string>* getWords();
 
-	void pesarBag();
+	void pesarBag(float paso, float potencia);
 };
 
 #endif /* BAGOFWORDS_H_ */

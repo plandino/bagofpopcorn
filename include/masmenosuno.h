@@ -13,7 +13,7 @@ public:
 	MasMenosUno();
 	virtual ~MasMenosUno();
 
-	void realizarPrediccion(BagOfWords* bag, Parser* parser);
+	void realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar);
 };
 
 #endif /* MASMENOSUNO_H_ */
