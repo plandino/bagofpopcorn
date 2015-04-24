@@ -9,6 +9,7 @@
 #include <vector>
 #include <math.h>
 #include "string.h"
+#include <cmath>
 
 // Esto lo hago para cambiar entre double y float por la precision en la multiciplicacion
 // de probabilidades menores a 1
@@ -58,7 +59,7 @@ public:
 	vector<numeroReal>* getProbabilidadesNegativas();
 	vector<string>* getWords();
 
-	void pesarBag();
+	void pesarBag(float paso, float potencia);
 };
 
 #endif /* BAGOFWORDS_H_ */
