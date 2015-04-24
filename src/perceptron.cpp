@@ -75,6 +75,7 @@ double* Perceptron::entrenar() {
 			cout << contadorError << " errores encontrados en el entrenamiento. Detenido." << endl;
 		}
 	}
+	delete reviews;
 	return pesos;
 }
 
@@ -119,7 +120,7 @@ vector<prediccion> Perceptron::predecir() {
 		prediccion p = *it;
 		p.productoInternoNormalizado = ( (p.productoInterno - minProd) / divisor );
 	}
-
+	delete reviews;
 	return preds;
 }
 
