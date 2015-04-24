@@ -19,7 +19,7 @@ struct prediccion {
 class Perceptron {
 
     private:
-        int* pesos ; //Array de 2 ** 25 posiciones. Tamanio copiado del de python. REVISAR NUMERO
+        double* pesos ; //Array de 2 ** 25 posiciones. Tamanio copiado del de python. REVISAR NUMERO
         BagOfWords* bag; //En lugar de funcion de hashing, usar la bag directamente. Colisiones == 0!!.
         Parser* parser;
         int productoInterno(vector<string> features);
@@ -27,7 +27,7 @@ class Perceptron {
         int numeroPasadas;
         float learningRate;
     public:
-        int* entrenar(); //Devuelve el vector de pesos con los valores que resultan.
+        double* entrenar(); //Devuelve el vector de pesos con los valores que resultan.
         vector<prediccion> predecir();
         Perceptron(BagOfWords* bag, Parser* parser);
         virtual ~Perceptron();

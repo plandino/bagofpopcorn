@@ -4,7 +4,7 @@
 Perceptron::Perceptron(BagOfWords* bag, Parser* parser)  {
 	this->bag = bag;
 	this->parser = parser;
-	this->pesos = new int[VEC_SIZE];
+	this->pesos = new double[VEC_SIZE];
 	for (int i=0; i < VEC_SIZE; i++) {
 		pesos[i] = 0;
 	}
@@ -25,16 +25,18 @@ int Perceptron::productoInterno(vector<string> features) {
 	vector<string>::iterator iterador = features.begin();
 	for ( ; iterador != features.end(); iterador++ ) {
 		string palabra = *iterador;
-		int indice = bag->posicionEnBag(palabra);
-		int pesoPalabra = pesos[indice];
-		productoInterno += pesoPalabra * 1; // ver
+		if (bag->estaEnBag(palabra) != -1) {
+			int indice = bag->posicionEnBag(palabra);
+			int pesoPalabra = pesos[indice];	
+			productoInterno += pesoPalabra * 1; // 1 es el "value" en el perceptron. 
+		}
 	}
-	cout << "DEBUG: " << productoInterno << endl;
+	// if (productoInterno) cout << "DEBUG: " << productoInterno << endl;
 	return productoInterno;
 }
 
 
-int* Perceptron::entrenar() {
+double* Perceptron::entrenar() {
 	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/labeledTrainData.tsv", 0);
 	cout << "\nPass\t\tErrors\t\tNr. Samples\tSince Start" << endl;
 	for (int pasada = 0; pasada < numeroPasadas; pasada++) {
@@ -48,11 +50,9 @@ int* Perceptron::entrenar() {
 			//cout << "ENTRANDO EN EL SEGUNDO FOR" << endl; //DEBUG
 			Review rev = (*iterador);
 			vector<string> features = rev.getPalabras();
-			productoInterno = this->productoInterno(features) > 0.5;
-			if (productoInterno)
-				dotp = 1; 
-			else 
-				dotp = 0;
+			productoInterno = ( this->productoInterno(features) > 0.5 );
+			if (productoInterno) { dotp = 1; }
+			else { dotp = 0; }
 			error = rev.getSentiment() - dotp;
 
 			if (error != 0) {
@@ -62,8 +62,10 @@ int* Perceptron::entrenar() {
 				vector<string>::iterator it = features.begin();
 				for ( ; it != features.end() ; it++ ) {
 					string palabra = *it;
-					int j = this->bag->posicionEnBag(palabra);
-					pesos[j] += learningRate * error * log(1.0 + 1); //	ver
+					if (bag->estaEnBag(palabra) ) {
+						int j = this->bag->posicionEnBag(palabra);
+						pesos[j] += learningRate * error * log(2); //	ver
+					}
 				}
 			}
 		}
