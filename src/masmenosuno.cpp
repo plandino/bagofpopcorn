@@ -37,16 +37,17 @@ void MasMenosUno::probar(BagOfWords* bag, Parser* parser, bool pesar) {
 	vector<numeroReal> vectorProbabilidades;
 	int resultadoMayor = 0;
 	double potenciaMayor, pasoMayor, kMayor;
+	double paso = 0.001, potencia = 10.0, k = 0.7;
 
 	for (int j = 0; j < 2; j++){
 		if (j==0) archivoSalida << "-----------------------------------------------------------------POLINOMICA-----------------------------------------------------------------" << endl;
 		if (j==1) archivoSalida << endl << endl <<"-----------------------------------------------------------------EXPONENCIAL-----------------------------------------------------------------" << endl;
-		for (double paso = 0.001; paso <= 0.021; paso += 0.001){
-			for (double potencia = 7.0; potencia <= 13; potencia += 1.0 ){
+		for (paso = 0.001; paso <= 0.021; paso += 0.001){
+			for (potencia = 7.0; potencia <= 13; potencia += 1.0 ){
 				if (pesar and j==0) bag->pesarBag(paso,potencia,false);
 				if (pesar and j==1) bag->pesarBag(paso,potencia,true);
 
-				for (double k = 0.5; k <= 0.81; k+=0.01){
+				for (k = 0.5; k <= 0.81; k+=0.01){
 					// Cuenta la cantidad que coincidieron
 					int contador = iterarPorReviews(k, reviewsAPredecir, bag, vectorIds, vectorProbabilidades, true);
 					float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
