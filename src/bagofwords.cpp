@@ -8,6 +8,8 @@ BagOfWords::BagOfWords() {
 	this->pesosNegativos = new vector<int>();
 	this->probabilidadesPositivas = new vector<numeroReal>();
 	this->probabilidadesNegativas = new vector<numeroReal>();
+	this->probabilidadesNegativasTrad = new vector<numeroReal>();
+	this->probabilidadesPositivasTrad = new vector<numeroReal>();
 	this->words = new vector<string>();
 	this->contador = 0;
 }
@@ -134,19 +136,37 @@ bool pred(const int a, const int b) {
 }
 
 void BagOfWords::crearVectorConProbabilidades() {
+	// FALTA HACER QUE USE LAS PONDERACIONES DE LOS PESOS
+	//	this->pesarBag(0.001, 10);
+	// Con esto calculo la probabilidad de que una palabra sea pos o neg
 	int lenght = this->cantidadDePalabrasTotales();
-	numeroReal probabilidadPositiva;
-	numeroReal probabilidadNegativa;
-	numeroReal frecPositiva;
-	numeroReal frecNegativa;
-	numeroReal frecTotal;
+	numeroReal frecPositiva = 0;
+	numeroReal frecNegativa = 0;
+	numeroReal frecTotal = 0;
 	for(int i = 0; i < lenght; i++){
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
 		frecTotal = frecPositiva + frecNegativa;
-		probabilidadesPositivas->push_back(log(frecPositiva / frecTotal));
-		probabilidadesNegativas->push_back(log(frecNegativa / frecTotal));
+		probabilidadesPositivas->push_back(frecPositiva / frecTotal);
+		probabilidadesNegativas->push_back(frecNegativa / frecTotal);
 	}
+
+	// Con esto calculo la probabilidad de que una palabra este adentro de un determinado bag
+	numeroReal frecuenciaTodaLaBagPos = 0;
+	numeroReal frecuenciaTodaLaBagNeg = 0;
+	for(int i = 0; i < lenght; i++){
+		frecuenciaTodaLaBagPos += (*frecuenciasPositivas)[i];
+		frecuenciaTodaLaBagNeg += (*frecuenciasNegativas)[i];
+	}
+	frecuenciaTodaLaBagPos += lenght;
+	frecuenciaTodaLaBagNeg += lenght;
+	for(int i = 0; i < lenght; i++){
+		frecPositiva = (*frecuenciasPositivas)[i] + 1;
+		frecNegativa = (*frecuenciasNegativas)[i] + 1;
+		probabilidadesPositivasTrad->push_back(frecPositiva / frecuenciaTodaLaBagPos); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
+		probabilidadesNegativasTrad->push_back(frecNegativa / frecuenciaTodaLaBagNeg); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
+	}
+
 }
 
 vector<numeroReal>* BagOfWords::getProbabilidadesPositivas() {
@@ -155,6 +175,14 @@ vector<numeroReal>* BagOfWords::getProbabilidadesPositivas() {
 
 vector<numeroReal>* BagOfWords::getProbabilidadesNegativas() {
 	return probabilidadesNegativas;
+}
+
+vector<numeroReal>* BagOfWords::getProbabilidadesPositivasTradicionales() {
+	return probabilidadesPositivasTrad;
+}
+
+vector<numeroReal>* BagOfWords::getProbabilidadesNegativasTradicionales() {
+	return probabilidadesNegativasTrad;
 }
 
 void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {

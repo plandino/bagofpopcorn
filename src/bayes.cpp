@@ -10,6 +10,7 @@ Bayes::~Bayes(){
 
 void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
+//	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 	float k = 0.7;
 //	ofstream archivoSalida("data/dataout/distintosKFino.txt");
 //	int resultadoMayor = 0;
@@ -27,26 +28,26 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 		if (i == 0) cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
 		if ( predecir(reviewAPredecir, bag, k, &probabilidadPositiva) ) contador++;
 
-		vectorIds[i] = reviewAPredecir.getId();
-		vectorProbabilidades[i] = probabilidadPositiva;
+		vectorIds.push_back(reviewAPredecir.getId());
+		vectorProbabilidades.push_back(probabilidadPositiva);
 
 		if ( (i+1) % 1000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << endl;
 		i++;
 		if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
 	}
 
-	float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
+//	float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
 
 	cout << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
-	cout << "Bayes: Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
+	//cout << "Bayes: Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
 	parser->agregarAlCSV(vectorIds, vectorProbabilidades);
 	delete reviewsAPredecir;
 }
 
 bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal *probabilidadPositiva) {
 	int puntuacion = 0;
-	numeroReal acumuladorProbaPositiva = 0;
-	numeroReal acumuladorProbaNegativa = 0;
+	numeroReal acumuladorProbaPositiva = 1.0;
+	numeroReal acumuladorProbaNegativa = 1.0;
 	vector<string> palabras = review.getPalabras();
 
 	bool inicio = true;
@@ -54,40 +55,16 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal *proba
 	for ( ; iterador != palabras.end() ; iterador++){
 		string palabra = (*iterador);
 		if ( bag->estaEnBag(palabra) ){
-		//	int frecPos = ( bag->getFrecuencias(1) )->at( bag->posicionEnBag(palabra) );
-		//	int frecNeg = ( bag->getFrecuencias(0) )->at( bag->posicionEnBag(palabra) );
-		//	int frecTotal = frecPos + frecNeg;
-			numeroReal probaPositiva = bag->getProbabilidadesPositivas() -> at( bag->posicionEnBag(palabra));
-			numeroReal probaNegativa = bag->getProbabilidadesNegativas() -> at( bag->posicionEnBag(palabra));
-			//probaPositiva = (probaPositiva);
-			//probaNegativa = log(probaNegativa);
+			numeroReal probaPositiva = bag->getProbabilidadesPositivasTradicionales() -> at( bag->posicionEnBag(palabra));
+			numeroReal probaNegativa = bag->getProbabilidadesNegativasTradicionales() -> at( bag->posicionEnBag(palabra));
 
-//			// Casteo ambos para que devuelva float
-//			// La probabilidad de que la palabra venga de la bag positiva
-//			if(frecPos > 0) {
-//				probaPositiva = (1.0 * frecPos) / frecTotal;
-//				probaPositiva = log(probaPositiva);
-//			}
-//
-//			// La probabilidad de que la palabra venga de la bag negativa
-//			if(frecNeg > 0) {
-//				probaNegativa = (1.0 * frecNeg) / frecTotal;
-//				probaNegativa = log(probaNegativa);
-//			}
-//
-//				if(inicio)
-//				{
-//					cout << "Proba pos: " << probaPositiva << endl;
-//					cout << "Proba neg: " << probaNegativa << endl;
-//					inicio = false;
-//				}
-//			//if(probaPositiva == 0)
-			acumuladorProbaNegativa = acumuladorProbaNegativa + probaNegativa;
-			acumuladorProbaPositiva = acumuladorProbaPositiva + probaPositiva;
+			if( (probaPositiva == 0) or (probaNegativa == 0)) cout << "QUILOMBOOOO" << endl;
+			acumuladorProbaNegativa = acumuladorProbaNegativa * probaNegativa;
+			acumuladorProbaPositiva = acumuladorProbaPositiva * probaPositiva;
 		}
 	}
-	acumuladorProbaPositiva = exp(acumuladorProbaPositiva);
-	acumuladorProbaNegativa = exp(acumuladorProbaNegativa);
+	//acumuladorProbaPositiva = acumuladorProbaPositiva;
+	//acumuladorProbaNegativa = acumuladorProbaNegativa;
 
 	numeroReal probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
 	numeroReal probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);

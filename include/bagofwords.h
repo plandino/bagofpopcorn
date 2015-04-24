@@ -31,6 +31,8 @@ private:
 	vector<int>* pesosNegativos;
 	vector<numeroReal>* probabilidadesPositivas;
 	vector<numeroReal>* probabilidadesNegativas;
+	vector<numeroReal>* probabilidadesNegativasTrad;
+	vector<numeroReal>* probabilidadesPositivasTrad;
 	vector<string>* words;
 	int contador;
 
@@ -57,6 +59,8 @@ public:
 	vector<int>* getPesosNegativos();
 	vector<numeroReal>* getProbabilidadesPositivas();
 	vector<numeroReal>* getProbabilidadesNegativas();
+	vector<numeroReal>* getProbabilidadesPositivasTradicionales();
+	vector<numeroReal>* getProbabilidadesNegativasTradicionales();
 	vector<string>* getWords();
 
 	void pesarBag(double paso, double potencia, bool exponencial);

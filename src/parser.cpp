@@ -146,6 +146,7 @@ void Parser::generarTSV() {
 		}
 	}
 	archivo.close();
+	bag->crearVectorConProbabilidades();
 }
 
 void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad){

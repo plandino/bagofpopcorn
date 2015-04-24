@@ -13,7 +13,7 @@ const string NOMBRE_ARCHIVO_TEST_DATA = "data/datain/testData.tsv";
 const string NOMBRE_ARCHIVO_CSV_PROBABILIDADES = "data/dataout/csvProbas.csv";
 const string NOMBRE_ARCHIVO_CSV_MASMENOSUNO = "data/dataout/csvMasMenosUno.csv";
 
-const int CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO = 25000;
+const int CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO = 15000;
 
 class Parser {
 
