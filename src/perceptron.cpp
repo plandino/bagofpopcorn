@@ -37,7 +37,7 @@ int Perceptron::productoInterno(vector<string> features) {
 
 
 double* Perceptron::entrenar() {
-	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/labeledTrainData.tsv", 0, true);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true);
 	cout << "\nPass\t\tErrors\t\tNr. Samples\tSince Start" << endl;
 	for (int pasada = 0; pasada < numeroPasadas; pasada++) {
 		int contadorError = 0;
@@ -92,7 +92,7 @@ vector<prediccion> Perceptron::predecir() {
 	int productoInterno;
 	vector<prediccion> preds;
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/testData.tsv", 0, false);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 	vector<Review>::iterator iterador = reviews->begin();
 
 	for ( ; iterador != reviews->end() ; iterador++) {
@@ -128,7 +128,7 @@ void Perceptron::tirarACSV(vector<prediccion> predicciones) {
 
 	ofstream archivo("data/dataout/perceptron.csv");
 	if ( archivo.is_open() ) {
-		archivo << "id,sentiment" << "\n";
+		archivo << "\"id\",\"sentiment\"" << "\n";
 		vector<prediccion>::iterator it = predicciones.begin();
 		for ( ; it != predicciones.end(); it++) {
 			prediccion p = *it;

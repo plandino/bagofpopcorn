@@ -9,70 +9,68 @@ MasMenosUno::~MasMenosUno() {
 
 }
 
-void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar) {
-//	ofstream archivoSalida("data/dataout/distintosPasoPotencia2.txt");
-//	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
-	double paso = 0.001;
-	double potencia = 10.0;
-	double pasoMayor = 0, potenciaMayor = 0;
-	int resultadoMayor = 0;
+int MasMenosUno::iterarPorReviews(float k, vector<Review>* reviewsAPredecir, BagOfWords* bag, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool contar) {
+	vector<Review>::iterator iterador = reviewsAPredecir->begin();
+	int contador = 0;
+	unsigned int i = 0;
+
+	for (; iterador != reviewsAPredecir->end(); iterador++) {
+		Review reviewAPredecir = (*iterador);
+		double probabilidadPositiva = predecir(reviewAPredecir, bag, k);
+		vectorIds.push_back(reviewAPredecir.getId());
+		vectorProbabilidades.push_back(probabilidadPositiva);
+		//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
+		if ( contar and ( ( (probabilidadPositiva > 0.5) and (reviewAPredecir.getSentiment() == 1) )
+						or ( (probabilidadPositiva < 0.5) and (reviewAPredecir.getSentiment() == 0) ) ) ) contador++;
+		if (i == 0)	cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
+		if ((i + 1) % 1000 == 0) cout << "Ya se predijeron " << (i + 1) << " reviews de " << reviewsAPredecir->size() << endl;
+		i++;
+		if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
+	}
+	return contador;
+}
+
+void MasMenosUno::probar(BagOfWords* bag, Parser* parser, bool pesar) {
+	ofstream archivoSalida("data/dataout/distintosPasoPotenciaK.txt");
+	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
 	vector<string> vectorIds;
 	vector<numeroReal> vectorProbabilidades;
+	int resultadoMayor = 0;
+	double potenciaMayor, pasoMayor, kMayor;
 
-//	for (int j = 0; j < 2; j++){
-//		if (j==0) archivoSalida << "-----------------------------------------------------------------POLINOMICA-----------------------------------------------------------------" << endl;
-//		if (j==1) archivoSalida << endl << endl <<"-----------------------------------------------------------------EXPONENCIAL-----------------------------------------------------------------" << endl;
-//		for (paso = 0.004; paso < 0.008; paso += 0.001){
-//			for (potencia = 8.0; potencia <= 12; potencia += 1.0 ){
-//				if (pesar and j==0) bag->pesarBag(paso,potencia,false);
-//				if (pesar and j==1) bag->pesarBag(paso,potencia,true);
-				cout << "Pesando bag..." << endl;
-				bag->pesarBag(paso,potencia,false);
-				cout << "Pesaje terminado" << endl;
-				float k = 0.7;
+	for (int j = 0; j < 2; j++){
+		if (j==0) archivoSalida << "-----------------------------------------------------------------POLINOMICA-----------------------------------------------------------------" << endl;
+		if (j==1) archivoSalida << endl << endl <<"-----------------------------------------------------------------EXPONENCIAL-----------------------------------------------------------------" << endl;
+		for (double paso = 0.001; paso <= 0.021; paso += 0.001){
+			for (double potencia = 7.0; potencia <= 13; potencia += 1.0 ){
+				if (pesar and j==0) bag->pesarBag(paso,potencia,false);
+				if (pesar and j==1) bag->pesarBag(paso,potencia,true);
 
-	//			for (k = 0.3; k <= 1; k+=0.01){
-					int contador = 0; // Cuenta la cantidad que coincidieron
-					vector<Review>::iterator iterador = reviewsAPredecir->begin();
-					unsigned int i = 0;
-					for ( ; iterador != reviewsAPredecir->end() ; iterador++){
-						Review reviewAPredecir = (*iterador);
-						double probabilidadPositiva = predecir(reviewAPredecir, bag, k);
-						vectorIds.push_back(reviewAPredecir.getId());
-						vectorProbabilidades.push_back(probabilidadPositiva);
+				for (double k = 0.5; k <= 0.81; k+=0.01){
+					// Cuenta la cantidad que coincidieron
+					int contador = iterarPorReviews(k, reviewsAPredecir, bag, vectorIds, vectorProbabilidades, true);
+					float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
 
-						//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
-//						if ( ( (probabilidadPositiva > 0.5) and (reviewAPredecir.getSentiment() == 1) ) or ( (probabilidadPositiva < 0.5) and (reviewAPredecir.getSentiment() == 0) ) ) contador++;
+//					cout << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
+//					cout << "MasMenosUno: Dando un porcentaje de acertar de %" << porcentaje << "." << endl << endl;
 
-						if (i == 0) cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
-						if ( (i+1) % 1000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << endl;
-						i++;
-						if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
+					cout << "PASO: " << paso << " | POTENCIA: " << potencia << " | K: " << k <<endl;
+					archivoSalida << "PASO: " << paso << " | POTENCIA: " << potencia << " | K: " << k <<endl;
+					archivoSalida << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
+					archivoSalida << "Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
+					archivoSalida << endl << "--------------------------------------------------------------------------------------------------------------------" << endl;
+					if (resultadoMayor < contador) {
+						resultadoMayor = contador;
+						pasoMayor = paso;
+						potenciaMayor = potencia;
+						kMayor = k;
 					}
-
-//					float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
-
-	//				cout << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
-	//				cout << "MaseMenosUno: Dando un porcentaje de acertar de %" << porcentaje << "." << endl << endl;
-
-//					cout << "PASO: " << paso << " | POTENCIA: " << potencia << endl;
-//					archivoSalida << "PASO: " << paso << " | POTENCIA: " << potencia << endl;
-//					archivoSalida << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
-//					archivoSalida << "Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
-//					archivoSalida << endl << "--------------------------------------------------------------------------------------------------------------------" << endl;
-//					if (resultadoMayor < contador) {
-//						resultadoMayor = contador;
-//						pasoMayor = paso;
-//						potenciaMayor = potencia;
-//					}
-	//			}
-//			}
-//		}
-//		archivoSalida << endl << endl << "El mejor resultado fue " << resultadoMayor << " sobre 10000 reviews y se dio con paso=" << pasoMayor << " y potencia=" << potenciaMayor;
-//	}
-//	archivoSalida.close();
-	parser->agregarAlCSV(vectorIds, vectorProbabilidades);
+				}
+			}
+		}
+		archivoSalida << endl << endl << "El mejor resultado fue " << resultadoMayor << " sobre " << (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) << " reviews y se dio con paso=" << pasoMayor << ", potencia=" << potenciaMayor << " k=" << kMayor;
+	}
+	archivoSalida.close();
 	delete reviewsAPredecir;
 }
 
@@ -98,4 +96,26 @@ double MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 	double probabilidad = ((puntuacionPos*1.0)/(puntuacionPos + puntuacionNeg));
 	if (puntuacionPos == 0 and puntuacionNeg == 0) probabilidad = 0.5; //SI SE DIVIDE POR 0
 	return probabilidad;
+}
+
+void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar, bool esPrueba) {
+	if (esPrueba) probar(bag, parser, pesar);
+	else {
+		vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+		double paso = 0.001;
+		double potencia = 10.0;
+		double k = 0.7;
+		vector<string> vectorIds;
+		vector<numeroReal> vectorProbabilidades;
+
+		if (pesar){
+			cout << "Pesando bag..." << endl;
+			bag->pesarBag(paso,potencia,false);
+			cout << "Pesaje terminado" << endl;
+		}
+		iterarPorReviews(k, reviewsAPredecir, bag, vectorIds, vectorProbabilidades, false);
+
+		parser->agregarAlCSV(vectorIds, vectorProbabilidades);
+		delete reviewsAPredecir;
+	}
 }

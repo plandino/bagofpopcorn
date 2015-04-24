@@ -8,12 +8,14 @@ class MasMenosUno {
 
 private:
 	double predecir(Review& review, BagOfWords* bag, float k);
+	int iterarPorReviews(float k, vector<Review>* reviewsAPredecir, BagOfWords* bag, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool contar);
+	void probar(BagOfWords* bag, Parser* parser, bool pesar);
 
 public:
 	MasMenosUno();
 	virtual ~MasMenosUno();
 
-	void realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar);
+	void realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar, bool esPrueba);
 };
 
 #endif /* MASMENOSUNO_H_ */
