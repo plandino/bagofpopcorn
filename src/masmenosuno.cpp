@@ -9,7 +9,7 @@ MasMenosUno::~MasMenosUno() {
 
 }
 
-void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
+void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar) {
 	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
 	ofstream archivoSalida("data/dataout/distintosPasoPotencia.txt");
 	float paso = 0.001;
@@ -19,7 +19,7 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 
 	for (paso = 0.001; paso <= 0.1; paso += 0.001){
 		for (potencia = 1.0; potencia <= 20; potencia += 1.0 ){
-			bag->pesarBag(paso,potencia);
+			if (pesar) bag->pesarBag(paso,potencia);
 			float k = 0.7;
 
 //			for (k = 0.3; k <= 1; k+=0.01){

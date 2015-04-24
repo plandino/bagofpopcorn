@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
 //	Con esto leo frecuencias desde el TSV generado a partir del CSV de python -> Solo sirve si se usan 15000 para entrenar y 10000 para predecir
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV("data/dataout/frecuencias_python.tsv");
 
-	masMenosUno->realizarPrediccion(bag, parser);
+	masMenosUno->realizarPrediccion(bag, parser, true);
 
 //	bayes->realizarPrediccion(bag, parser);
 
