@@ -157,7 +157,7 @@ vector<numeroReal>* BagOfWords::getProbabilidadesNegativas() {
 	return probabilidadesNegativas;
 }
 
-void BagOfWords::pesarBag(float paso, float potencia) {
+void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 	int maxPos = (*max_element(frecuenciasPositivas->begin(), frecuenciasPositivas->end(), pred));
 	int maxNeg = (*max_element(frecuenciasNegativas->begin(), frecuenciasNegativas->end(), pred));
 
@@ -165,10 +165,17 @@ void BagOfWords::pesarBag(float paso, float potencia) {
 	int i = 0;
 	for ( ; iteradorPos != frecuenciasPositivas->end() ; iteradorPos++, i++){
 		int frecuencia = (*iteradorPos);
-		for (float j = 0; j < 1; j+=paso){
-			if ((pow(j, potencia)*maxPos < frecuencia) and (pow((j+paso), potencia)*maxPos >= frecuencia)) {
-				pesosPositivos->at(i) = ((j+paso)/paso);
-				break;
+		for (double j = 0; j < 1; j+=paso){
+			if (exponencial) {
+				if (((exp(pow(j, potencia))-1)*maxPos/(exp(1)-1) < frecuencia) and ((exp(pow(j+paso, potencia))-1)*maxPos/(exp(1)-1) >= frecuencia)) {
+					pesosPositivos->at(i) = ((j+paso)/paso);
+					break;
+				}
+			} else {
+				if ((pow(j, potencia)*maxPos < frecuencia) and (pow((j+paso), potencia)*maxPos >= frecuencia)) {
+					pesosPositivos->at(i) = ((j+paso)/paso);
+					break;
+				}
 			}
 		}
 	}
@@ -177,10 +184,17 @@ void BagOfWords::pesarBag(float paso, float potencia) {
 	i = 0;
 	for ( ; iteradorNeg != frecuenciasNegativas->end() ; iteradorNeg++, i++){
 		int frecuencia = (*iteradorNeg);
-		for (float j = 0; j < 1; j+=paso){
-			if ((pow(j, potencia)*maxNeg < frecuencia) and (pow((j+paso), potencia)*maxNeg >= frecuencia)) {
-				pesosNegativos->at(i) = ((j+paso)/paso);
-				break;
+		for (double j = 0; j < 1; j+=paso){
+			if (exponencial) {
+				if (((exp(pow(j, potencia))-1)*maxNeg/(exp(1)-1) < frecuencia) and ((exp(pow(j+paso, potencia))-1)*maxNeg/(exp(1)-1) >= frecuencia)) {
+					pesosNegativos->at(i) = ((j+paso)/paso);
+					break;
+				}
+			} else {
+				if ((pow(j, potencia)*maxNeg < frecuencia) and (pow((j+paso), potencia)*maxNeg >= frecuencia)) {
+					pesosNegativos->at(i) = ((j+paso)/paso);
+					break;
+				}
 			}
 		}
 	}

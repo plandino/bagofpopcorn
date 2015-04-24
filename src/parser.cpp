@@ -129,6 +129,7 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo) {
 	}
 	cout << "Se terminaron de parsear las palabras para el entrenamiento." << endl << endl;
 	archivo.close();
+	//TODO: ACA NO TENDRIA QUE IR TMB EL CREAR VECTORES DE PROBAS?
 	return bag;
 }
 
@@ -147,12 +148,12 @@ void Parser::generarTSV() {
 	archivo.close();
 }
 
-void Parser::agregarAlCSV(string *id, numeroReal *vectorProbabilidades){
+void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad){
 	ofstream archivo(NOMBRE_ARCHIVO_CSV_PROBABILIDADES.c_str());
 	if ( archivo.is_open() ){
-		archivo << "id,probabilidad" << "\n";
+		archivo << "\"id\",\"sentiment\"" << "\n";
 		for (int i = 0; i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO; i++){
-			archivo << id[i].c_str() << "," << vectorProbabilidades[i] << "\n";
+			archivo << id[i].c_str() << "," << probabilidad[i] << "\n";
 		}
 	}
 	archivo.close();
@@ -161,7 +162,7 @@ void Parser::agregarAlCSV(string *id, numeroReal *vectorProbabilidades){
 void Parser::agregarAlCSV(string *id, int *vectorMasMenosUnos){
 	ofstream archivo(NOMBRE_ARCHIVO_CSV_MASMENOSUNO.c_str());
 	if ( archivo.is_open() ){
-		archivo << "id,probabilidad" << "\n";
+		archivo << "\"id\",\"sentiment\"" << "\n";
 		for (int i = 0; i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO; i++){
 			archivo << id[i].c_str() << "," << vectorMasMenosUnos[i] << "\n";
 		}
@@ -239,15 +240,16 @@ vector<string> Parser::soloLetras(string word) {
 	return words;
 }
 
-vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde) {
+vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento) {
 	ifstream archivo(nombreArchivo.c_str());
 	vector< Review >* reviews = new vector< Review >();
 	if ( archivo.is_open() ){
 		string id, header;
-		int sentimiento;
+		int sentimiento = -1;
 		int i = 0;
 		getline(archivo,header); // Leo el header
-		while ( archivo >> id >> sentimiento ){ //Leo id y sentimiento
+		while ( archivo >> id ){ //Leo id y sentimiento
+			if (tieneSentimiento) archivo >> sentimiento;
 			if ( i < desde ) { //Saco las primeras que no me interesan
 				string review_str;
 				getline(archivo,review_str); //Leo review

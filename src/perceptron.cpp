@@ -37,7 +37,7 @@ int Perceptron::productoInterno(vector<string> features) {
 
 
 double* Perceptron::entrenar() {
-	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/labeledTrainData.tsv", 0);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/labeledTrainData.tsv", 0, true);
 	cout << "\nPass\t\tErrors\t\tNr. Samples\tSince Start" << endl;
 	for (int pasada = 0; pasada < numeroPasadas; pasada++) {
 		int contadorError = 0;
@@ -92,7 +92,7 @@ vector<prediccion> Perceptron::predecir() {
 	int productoInterno;
 	vector<prediccion> preds;
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/testData.tsv", 0);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir("data/datain/testData.tsv", 0, false);
 	vector<Review>::iterator iterador = reviews->begin();
 
 	for ( ; iterador != reviews->end() ; iterador++) {

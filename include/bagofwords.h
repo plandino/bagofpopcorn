@@ -59,7 +59,7 @@ public:
 	vector<numeroReal>* getProbabilidadesNegativas();
 	vector<string>* getWords();
 
-	void pesarBag(float paso, float potencia);
+	void pesarBag(double paso, double potencia, bool exponencial);
 };
 
 #endif /* BAGOFWORDS_H_ */

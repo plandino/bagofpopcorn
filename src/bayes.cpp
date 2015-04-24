@@ -9,7 +9,7 @@ Bayes::~Bayes(){
 }
 
 void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
+	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
 	float k = 0.7;
 //	ofstream archivoSalida("data/dataout/distintosKFino.txt");
 //	int resultadoMayor = 0;
@@ -17,8 +17,8 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 //	for (k = 0.3; k <= 1; k+=0.01){
 	int contador = 0; // Cuenta la cantidad que coincidieron
 	numeroReal probabilidadPositiva;
-	string vectorIds[CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO];
-	numeroReal vectorProbabilidades[CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO];
+	vector<string> vectorIds;
+	vector<numeroReal> vectorProbabilidades;
 	vector<Review>::iterator iterador = reviewsAPredecir->begin();
 	unsigned int i = 0;
 //	cout << "K = " << k << endl;

@@ -8,7 +8,7 @@ int main(int argc, char* argv[]){
 	Bayes* bayes = new Bayes();
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-//	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_REVIEWS);
+//	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
 //	parser->generarTSV();
 
 //	Con esto genero el TSV desde el CSV de salida de python -> Solo sirve si se usan 15000 para entrenar y 10000 para predecir
