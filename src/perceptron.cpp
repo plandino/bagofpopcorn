@@ -1,4 +1,5 @@
 #include "perceptron.h"
+#include <iomanip>
 
 
 Perceptron::Perceptron(BagOfWords* bag, Parser* parser)  {
@@ -19,15 +20,21 @@ Perceptron::~Perceptron() {
 	delete [] pesos;
 }
 
+double* Perceptron::getPesos() {
+	for (int i=0; i < VEC_SIZE; i++) {
+		if (pesos[i] != 0) cout << std::fixed << std::setprecision(8) << pesos[i] << ", ";
+	}
+	return pesos;
+}
 
-int Perceptron::productoInterno(vector<string> features) {
-	int productoInterno = 0;
+double Perceptron::productoInterno(vector<string> features) {
+	double productoInterno = 0;
 	vector<string>::iterator iterador = features.begin();
 	for ( ; iterador != features.end(); iterador++ ) {
 		string palabra = *iterador;
 		if (bag->estaEnBag(palabra) != -1) {
 			int indice = bag->posicionEnBag(palabra);
-			int pesoPalabra = pesos[indice];	
+			double pesoPalabra = pesos[indice];	
 			productoInterno += pesoPalabra * 1; // 1 es el "value" en el perceptron. 
 		}
 	}
@@ -43,8 +50,8 @@ double* Perceptron::entrenar() {
 		int contadorError = 0;
 		bool productoInterno;
 		int error = 0;
-
 		int dotp;
+
 		vector<Review>::iterator iterador = reviews->begin();
 		for ( ; iterador != reviews->end() ; iterador++) {
 			//cout << "ENTRANDO EN EL SEGUNDO FOR" << endl; //DEBUG
@@ -64,7 +71,7 @@ double* Perceptron::entrenar() {
 					string palabra = *it;
 					if (bag->estaEnBag(palabra) ) {
 						int j = this->bag->posicionEnBag(palabra);
-						pesos[j] += learningRate * error * log(2); //	ver
+						pesos[j] += learningRate * error; //* log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
 					}
 				}
 			}
@@ -73,6 +80,7 @@ double* Perceptron::entrenar() {
 
 		if ((contadorError == 0) or (contadorError < toleranciaErrores)) {
 			cout << contadorError << " errores encontrados en el entrenamiento. Detenido." << endl;
+			break;
 		}
 	}
 	delete reviews;
@@ -87,23 +95,23 @@ bool comparador_pred(prediccion a, prediccion b) {
 
 vector<prediccion> Perceptron::predecir() {
 
-	cout << "\nTesting online\nErrors\t\tAverage\t\tNr. Samples\tSince Start" << endl;
 	int contadorError = 0;
 	bool posONeg;
-	int productoInterno;
+	double dotp;
 	vector<prediccion> preds;
 
 	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+	cout << "\nTesting online\nErrors\t\tAverage\t\tNr. Samples\tSince Start" << endl;
 	vector<Review>::iterator iterador = reviews->begin();
 
 	for ( ; iterador != reviews->end() ; iterador++) {
 		Review rev = (*iterador);
 		vector<string> features = rev.getPalabras();
-		productoInterno = this->productoInterno(features);
-		posONeg = productoInterno > 0.5;
+		dotp = this->productoInterno(features);
+		posONeg = dotp > 0.5;
 		prediccion pred;
 		pred.id = rev.getId();
-		pred.productoInterno = productoInterno;
+		pred.productoInterno = dotp;
 		preds.push_back(pred);
 
 		if ( ( rev.getSentiment()- posONeg)!= 0) {
@@ -111,9 +119,11 @@ vector<prediccion> Perceptron::predecir() {
 		}
 	}
 	cout << contadorError << "\t" << endl;
-	int maxProd = (*max_element(preds.begin(), preds.end(), comparador_pred)).productoInterno;
-	int minProd = (*min_element(preds.begin(), preds.end(), comparador_pred)).productoInterno;
-	int divisor = maxProd - minProd;
+	double maxProd = (*max_element(preds.begin(), preds.end(), comparador_pred)).productoInterno;
+	double minProd = (*min_element(preds.begin(), preds.end(), comparador_pred)).productoInterno;
+	double divisor = maxProd - minProd;
+
+	cout << "DEBUG: MaxProd: " << maxProd << " MinProd: " << minProd << " Divisor: " << divisor << endl;
 
 	vector<prediccion>::iterator it = preds.begin();
 	for ( ; it != preds.end(); it++) {

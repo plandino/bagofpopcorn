@@ -12,8 +12,8 @@ using namespace std;
 
 struct prediccion { 
 	string id;
-	float productoInternoNormalizado;
-	float productoInterno;
+	double productoInternoNormalizado;
+	double productoInterno;
 };
 
 class Perceptron {
@@ -22,7 +22,7 @@ class Perceptron {
         double* pesos ; //Array de 2 ** 25 posiciones. Tamanio copiado del de python. REVISAR NUMERO
         BagOfWords* bag; //En lugar de funcion de hashing, usar la bag directamente. Colisiones == 0!!.
         Parser* parser;
-        int productoInterno(vector<string> features);
+        double productoInterno(vector<string> features);
         int toleranciaErrores;
         int numeroPasadas;
         float learningRate;
@@ -32,4 +32,5 @@ class Perceptron {
         Perceptron(BagOfWords* bag, Parser* parser);
         virtual ~Perceptron();
         void tirarACSV(vector<prediccion> predicciones);
+        double* getPesos();
 };

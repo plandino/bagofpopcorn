@@ -1,6 +1,6 @@
 #include "masmenosuno.h"
 #include "bayes.h"
-
+#include "perceptron.h"
 
 int main(int argc, char* argv[]){
 	Parser* parser = new Parser();
@@ -27,6 +27,7 @@ int main(int argc, char* argv[]){
 //	Para facilitar el activar o desactivar de correr uno y/u otro algoritmo
 	bool correrMasMenosUno = true;
 	bool correrBayes = false;
+	bool correrPerceptron = false;
 
 //	PARA MASMENOSUNO:
 	bool pesarBag = true; 		// Indica si quiero pesar o no la bag
@@ -52,6 +53,15 @@ int main(int argc, char* argv[]){
 		delete bayes;
 	}
 
+	if ( correrPerceptron ) {
+		cout << "Empezando Perceptron" << endl;
+		Perceptron* tron = new Perceptron(bag, parser);
+		tron->entrenar();
+		vector<prediccion> preds = tron->predecir();
+		tron->tirarACSV(preds);
+		tron->getPesos();
+		delete tron;
+	}
 //	cout << "Palabras totales: " << bag->cantidadDePalabrasTotales() << endl;
 //	cout << "Palabras Positivas: " << bag->cantidadDePalabrasPositivas() << endl;
 //	cout << "Palabras Negativas: " << bag->cantidadDePalabrasNegativas() << endl;
