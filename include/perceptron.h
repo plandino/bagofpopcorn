@@ -25,12 +25,12 @@ class Perceptron {
         double productoInterno(vector<string> features);
         int toleranciaErrores;
         int numeroPasadas;
-        float learningRate;
+        double learningRate;
     public:
         double* entrenar(); //Devuelve el vector de pesos con los valores que resultan.
         vector<prediccion> predecir();
         Perceptron(BagOfWords* bag, Parser* parser);
         virtual ~Perceptron();
-        void tirarACSV(vector<prediccion> predicciones);
+        void tirarACSV(const vector<prediccion>& predicciones);
         double* getPesos();
 };

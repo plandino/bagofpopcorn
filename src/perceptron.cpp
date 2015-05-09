@@ -71,7 +71,7 @@ double* Perceptron::entrenar() {
 					string palabra = *it;
 					if (bag->estaEnBag(palabra) ) {
 						int j = this->bag->posicionEnBag(palabra);
-						pesos[j] += learningRate * error; //* log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
+						pesos[j] += learningRate * error * log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
 					}
 				}
 			}
@@ -123,27 +123,24 @@ vector<prediccion> Perceptron::predecir() {
 	double minProd = (*min_element(preds.begin(), preds.end(), comparador_pred)).productoInterno;
 	double divisor = maxProd - minProd;
 
-	cout << "DEBUG: MaxProd: " << maxProd << " MinProd: " << minProd << " Divisor: " << divisor << endl;
-
 	vector<prediccion>::iterator it = preds.begin();
 	for ( ; it != preds.end(); it++) {
 		prediccion p = *it;
-		p.productoInternoNormalizado = ( (p.productoInterno - minProd) / divisor );
+		it->productoInternoNormalizado = ( (p.productoInterno - minProd) / divisor );
 	}
 	delete reviews;
 	return preds;
 }
 
 
-void Perceptron::tirarACSV(vector<prediccion> predicciones) {
-
+void Perceptron::tirarACSV(const vector<prediccion>& predicciones) {
 	ofstream archivo("data/dataout/perceptron.csv");
 	if ( archivo.is_open() ) {
 		archivo << "\"id\",\"sentiment\"" << "\n";
-		vector<prediccion>::iterator it = predicciones.begin();
+		vector<prediccion>::const_iterator it = predicciones.begin();
 		for ( ; it != predicciones.end(); it++) {
 			prediccion p = *it;
-			archivo << p.id.c_str() << "," << p.productoInternoNormalizado << "\n";
+			archivo << p.id.c_str() << "," << std::fixed << std::setprecision(6) << p.productoInternoNormalizado << "\n";
 		}
 	}
 	archivo.close();

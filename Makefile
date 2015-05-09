@@ -1,6 +1,6 @@
 OBJS = src/*.cpp
 CC = g++
-COMPILER_FLAGS = -w
+COMPILER_FLAGS = -w -std=c++11
 INCLUDE_PATH = -I./include/
 OBJ_NAME = popcorn
 all : $(OBJS)
