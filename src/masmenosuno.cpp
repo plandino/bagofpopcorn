@@ -114,8 +114,6 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<str
 		}
 		iterarPorReviews(k, reviewsAPredecir, bag, vectorIds, vectorProbabilidades, false);
 
-		parser->agregarAlCSV(vectorIds, vectorProbabilidades);
-
 		delete reviewsAPredecir;
 	}
 }

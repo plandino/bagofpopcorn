@@ -1,4 +1,5 @@
 #include "parser.h"
+#include <iomanip>
 
 Parser::Parser() {
 	bag = new BagOfWords();
@@ -8,7 +9,6 @@ Parser::Parser() {
 }
 
 Parser::~Parser() {
-	//TODO: Delete bag?
 	delete this->bag;
 }
 
@@ -31,7 +31,7 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 	vector<string> palabrasReview;
 	review.erase(0,2); // Elimino comillas y tab del comienzo
 	review.erase(review.length()-1, 1); // Elimino comillas del final
-//	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios TODO: Esto se puede sacar para evitar las urls en las reviews, pero asi en caso de que se haya olvidado el espacio despues del punto se separa como 2 palabras, que me parece mas importante
+//	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios
 //	replace(review.begin(), review.end(), '-', ' ');
 //	replace(review.begin(), review.end(), ',', ' ');
 //	replace(review.begin(), review.end(), '?', ' ');
@@ -42,8 +42,6 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 	bool anteriorEsSaltoDeLinea = false;
 //	char chars[] = "ºª!|\"@·#$%&¬/()='?¡¿[]^*ç`'\\{},;.:-_<>";
 	while(iss >> word) {
-		//TODO: Limpiar palabra por palabra e ir agregándolas a la lista del bag
-
 		//Elimino los <br />
 		if (anteriorEsSaltoDeLinea){
 			if (word == "/>") {
@@ -129,7 +127,7 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo) {
 	}
 	cout << "Se terminaron de parsear las palabras para el entrenamiento." << endl << endl;
 	archivo.close();
-	//TODO: ACA NO TENDRIA QUE IR TMB EL CREAR VECTORES DE PROBAS?
+	bag->crearVectorConProbabilidades();
 	return bag;
 }
 
@@ -146,26 +144,25 @@ void Parser::generarTSV() {
 		}
 	}
 	archivo.close();
-	bag->crearVectorConProbabilidades();
 }
 
 void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad){
 	ofstream archivo(NOMBRE_ARCHIVO_CSV_PROBABILIDADES.c_str());
 	if ( archivo.is_open() ){
 		archivo << "\"id\",\"sentiment\"" << "\n";
-		for (int i = 0; i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO; i++){
-			archivo << id[i].c_str() << "," << probabilidad[i] << "\n";
+		for (unsigned int i = 0; i < probabilidad.size(); i++){
+			archivo << id[i].c_str() << ","<< std::fixed << std::setprecision(10) << probabilidad[i] << "\n";
 		}
 	}
 	archivo.close();
 }
 
-void Parser::agregarAlCSV(string *id, int *vectorMasMenosUnos){
+void Parser::agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos){
 	ofstream archivo(NOMBRE_ARCHIVO_CSV_MASMENOSUNO.c_str());
 	if ( archivo.is_open() ){
 		archivo << "\"id\",\"sentiment\"" << "\n";
-		for (int i = 0; i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO; i++){
-			archivo << id[i].c_str() << "," << vectorMasMenosUnos[i] << "\n";
+		for (unsigned int i = 0; i < cerosYUnos.size(); i++){
+			archivo << id[i].c_str() << "," << cerosYUnos[i] << "\n";
 		}
 	}
 	archivo.close();

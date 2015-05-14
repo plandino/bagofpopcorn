@@ -39,7 +39,7 @@ public:
 
 	void generarTSV();
 	void agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad);
-	void agregarAlCSV(string *id, int *masMenosUno);
+	void agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos);
 
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
 	BagOfWords* leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo);
