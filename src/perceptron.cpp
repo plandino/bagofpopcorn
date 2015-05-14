@@ -38,7 +38,6 @@ double Perceptron::productoInterno(vector<string> features) {
 			productoInterno += pesoPalabra * 1; // 1 es el "value" en el perceptron. 
 		}
 	}
-	// if (productoInterno) cout << "DEBUG: " << productoInterno << endl;
 	return productoInterno;
 }
 
@@ -54,7 +53,6 @@ double* Perceptron::entrenar() {
 
 		vector<Review>::iterator iterador = reviews->begin();
 		for ( ; iterador != reviews->end() ; iterador++) {
-			//cout << "ENTRANDO EN EL SEGUNDO FOR" << endl; //DEBUG
 			Review rev = (*iterador);
 			vector<string> features = rev.getPalabras();
 			productoInterno = ( this->productoInterno(features) > 0.5 );
@@ -93,8 +91,7 @@ bool comparador_pred(prediccion a, prediccion b) {
 }
 
 
-vector<prediccion> Perceptron::predecir() {
-
+void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones) {
 	int contadorError = 0;
 	bool posONeg;
 	double dotp;
@@ -127,9 +124,10 @@ vector<prediccion> Perceptron::predecir() {
 	for ( ; it != preds.end(); it++) {
 		prediccion p = *it;
 		it->productoInternoNormalizado = ( (p.productoInterno - minProd) / divisor );
+		predicciones.push_back(it->productoInternoNormalizado);
+		ids.push_back(it->id);
 	}
 	delete reviews;
-	return preds;
 }
 
 
