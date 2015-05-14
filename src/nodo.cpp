@@ -16,19 +16,17 @@ list<Nodo*>* Nodo::getNodosQueApunto() {
 }
 
 list<Nodo*>* Nodo::getNodosQueMeApuntan() {
+	list<Nodo* >::iterator iterador = nodosQueMeApuntan->begin();
+//	cout << "mi word" << palabra.c_str() << (*iterador)->getPalabra().c_str() << endl;
 	return nodosQueMeApuntan;
 }
 
 void Nodo::agregarNodoQueMeApunta(Nodo *nodo) {
-	if( nodoNoEstaEnLista(0, nodo) ){
-		nodosQueApunto->push_back(nodo);
-	}
+	nodosQueMeApuntan->push_back(nodo);
 }
 
 void Nodo::apuntarANodo(Nodo *nodo) {
-	if( nodoNoEstaEnLista(1, nodo) ){
-		nodosQueApunto->push_back(nodo);
-	}
+	nodosQueApunto->push_back(nodo);
 }
 
 
@@ -49,6 +47,7 @@ bool Nodo::nodoNoEstaEnLista(int numeroDeLista, Nodo* nodo) {
 		cout << "SOS UN CONCHUDO -- revisa nodo.cpp." << endl;
 	}
 
+
 	// Checkeo contra todos los nodos a ver si es igual
 	for( ; iteradorNodos != nodoEnd; iteradorNodos++){
 		Nodo * nodito = (*iteradorNodos);
@@ -58,5 +57,6 @@ bool Nodo::nodoNoEstaEnLista(int numeroDeLista, Nodo* nodo) {
 }
 
 string Nodo::getPalabra() {
+//	cout << "Trato de sacar palabra" << endl;
 	return this->palabra;
 }

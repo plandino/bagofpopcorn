@@ -8,7 +8,7 @@ int main(int argc, char** argv){
 	Network * redBayesiana = new Network();
 	Parser * parser = new Parser();
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 24997, true);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 24999, true);
 
 	vector<Review>::iterator iteradorReviews = reviews->begin();
 	unsigned int i = 0;
@@ -19,16 +19,36 @@ int main(int argc, char** argv){
 		vector<string> palabras = reviewAPredecir.getPalabras();
 
 		vector<string>::iterator iteradorPalabras = palabras.begin();
+		string palabraAnterior = "";
 		for ( ; iteradorPalabras != palabras.end() ; iteradorPalabras++){
 			string palabra = (*iteradorPalabras);
-			redBayesiana->agregarPalabra(palabra);
+//			cout << "MI PALABRA: " << palabra.c_str() << " palabra anterior " << palabraAnterior.c_str();
+			redBayesiana->agregarPalabra(palabra, palabraAnterior);
+			palabraAnterior.assign(palabra.c_str());
 		}
 	}
+	bool inicio = true;
 	list<Nodo* > * listaDeNodos = redBayesiana->getListaNodos();
 	list<Nodo* >::iterator iteradorLista = listaDeNodos->begin();
 	for(; iteradorLista != listaDeNodos->end(); iteradorLista++){
 		Nodo* nodito = (*iteradorLista);
-		cout << "Palabra: " << nodito->getPalabra().c_str() << endl;
+		if(!nodito->getNodosQueMeApuntan()->empty() ){
+			list<Nodo* > * listaDeNodosApuntadores = nodito->getNodosQueMeApuntan();
+			list<Nodo* >::iterator iteradorApuntadores = listaDeNodosApuntadores->begin();
+			for(; iteradorApuntadores != listaDeNodosApuntadores->end(); iteradorApuntadores++){
+				Nodo* nodoApuntaadsasdasd = (*iteradorApuntadores);
+				if(inicio){
+					inicio = false;
+				}else {
+					cout << "Palabra: " << nodito->getPalabra().c_str()  << " apuntada por: " << nodoApuntaadsasdasd->getPalabra().c_str() << endl;
+				}
+//				cout << "Palabra: " << nodito->getPalabra().c_str()  << " apuntada por: " << nodoApuntaadsasdasd->getPalabra().c_str() << endl;
+			}
+//
+		} else {
+			cout << "Palabra: " << nodito->getPalabra().c_str() << endl;
+		}
+
 	}
 
 	cout << " termine" << endl;
