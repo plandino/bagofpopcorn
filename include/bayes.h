@@ -6,12 +6,12 @@
 
 class Bayes{
 private:
-	bool predecir(Review& review, BagOfWords* bag, float k, numeroReal *probabilidadPositiva);
+	bool predecir(Review& review, BagOfWords* bag, float k, numeroReal& probabilidadPositiva);
 
 public:
 	Bayes();
 	~Bayes();
-	void realizarPrediccion(BagOfWords* bag, Parser* parser);
+	void realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades);
 };
 
 #endif /*BAYES_H_*/

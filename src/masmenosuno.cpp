@@ -99,15 +99,13 @@ double MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 	return probabilidad;
 }
 
-void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar, bool esPrueba) {
+void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool pesar, bool esPrueba) {
 	if (esPrueba) probar(bag, parser, pesar);
 	else {
 		vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 		double paso = 0.001;
 		double potencia = 10.0;
 		double k = 0.7;
-		vector<string> vectorIds;
-		vector<numeroReal> vectorProbabilidades;
 
 		if (pesar){
 			cout << "Pesando bag..." << endl;
@@ -117,6 +115,7 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, bool pesar
 		iterarPorReviews(k, reviewsAPredecir, bag, vectorIds, vectorProbabilidades, false);
 
 		parser->agregarAlCSV(vectorIds, vectorProbabilidades);
+
 		delete reviewsAPredecir;
 	}
 }

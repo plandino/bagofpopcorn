@@ -1,6 +1,6 @@
 #ifndef VEC_SIZE 
 #define VEC_SIZE 33554432 //2 ** 25
-#endif VEC_SIZE
+#endif /* VEC_SIZE */
 
 #include "bagofwords.h"
 #include "parser.h"

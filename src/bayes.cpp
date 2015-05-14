@@ -8,7 +8,7 @@ Bayes::~Bayes(){
 
 }
 
-void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
+void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades) {
 	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
 //	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 	float k = 0.7;
@@ -18,15 +18,13 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 //	for (k = 0.3; k <= 1; k+=0.01){
 	int contador = 0; // Cuenta la cantidad que coincidieron
 	numeroReal probabilidadPositiva;
-	vector<string> vectorIds;
-	vector<numeroReal> vectorProbabilidades;
 	vector<Review>::iterator iterador = reviewsAPredecir->begin();
 	unsigned int i = 0;
 //	cout << "K = " << k << endl;
 	for ( ; iterador != reviewsAPredecir->end() ; iterador++){
 		Review reviewAPredecir = (*iterador);
 		if (i == 0) cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
-		if ( predecir(reviewAPredecir, bag, k, &probabilidadPositiva) ) contador++;
+		if ( this->predecir(reviewAPredecir, bag, k, probabilidadPositiva) ) contador++;
 
 		vectorIds.push_back(reviewAPredecir.getId());
 		vectorProbabilidades.push_back(probabilidadPositiva);
@@ -40,11 +38,10 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser) {
 
 	cout << "Se predijeron correctamente " << contador << " reviews de un total de " << 25000-CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << "." << endl;
 	//cout << "Bayes: Dando un porcentaje de acertar de %" << porcentaje << "." << endl;
-	parser->agregarAlCSV(vectorIds, vectorProbabilidades);
 	delete reviewsAPredecir;
 }
 
-bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal *probabilidadPositiva) {
+bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& probabilidadPositiva) {
 	int puntuacion = 0;
 	numeroReal acumuladorProbaPositiva = 1.0;
 	numeroReal acumuladorProbaNegativa = 1.0;
@@ -75,7 +72,7 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal *proba
 //		cout << "Proba review Negativas" << probaReviewNegativa << endl;
 //	}
 
-	*probabilidadPositiva = probaReviewPositiva;
+	probabilidadPositiva = probaReviewPositiva;
 	//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
 	if ( ( (probaReviewPositiva >= probaReviewNegativa) and (review.getSentiment() == 1) ) or ( (probaReviewPositiva < probaReviewNegativa) and (review.getSentiment() == 0) ) ) return true;
 	else return false;

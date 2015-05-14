@@ -39,17 +39,23 @@ int main(int argc, char* argv[]){
 	// WARNING:	Utilizar la funcion de parser->leerPalabrasYFrecuenciasDesdeTSV unicamente si antes se corrio el parser->parsearReviews con la
 	// 			constante CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO en el estado deseado.
 	// WARNING:	Si esPrueba = TRUE y pesarBag = FALSE, solo tiene sentido variar el k.
+	vector<string> vectorIdsMasMenosUno;
+	vector<numeroReal> vectorProbabilidadesMasMenosUno;
 
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bag, parser, pesarBag, esPrueba);
+		masMenosUno->realizarPrediccion(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
+		parser->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno);
 		delete masMenosUno;
 	}
 
+	vector<string> vectorIdsBayes;
+	vector<numeroReal> vectorProbabilidadesBayes;
 
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
-		bayes->realizarPrediccion(bag, parser);
+		bayes->realizarPrediccion(bag, parser, vectorIdsBayes, vectorProbabilidadesBayes);
+		parser->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes);
 		delete bayes;
 	}
 
