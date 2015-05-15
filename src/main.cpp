@@ -6,6 +6,7 @@ int main(int argc, char* argv[]){
 	Parser* parser = new Parser();
 
 
+
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
 	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
 	parser->generarTSV();
