@@ -7,11 +7,11 @@ int main(int argc, char* argv[]){
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-//	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
-//	parser->generarTSV();
+	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
+	parser->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
-	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
+//	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
 
 
 
@@ -25,9 +25,10 @@ int main(int argc, char* argv[]){
 
 
 //	Para facilitar el activar o desactivar de correr uno y/u otro algoritmo
-	bool correrMasMenosUno = true;
-	bool correrBayes = true;
+	bool correrMasMenosUno = false;
+	bool correrBayes = false;
 	bool correrPerceptron = false;
+	bool ponderar = false;
 
 //	PARA MASMENOSUNO:
 	bool pesarBag = true; 		// Indica si quiero pesar o no la bag
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]){
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
 		masMenosUno->realizarPrediccion(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
-//		parser->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno);
+		parser->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
 
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]){
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
 		bayes->realizarPrediccion(bag, parser, vectorIdsBayes, vectorProbabilidadesBayes);
-//		parser->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes);
+		parser->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
 	}
 
@@ -69,27 +70,29 @@ int main(int argc, char* argv[]){
 		Perceptron* tron = new Perceptron(bag, parser);
 		tron->entrenar();
 		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
-		parser->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron);
+		parser->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
 	}
 
 
-	vector<numeroReal> probabilidadesFinales;
-	vector<string> idsFinales;
-	const double pesoBayes = 0.7;
-	if ( vectorProbabilidadesMasMenosUno.size() == vectorIdsBayes.size() ){
-		for (unsigned int i = 0; i < vectorProbabilidadesMasMenosUno.size(); i++){
-			numeroReal probabilidadFinal = ( (vectorProbabilidadesMasMenosUno[i] * (1-pesoBayes)) + (vectorProbabilidadesBayes[i] * pesoBayes) );
-			probabilidadesFinales.push_back(probabilidadFinal);
-			if ( vectorIdsMasMenosUno[i] != vectorIdsBayes[i] ){
-				cout << "TODO MAL GUACHIN" << endl;
-				exit(1);
+
+	if (ponderar) {
+		vector<numeroReal> probabilidadesFinales;
+		vector<string> idsFinales;
+		const double pesoBayes = 0.7;
+		if ( vectorProbabilidadesMasMenosUno.size() == vectorIdsBayes.size() ){
+			for (unsigned int i = 0; i < vectorProbabilidadesMasMenosUno.size(); i++){
+				numeroReal probabilidadFinal = ( (vectorProbabilidadesMasMenosUno[i] * (1-pesoBayes)) + (vectorProbabilidadesBayes[i] * pesoBayes) );
+				probabilidadesFinales.push_back(probabilidadFinal);
+				if ( vectorIdsMasMenosUno[i] != vectorIdsBayes[i] ){
+					cout << "TODO MAL GUACHIN" << endl;
+					exit(1);
+				}
+				idsFinales.push_back(vectorIdsMasMenosUno[i]);
 			}
-			idsFinales.push_back(vectorIdsMasMenosUno[i]);
+			parser->agregarAlCSV(idsFinales, probabilidadesFinales, NOMBRE_ARCHIVO_CSV_PONDERADO);
 		}
 	}
-	parser->agregarAlCSV(idsFinales, probabilidadesFinales);
-
 
 
 	delete parser;

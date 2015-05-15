@@ -50,10 +50,6 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 			} else {
 				anteriorEsSaltoDeLinea = false;
 				word.erase (word.begin(), word.begin()+2);
-//				char saltoDeLinea[] = "/>";
-//				for (unsigned int i = 0; i < strlen(saltoDeLinea); ++i){
-//					word.erase ( remove(word.begin(), word.end(), saltoDeLinea[i]), word.end() );
-//				}
 			}
 		}
 		if (not anteriorEsSaltoDeLinea) {
@@ -77,23 +73,6 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 
 		//Separo en todas las palabras que estan incluidas en la word y las dejo solo con letras
 		vector<string> words = soloLetras(wordSinURL);
-//		string wordSoloLetras = "";
-//		unsigned int length = wordSinURL.length();
-//		for (unsigned int i = 0; i < length; i++){
-//			if ( (wordSinURL[i] >= 'a') and (wordSinURL[i] <= 'z') ) wordSoloLetras = wordSoloLetras + wordSinURL[i];
-//				else {
-//					words.push_back(wordSoloLetras);
-//					wordSoloLetras = "";
-//				}
-//		}
-
-
-//		//Elimino caracteres especiales
-//		for (int i = 0; i < strlen(chars); ++i){
-//			word.erase ( remove(word.begin(), word.end(), chars[i]), word.end() );
-//		}
-
-		//TODO: Estas garompas  -> Con el cambio que hice ya se sacan.
 
 		//TODO: Algun algoritmo para que, por ejemplo, considere palabras terminadas en s, ed, ing, ly sean lo mismo. Ejemplo: terrible, terribled, terribly, terribles (?
 		vector<string>::iterator iterador = words.begin();
@@ -146,8 +125,8 @@ void Parser::generarTSV() {
 	archivo.close();
 }
 
-void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad){
-	ofstream archivo(NOMBRE_ARCHIVO_CSV_PROBABILIDADES.c_str());
+void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, string nombreArchivoSalida){
+	ofstream archivo(nombreArchivoSalida.c_str());
 	if ( archivo.is_open() ){
 		archivo << "\"id\",\"sentiment\"" << "\n";
 		for (unsigned int i = 0; i < probabilidad.size(); i++){
@@ -158,7 +137,7 @@ void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad){
 }
 
 void Parser::agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos){
-	ofstream archivo(NOMBRE_ARCHIVO_CSV_MASMENOSUNO.c_str());
+	ofstream archivo(NOMBRE_ARCHIVO_CSV_CEROSYUNO.c_str());
 	if ( archivo.is_open() ){
 		archivo << "\"id\",\"sentiment\"" << "\n";
 		for (unsigned int i = 0; i < cerosYUnos.size(); i++){
@@ -227,7 +206,7 @@ vector<string> Parser::soloLetras(string word) {
 	unsigned int length = word.length();
 	vector<string> words;
 	for (unsigned int i = 0; i < length; i++){
-		if ( (word[i] >= 'a') and (word[i] <= 'z') ) wordSoloLetras = wordSoloLetras + word[i];
+		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) or (word[i] == 'ñ'/*(char)241 ñ*/) ) wordSoloLetras = wordSoloLetras + word[i];
 			else {
 				words.push_back(wordSoloLetras);
 				wordSoloLetras = "";
