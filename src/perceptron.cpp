@@ -2,10 +2,11 @@
 #include <iomanip>
 
 
-Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag)  {
+Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag, bool usaBigramas)  {
 	this->bag = bag;
 	this->parser = parser;
 	this->usaBag = usaBag;
+	this->usaBigramas = usaBigramas;
 	this->pesos = new double[VEC_SIZE];
 	//Inicializo el vector de pesos en 0.
 	for (int i=0; i < VEC_SIZE; i++) {
@@ -36,18 +37,24 @@ double Perceptron::productoInterno(vector<string> features) {
         hash<string> hashFunction;
 		string palabra = *iterador;
 		int indice = -1;
+		int indiceBigrama;
 		if (usaBag == true) {
 			if (bag->estaEnBag(palabra) != -1) {
 				indice = bag->posicionEnBag(palabra);
 			}
 		} else {
-			// cout << "Usando hash";
 			indice = hashFunction(palabra) % VEC_SIZE;
+			if (usaBigramas == true) {
+				if ( std::next(iterador,1) != features.end() ) { 
+					indiceBigrama = hashFunction( palabra + *std::next(iterador,1) ) % VEC_SIZE;
+				}
+			}
 		}
 		if (indice != -1) {
 			pesoPalabra = pesos[indice];	
 		}
 		productoInterno += pesoPalabra * 1; // 1 es el "value" en el perceptron. 
+		if (usaBigramas) productoInterno += pesos[indiceBigrama]; 
 	}
 	return productoInterno;
 }
@@ -84,8 +91,15 @@ double* Perceptron::entrenar() {
 							pesos[j] += learningRate * error * log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
 						}
 				    } else {
-				    	int indice = hashFunction(palabra) % VEC_SIZE;
-				    	pesos[indice] += learningRate * error * log(2);
+				    	int indice;
+				    	indice = hashFunction(palabra) % VEC_SIZE;
+					    pesos[indice] += learningRate * error * log(2);
+				    	if (usaBigramas == true) { 
+				    		if ( std::next(it,1) != features.end() ) { 
+								indice = hashFunction( palabra + *std::next(it,1) ) % VEC_SIZE;
+								pesos[indice] += learningRate * error * log(2);
+							}
+				    	}
 				    }
 				}
 			}
