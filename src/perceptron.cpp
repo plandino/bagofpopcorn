@@ -2,14 +2,15 @@
 #include <iomanip>
 
 
-Perceptron::Perceptron(BagOfWords* bag, Parser* parser)  {
+Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag)  {
 	this->bag = bag;
 	this->parser = parser;
+	this->usaBag = usaBag;
 	this->pesos = new double[VEC_SIZE];
+	//Inicializo el vector de pesos en 0.
 	for (int i=0; i < VEC_SIZE; i++) {
 		pesos[i] = 0;
 	}
-	//Inicializo el vector de pesos en 0.
 	numeroPasadas = 80;
 	toleranciaErrores = 0;
 	learningRate = 0.1;
@@ -31,12 +32,22 @@ double Perceptron::productoInterno(vector<string> features) {
 	double productoInterno = 0;
 	vector<string>::iterator iterador = features.begin();
 	for ( ; iterador != features.end(); iterador++ ) {
+		double pesoPalabra = 0;
+        hash<string> hashFunction;
 		string palabra = *iterador;
-		if (bag->estaEnBag(palabra) != -1) {
-			int indice = bag->posicionEnBag(palabra);
-			double pesoPalabra = pesos[indice];	
-			productoInterno += pesoPalabra * 1; // 1 es el "value" en el perceptron. 
+		int indice = -1;
+		if (usaBag == true) {
+			if (bag->estaEnBag(palabra) != -1) {
+				indice = bag->posicionEnBag(palabra);
+			}
+		} else {
+			// cout << "Usando hash";
+			indice = hashFunction(palabra) % VEC_SIZE;
 		}
+		if (indice != -1) {
+			pesoPalabra = pesos[indice];	
+		}
+		productoInterno += pesoPalabra * 1; // 1 es el "value" en el perceptron. 
 	}
 	return productoInterno;
 }
@@ -44,13 +55,13 @@ double Perceptron::productoInterno(vector<string> features) {
 
 double* Perceptron::entrenar() {
 	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true);
-	cout << "\nPass\t\tErrors\t\tNr. Samples\tSince Start" << endl;
+	cout << "\nPass\t\tErrors\t\tNr. Samples" << endl;
 	for (int pasada = 0; pasada < numeroPasadas; pasada++) {
 		int contadorError = 0;
 		bool productoInterno;
 		int error = 0;
 		int dotp;
-
+        hash<string> hashFunction;
 		vector<Review>::iterator iterador = reviews->begin();
 		for ( ; iterador != reviews->end() ; iterador++) {
 			Review rev = (*iterador);
@@ -67,14 +78,19 @@ double* Perceptron::entrenar() {
 				vector<string>::iterator it = features.begin();
 				for ( ; it != features.end() ; it++ ) {
 					string palabra = *it;
-					if (bag->estaEnBag(palabra) ) {
-						int j = this->bag->posicionEnBag(palabra);
-						pesos[j] += learningRate * error * log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
-					}
+					if (usaBag == true) { 
+						if (bag->estaEnBag(palabra) ) {
+							int j = this->bag->posicionEnBag(palabra);
+							pesos[j] += learningRate * error * log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
+						}
+				    } else {
+				    	int indice = hashFunction(palabra) % VEC_SIZE;
+				    	pesos[indice] += learningRate * error * log(2);
+				    }
 				}
 			}
 		}
-		cout << pasada << "\t" << contadorError << "\t" << reviews->size() << endl;
+		cout << pasada << "\t\t" << contadorError << "\t\t" << reviews->size() << endl;
 
 		if ((contadorError == 0) or (contadorError < toleranciaErrores)) {
 			cout << contadorError << " errores encontrados en el entrenamiento. Detenido." << endl;
