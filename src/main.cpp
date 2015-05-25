@@ -71,12 +71,12 @@ void ponderar(Parser* parser,
 }
 
 void mostrarAyuda() {
-	cout << "Argumentos:" <<  "\n" << 	
-	"-f <archivo>: Lee las frecuencias de las palabras desde un archivo, en lugar de parsear el archivo de labeledTrainData." << "\n" << 
- 	"-p --perceptron: Corre el perceptron." << "\n" << 
-	"-b --bayes: Corre el algoritmo de Bayes." <<" \n" <<
-	"-m --mas-menos-uno: Corre el algoritmo de Mas menos uno." << "\n" << 
-	"-P<y|n> --ponderar=<y|n>: Pondera los distintos algoritmos pedidos. Por defecto en y." << "\n"
+	cout << "Argumentos:" <<  "\n\t" << 	
+	"-f <archivo>: Lee las frecuencias de las palabras desde un archivo, en lugar de parsear el archivo de labeledTrainData." << "\n\t" << 
+ 	"-p --perceptron: Corre el perceptron." << "\n\t" << 
+	"-b --bayes: Corre el algoritmo de Bayes." <<" \n\t" <<
+	"-m --mas-menos-uno: Corre el algoritmo de Mas menos uno." << "\n\t" << 
+	"-P<y|n> --ponderar=<y|n>: Pondera los distintos algoritmos pedidos. Por defecto en y." << "\n\t"
 	<< endl;
 }
 
@@ -102,36 +102,42 @@ int main(int argc, char* argv[]) {
 	while ( opt != -1 ) {
 		switch (opt) {
 			case 'p': /* Perceptron */
+				cout << "Corriendo perceptron" << endl;
 				correrPerceptron(bag, parser, vectorIdsTron, vectorProbabilidadesTron);
 				break;
 
-			case 'P': /* Ponderar, y | n */
-				if (optarg == "n") { cout << "No estamos ponderando" << endl; } 
+			case 'P': { /* Ponderar, y | n */
+				string stri(optarg);
+				if (stri == "n") { cout << "No estamos ponderando" << endl; } 
 				else { ponderar(parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno,
 								vectorIdsBayes, vectorProbabilidadesBayes,
 								vectorIdsTron, vectorProbabilidadesTron); }
-				break;
+				break; }
 
-			case 'b': 
+			case 'b': /* Bayes */
+				cout << "Corriendo bayes" << endl;
 				correrBayes(bag, parser, vectorIdsBayes, vectorProbabilidadesBayes);
 				break;
 
-			case 'f':
-				if (optarg != 0) { argumentos.archivoDeFrecuencias = optarg; }
+			case 'f': {/* Leer desde archivo de frecuencias */ 
+				if (optarg != 0) { string str(optarg); argumentos.archivoDeFrecuencias = str; }
 				bag = cargarBagDesdeArchivoFrecuencias(parser);
-				break;
+				break; }
 
-			case 'm':
+			case 'm': /* Mas menos uno */
+				cout << "Corriendo mas menos uno" << endl;
 				correrMasMenosUno(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno);
 				break;
 
-			case '?':
-			case '-h':
+			case '?': /* En caso de caracter invalido */
+			case 'h': /* o -h, mostrar ayuda */
 				mostrarAyuda();
 				break;
 			default: /* No se deberia llegar nunca */
 				break;
 		}
+
+		opt = getopt(argc, argv, optString);
 	}
 
 	/*  En caso de no tener ningun argumento, por defecto:
@@ -139,6 +145,7 @@ int main(int argc, char* argv[]) {
 		Bayes, Perceptron y MasMenosUno, y se pondera. */
 
 	if (argc == 1) {
+		cout << "Entrando en por defecto" << endl;
 		parser = new Parser(); 
 
 		bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
