@@ -11,26 +11,16 @@
 	-m --mas-menos-uno: Corre el algoritmo de Mas menos uno.
 	-P<y|n> --ponderar=<y|n>: Pondera los distintos algoritmos pedidos. Por defecto en y.
 */
-struct argumentos_t {
-	bool correrMasMenosUno;
-	bool correrPerceptron;
-	bool correrBayes;
-	bool ponderar;
-	bool pesarBag;
-	bool esPrueba;
-	bool cargarBagDesdeArchivoFrecuencias;
-	string archivoDeFrecuencias;
-} argumentos;
 
 static const char *optString = "pP:bf:mh";
 
 void mostrarAyuda() {
-	cout << "Argumentos:" <<  "\n\t" << 	
+	cout << endl << "Argumentos:" <<  "\n\t" << 	
 	"-f <archivo>: Lee las frecuencias de las palabras desde un archivo, en lugar de parsear el archivo de labeledTrainData." << "\n\t" << 
  	"-p --perceptron: Corre el perceptron." << "\n\t" << 
 	"-b --bayes: Corre el algoritmo de Bayes." <<" \n\t" <<
 	"-m --mas-menos-uno: Corre el algoritmo de Mas menos uno." << "\n\t" << 
-	"-P<y|n> --ponderar=<y|n>: Pondera los distintos algoritmos pedidos. Por defecto en y." << "\n\t"
+	"-P<y|n> --ponderar=<y|n>: Pondera los distintos algoritmos pedidos. Por defecto en y." << "\n"
 	<< endl;
 }
 
@@ -40,53 +30,51 @@ int main(int argc, char* argv[]) {
 	BagOfWords* bag; /* Necesario, luego se le asigna un valor (sin falta) */
 	int opt = 0;
 
-
-	/*  En caso de no tener ningun argumento, por defecto:
-		La Bag se genera con el parseo de reviews y se corre
-		Bayes, Perceptron y MasMenosUno, y se pondera. */	
-	argumentos.correrBayes = true;
-	argumentos.correrPerceptron = true;
-	argumentos.correrMasMenosUno = true;
-	argumentos.pesarBag = true;		/* Para mas menos uno: */
-	argumentos.esPrueba = false; 	/* Indica si estoy utilizando el modo prueba -> Itera cambiando entre funcion polinomica y exponencial
+	bool correrBayes = false;
+	bool correrPerceptron = false;
+	bool correrMasMenosUno = false;
+	bool pesarBag = true;		/* Para mas menos uno: */
+	bool esPrueba = false; 	/* Indica si estoy utilizando el modo prueba -> Itera cambiando entre funcion polinomica y exponencial
 									con distintos pasos, potencias y porcentaje de aceptación 
 									(frecPositiva >= k*frecTotal) */
-	argumentos.ponderar = true;
-	argumentos.cargarBagDesdeArchivoFrecuencias = false;
-	argumentos.archivoDeFrecuencias = NOMBRE_ARCHIVO_FRECUENCIAS;
+	bool ponderar = false;
+	bool cargarBagDesdeArchivoFrecuencias = false;
+	string archivoDeFrecuencias = NOMBRE_ARCHIVO_FRECUENCIAS;
 
 	opt = getopt( argc, argv, optString);
 	while ( opt != -1 ) {
 		switch (opt) {
 			case 'p': /* Perceptron */
 				cout << "Corriendo perceptron" << endl;
-				argumentos.correrPerceptron = true;
+				correrPerceptron = true;
 				break;
 
 			case 'P': { /* Ponderar, y | n */
 				string stri(optarg);
-				if (stri == "n") { cout << "No estamos ponderando" << endl; argumentos.ponderar = false; } 
-				else { argumentos.ponderar = true; }
+				if (stri == "n") { cout << "No estamos ponderando" << endl; ponderar = false; } 
+				else { ponderar = true; }
 				break; }
 
 			case 'b': /* Bayes */
 				cout << "Corriendo bayes" << endl;
-				argumentos.correrBayes = true;
+				correrBayes = true;
 				break;
 
 			case 'f': {/* Leer desde archivo de frecuencias */ 
-				if (optarg != 0) { string str(optarg); argumentos.archivoDeFrecuencias = str; }
-				argumentos.cargarBagDesdeArchivoFrecuencias = true;
+				cout << "Leyendo frecuencias desde TSV" << endl;
+				if (optarg != 0) { string str(optarg); archivoDeFrecuencias = str; }
+				cargarBagDesdeArchivoFrecuencias = true;
 				break; }
 
 			case 'm': /* Mas menos uno */
 				cout << "Corriendo mas menos uno" << endl;
-				argumentos.correrMasMenosUno = true;
+				correrMasMenosUno = true;
 				break;
 
 			case '?': /* En caso de caracter invalido */
 			case 'h': /* o -h, mostrar ayuda */
 				mostrarAyuda();
+				exit(1);
 				break;
 			default: /* No se deberia llegar nunca */
 				break;
@@ -95,7 +83,21 @@ int main(int argc, char* argv[]) {
 		opt = getopt(argc, argv, optString);
 	}	
 
-	if ( argumentos.cargarBagDesdeArchivoFrecuencias ) {
+	/*  En caso de no tener ningun argumento, por defecto:
+	La Bag se genera con el parseo de reviews y se corre
+	Bayes, Perceptron y MasMenosUno, y se pondera. */
+	if (argc == 1) { 
+		cout << "Sin argumentos" << endl;
+		correrBayes = true;
+		correrPerceptron = true;
+		correrMasMenosUno = true;
+		pesarBag = true;		
+		esPrueba = false;
+		ponderar = true;
+		cargarBagDesdeArchivoFrecuencias = false;
+	}
+
+	if ( cargarBagDesdeArchivoFrecuencias ) {
 		bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
 	} else { 
 		bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
@@ -112,13 +114,13 @@ int main(int argc, char* argv[]) {
 // WARNING:	Utilizar la funcion de parser->leerPalabrasYFrecuenciasDesdeTSV unicamente si antes se corrio el parser->parsearReviews con la
 // 			constante CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO en el estado deseado.
 // WARNING:	Si esPrueba = TRUE y pesarBag = FALSE, solo tiene sentido variar el k.
-	
+
 	vector<string> vectorIdsMasMenosUno;
 	vector<numeroReal> vectorProbabilidadesMasMenosUno;
 
-	if ( argumentos.correrMasMenosUno ) {
+	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, argumentos.pesarBag, argumentos.esPrueba);
+		masMenosUno->realizarPrediccion(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
 		parser->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
@@ -127,7 +129,7 @@ int main(int argc, char* argv[]) {
 	vector<string> vectorIdsBayes;
 	vector<numeroReal> vectorProbabilidadesBayes;
 
-	if ( argumentos.correrBayes ) {
+	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
 		bayes->realizarPrediccion(bag, parser, vectorIdsBayes, vectorProbabilidadesBayes);
 		parser->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
@@ -138,9 +140,8 @@ int main(int argc, char* argv[]) {
 	vector<string> vectorIdsTron;
 	vector<numeroReal> vectorProbabilidadesTron;
 
-	if ( argumentos.correrPerceptron ) {
-		cout << "Empezando Perceptron" << endl;
-		Perceptron* tron = new Perceptron(bag, parser, true, false);
+	if ( correrPerceptron ) {
+		Perceptron* tron = new Perceptron(bag, parser, false, true);
 		tron->entrenar();
 		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
 		parser->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
@@ -148,7 +149,7 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	if ( argumentos.ponderar ) {
+	if ( ponderar ) {
 		vector<numeroReal> probabilidadesFinales;
 		vector<string> idsFinales;
 		const double pesoBayes = 0.9;
