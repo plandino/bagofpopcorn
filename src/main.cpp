@@ -28,7 +28,7 @@ int main(int argc, char* argv[]){
 //	Para facilitar el activar o desactivar de correr uno y/u otro algoritmo
 	bool correrMasMenosUno = true;
 	bool correrBayes = true;
-	bool correrPerceptron = false;
+	bool correrPerceptron = true;
 	bool ponderar = true;
 
 //	PARA MASMENOSUNO:
@@ -80,12 +80,13 @@ int main(int argc, char* argv[]){
 	if (ponderar) {
 		vector<numeroReal> probabilidadesFinales;
 		vector<string> idsFinales;
-		const double pesoBayes = 0.9;
-		if ( vectorProbabilidadesMasMenosUno.size() == vectorIdsBayes.size() ){
+		const double pesoTron = 0.9;
+		const double pesoBayes = 0.07;
+		if ( ( vectorProbabilidadesMasMenosUno.size() == vectorIdsBayes.size() ) and ( vectorIdsBayes.size() == vectorIdsTron.size() ) ){
 			for (unsigned int i = 0; i < vectorProbabilidadesMasMenosUno.size(); i++){
-				numeroReal probabilidadFinal = ( (vectorProbabilidadesMasMenosUno[i] * (1-pesoBayes)) + (vectorProbabilidadesBayes[i] * pesoBayes) );
+				numeroReal probabilidadFinal = ( (vectorProbabilidadesMasMenosUno[i] * (1-pesoTron-pesoBayes)) + (vectorProbabilidadesBayes[i] * pesoBayes) + (vectorProbabilidadesTron[i] * pesoTron) );
 				probabilidadesFinales.push_back(probabilidadFinal);
-				if ( vectorIdsMasMenosUno[i] != vectorIdsBayes[i] ){
+				if ( ( vectorIdsMasMenosUno[i] != vectorIdsBayes[i] ) or ( vectorIdsMasMenosUno[i] != vectorIdsTron[i] ) or ( vectorIdsBayes[i] != vectorIdsTron[i] ) ){
 					cout << "TODO MAL GUACHIN" << endl;
 					exit(1);
 				}
