@@ -16,13 +16,15 @@ BagOfWords::BagOfWords() {
 
 BagOfWords::~BagOfWords() {
 	//TODO: Delete de vectores y map?
-	delete this->pesosPositivos;
-	delete this->pesosNegativos;
 	delete this->bag;
 	delete this->frecuenciasNegativas;
 	delete this->frecuenciasPositivas;
+	delete this->pesosPositivos;
+	delete this->pesosNegativos;
 	delete this->probabilidadesPositivas;
 	delete this->probabilidadesNegativas;
+	delete this->probabilidadesPositivasTrad;
+	delete this->probabilidadesNegativasTrad;
 	delete this->words;
 }
 
