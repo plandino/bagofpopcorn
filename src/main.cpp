@@ -68,7 +68,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrPerceptron ) {
 		cout << "Empezando Perceptron" << endl;
-		Perceptron* tron = new Perceptron(bag, parser);
+		Perceptron* tron = new Perceptron(bag, parser, false, true);
 		tron->entrenar();
 		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
 		parser->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
