@@ -3,13 +3,16 @@
 #include "perceptron.h"
 
 int main(int argc, char* argv[]){
-	Parser* parser = new Parser();
+	bool sinStopWords = true;
+	Parser* parserSinStopWords = new Parser(sinStopWords);
+	Parser* parserConStopWords = new Parser(not sinStopWords);
 
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
-	parser->generarTSV();
+	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
+	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
+	parserSinStopWords->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
@@ -46,8 +49,8 @@ int main(int argc, char* argv[]){
 
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
-		parser->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
+		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
+		parserSinStopWords->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
 
@@ -57,8 +60,8 @@ int main(int argc, char* argv[]){
 
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
-		bayes->realizarPrediccion(bag, parser, vectorIdsBayes, vectorProbabilidadesBayes);
-		parser->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
+		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes);
+		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
 	}
 
@@ -68,10 +71,10 @@ int main(int argc, char* argv[]){
 
 	if ( correrPerceptron ) {
 		cout << "Empezando Perceptron" << endl;
-		Perceptron* tron = new Perceptron(bag, parser, false, true);
+		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, false, true);
 		tron->entrenar();
 		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
-		parser->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
+		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
 	}
 
@@ -92,11 +95,12 @@ int main(int argc, char* argv[]){
 				}
 				idsFinales.push_back(vectorIdsMasMenosUno[i]);
 			}
-			parser->agregarAlCSV(idsFinales, probabilidadesFinales, NOMBRE_ARCHIVO_CSV_PONDERADO);
+			parserSinStopWords->agregarAlCSV(idsFinales, probabilidadesFinales, NOMBRE_ARCHIVO_CSV_PONDERADO);
 		}
 	}
 
 
-	delete parser;
+	delete parserSinStopWords;
+	delete parserConStopWords;
 	return 0;
 }

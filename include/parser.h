@@ -34,7 +34,7 @@ private:
 	BagOfWords* bag;
 
 public:
-	Parser();
+	Parser(bool sinStopWords);
 	virtual ~Parser();
 
 	BagOfWords* parsearReviews(string nombreArchivo);

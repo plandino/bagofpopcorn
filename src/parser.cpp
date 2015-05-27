@@ -1,11 +1,11 @@
 #include "parser.h"
 #include <iomanip>
 
-Parser::Parser() {
+Parser::Parser(bool sinStopWords) {
 	bag = new BagOfWords();
 //	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS1);
 //	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS2);
-	cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS_PYHTON);
+	if (sinStopWords) cargarDiccionarioStopWords(NOMBRE_ARCHIVO_STOPWORDS_PYHTON);
 }
 
 Parser::~Parser() {
