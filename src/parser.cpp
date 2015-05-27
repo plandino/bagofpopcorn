@@ -87,13 +87,11 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar,
 	if (biWord){
 		unsigned int size = palabrasReview.size();
 		for (unsigned int i = 0; i < size-1; i++){
-			if (agregar) {
-				string word1 = palabrasReview[i];
-				string word2 = palabrasReview[i+1];
-				string concat = word1 + " " + word2;
-				bag->agregar(concat, sentiment);
-				palabrasReview.push_back(concat);
-			}
+			string word1 = palabrasReview[i];
+			string word2 = palabrasReview[i+1];
+			string concat = word1 + " " + word2;
+			if (agregar) bag->agregar(concat, sentiment);
+			palabrasReview.push_back(concat);
 		}
 	}
 	return palabrasReview;
