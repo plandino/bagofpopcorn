@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[]){
 	Parser* parser = new Parser();
-	const bool biWord = false;
+	const bool biWord = true;
 
 
 
@@ -13,6 +13,7 @@ int main(int argc, char* argv[]){
 	parser->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
+//	SI USAMOS EL BIWORD HAY QUE CAMBIARLO ESTO!!
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
 
 

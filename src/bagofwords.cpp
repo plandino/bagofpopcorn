@@ -208,6 +208,7 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 				}
 			}
 		}
+		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " de los positivos." << endl;
 	}
 
 	vector<int>::iterator iteradorNeg = frecuenciasNegativas->begin();
@@ -227,5 +228,6 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 				}
 			}
 		}
+		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " de los negativos." << endl;
 	}
 }

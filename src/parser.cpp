@@ -75,23 +75,24 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar,
 		vector<string> words = soloLetras(wordSinURL);
 
 		//TODO: Algun algoritmo para que, por ejemplo, considere palabras terminadas en s, ed, ing, ly sean lo mismo. Ejemplo: terrible, terribled, terribly, terribles (?
-		if (biWord){
-			for ( unsigned int i = 0; i < words.size()-1; i++){
-				string word1 = words[i];
-				if ( esStopWord(word1) ) continue;
-				if ( (word1.length() == 1) or (word1.length() == 0) ) continue;
-				string word2 = words[i+1];
-//				if (agregar) bag->agregar(wordAAgregar, sentiment);
-//				palabrasReview.push_back(wordAAgregar);
-			}
-		} else {
-			vector<string>::iterator iterador = words.begin();
-			for ( ; iterador != words.end() ; iterador++){
-				string wordAAgregar = (*iterador);
-				if ( esStopWord(wordAAgregar) ) continue;
-				if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
-				if (agregar) bag->agregar(wordAAgregar, sentiment);
-				palabrasReview.push_back(wordAAgregar);
+		vector<string>::iterator iterador = words.begin();
+		for ( ; iterador != words.end() ; iterador++){
+			string wordAAgregar = (*iterador);
+			if ( esStopWord(wordAAgregar) ) continue;
+			if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
+			if ( agregar ) bag->agregar(wordAAgregar, sentiment);
+			palabrasReview.push_back(wordAAgregar);
+		}
+	}
+	if (biWord){
+		unsigned int size = palabrasReview.size();
+		for (unsigned int i = 0; i < size-1; i++){
+			if (agregar) {
+				string word1 = palabrasReview[i];
+				string word2 = palabrasReview[i+1];
+				string concat = word1 + " " + word2;
+				bag->agregar(concat, sentiment);
+				palabrasReview.push_back(concat);
 			}
 		}
 	}
