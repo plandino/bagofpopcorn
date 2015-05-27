@@ -4,10 +4,11 @@
 
 int main(int argc, char* argv[]){
 	Parser* parser = new Parser();
+	const bool biWord = false;
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
+	BagOfWords* bag = parser->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord);
 	parser->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
+		masMenosUno->realizarPrediccion(bag, parser, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba, biWord);
 		parser->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
-		bayes->realizarPrediccion(bag, parser, vectorIdsBayes, vectorProbabilidadesBayes);
+		bayes->realizarPrediccion(bag, parser, vectorIdsBayes, vectorProbabilidadesBayes, biWord);
 		parser->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
 	}
@@ -68,8 +69,8 @@ int main(int argc, char* argv[]){
 	if ( correrPerceptron ) {
 		cout << "Empezando Perceptron" << endl;
 		Perceptron* tron = new Perceptron(bag, parser);
-		tron->entrenar();
-		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
+		tron->entrenar(biWord);
+		tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
 		parser->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
 	}

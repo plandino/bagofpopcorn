@@ -27,8 +27,8 @@ class Perceptron {
         int numeroPasadas;
         double learningRate;
     public:
-        double* entrenar(); //Devuelve el vector de pesos con los valores que resultan.
-        void predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones );
+        double* entrenar(bool biWord); //Devuelve el vector de pesos con los valores que resultan.
+        void predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones, bool biWord);
         Perceptron(BagOfWords* bag, Parser* parser);
         virtual ~Perceptron();
         void tirarACSV(const vector<prediccion>& predicciones);
