@@ -188,7 +188,8 @@ string Parser::eliminarURL(string word, bool &continuar) {
 	unsigned int length = word.length();
 	string wordSinURL = "";
 	for (unsigned int i = 0; i < length; i++){
-		if ( (word[i] != '<') and (word[i] != '(') and (word[i] != ')') ) wordSinURL = wordSinURL + word[i];
+		if (not ( (i == 0) and ( (word[i] == '<') or (word[i] == '(') or (word[i] == ')') or (word[i] == ':') ))) wordSinURL = wordSinURL + word[i]; //Solo si es la primera letra
+//		if ( (word[i] != '<') and (word[i] != '(') and (word[i] != ')') ) wordSinURL = wordSinURL + word[i];
 	}
 
 	string http = wordSinURL.substr(0,7);
@@ -206,7 +207,7 @@ vector<string> Parser::soloLetras(string word) {
 	unsigned int length = word.length();
 	vector<string> words;
 	for (unsigned int i = 0; i < length; i++){
-		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) or (word[i] == 'ñ'/*(char)241 ñ*/) ) wordSoloLetras = wordSoloLetras + word[i];
+		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) /*or (word[i] == char(-61) ñ)*/ ) wordSoloLetras = wordSoloLetras + word[i];
 			else {
 				words.push_back(wordSoloLetras);
 				wordSoloLetras = "";
