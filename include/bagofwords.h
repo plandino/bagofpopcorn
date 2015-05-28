@@ -6,6 +6,7 @@
 #include <sstream> //stringstream
 #include <algorithm> //toLower y remove
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <math.h>
 #include "string.h"
@@ -24,7 +25,7 @@ class BagOfWords {
 // en el feature vector generado en este proceso
 
 private:
-	map<string,int>* bag;
+	unordered_map<string,int>* bag;
 	vector<int>* frecuenciasPositivas;
 	vector<int>* frecuenciasNegativas;
 	vector<int>* pesosPositivos;

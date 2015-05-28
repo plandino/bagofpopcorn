@@ -85,8 +85,8 @@ int main(int argc, char* argv[]){
 	if (ponderar) {
 		vector<numeroReal> probabilidadesFinales;
 		vector<string> idsFinales;
-		const double pesoTron = 0.9;
-		const double pesoBayes = 0.07;
+		const double pesoTron = 0.95;
+		const double pesoBayes = 0.04;
 		if ( ( vectorProbabilidadesMasMenosUno.size() == vectorIdsBayes.size() ) and ( vectorIdsBayes.size() == vectorIdsTron.size() ) ){
 			for (unsigned int i = 0; i < vectorProbabilidadesMasMenosUno.size(); i++){
 				numeroReal probabilidadFinal = ( (vectorProbabilidadesMasMenosUno[i] * (1-pesoTron-pesoBayes)) + (vectorProbabilidadesBayes[i] * pesoBayes) + (vectorProbabilidadesTron[i] * pesoTron) );
