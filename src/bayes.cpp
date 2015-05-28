@@ -8,9 +8,9 @@ Bayes::~Bayes(){
 
 }
 
-void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades) {
+void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool biWord) {
 //	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
 	float k = 0.7;
 //	ofstream archivoSalida("data/dataout/distintosKFino.txt");
 //	int resultadoMayor = 0;
@@ -62,9 +62,16 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& proba
 	}
 	//acumuladorProbaPositiva = acumuladorProbaPositiva;
 	//acumuladorProbaNegativa = acumuladorProbaNegativa;
+	numeroReal probaReviewPositiva;
+	numeroReal probaReviewNegativa;
 
-	numeroReal probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
-	numeroReal probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	if (acumuladorProbaPositiva != 0 or acumuladorProbaNegativa != 0) {
+		probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+		probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	} else {
+		probaReviewPositiva = 0.5;
+		probaReviewNegativa = 0.5;
+	}
 //	float v1 = rand() % 100;
 //	if(v1 < 30)
 //	{

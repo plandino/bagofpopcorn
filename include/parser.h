@@ -26,7 +26,7 @@ class Parser {
 
 private:
 	void cargarDiccionarioStopWords(string nombreArchivo);
-	vector<string> limpiarReview(string review, int sentiment, bool agregar);
+	vector<string> limpiarReview(string review, int sentiment, bool agregar, bool biWord);
 	bool esStopWord(string word);
 	string eliminarURL(string word, bool &continuar);
 	vector<string> soloLetras(string word);
@@ -37,8 +37,8 @@ public:
 	Parser(bool sinStopWords);
 	virtual ~Parser();
 
-	BagOfWords* parsearReviews(string nombreArchivo);
-	vector<Review>* parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento);
+	BagOfWords* parsearReviews(string nombreArchivo, bool biWord);
+	vector<Review>* parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento, bool biWord);
 
 
 	void generarTSV();

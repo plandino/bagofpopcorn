@@ -30,9 +30,9 @@ int MasMenosUno::iterarPorReviews(float k, vector<Review>* reviewsAPredecir, Bag
 	return contador;
 }
 
-void MasMenosUno::probar(BagOfWords* bag, Parser* parser, bool pesar) {
+void MasMenosUno::probar(BagOfWords* bag, Parser* parser, bool pesar, bool biWord) {
 	ofstream archivoSalida("data/dataout/distintosPasoPotenciaK.txt");
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
+	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true, biWord);
 	vector<string> vectorIds;
 	vector<numeroReal> vectorProbabilidades;
 	int resultadoMayor = 0;
@@ -99,10 +99,10 @@ double MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 	return probabilidad;
 }
 
-void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool pesar, bool esPrueba) {
-	if (esPrueba) probar(bag, parser, pesar);
+void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool pesar, bool esPrueba, bool biWord) {
+	if (esPrueba) probar(bag, parser, pesar, biWord);
 	else {
-		vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+		vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
 		double paso = 0.001;
 		double potencia = 10.0;
 		double k = 0.7;

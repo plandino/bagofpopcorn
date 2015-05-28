@@ -59,9 +59,8 @@ double Perceptron::productoInterno(vector<string> features) {
 	return productoInterno;
 }
 
-
-double* Perceptron::entrenar() {
-	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true);
+double* Perceptron::entrenar(bool biWord) {
+	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true, biWord);
 	cout << "\nPass\t\tErrors\t\tNr. Samples" << endl;
 	for (int pasada = 0; pasada < numeroPasadas; pasada++) {
 		int contadorError = 0;
@@ -121,13 +120,13 @@ bool comparador_pred(prediccion a, prediccion b) {
 }
 
 
-void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones) {
+void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones, bool biWord) {
 	int contadorError = 0;
 	bool posONeg;
 	double dotp;
 	vector<prediccion> preds;
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
 	cout << "\nTesting online\nErrors\t\tAverage\t\tNr. Samples\tSince Start" << endl;
 	vector<Review>::iterator iterador = reviews->begin();
 

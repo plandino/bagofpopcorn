@@ -7,14 +7,16 @@ int main(int argc, char* argv[]){
 	Parser* parserSinStopWords = new Parser(sinStopWords);
 	Parser* parserConStopWords = new Parser(not sinStopWords);
 
+	const bool biWord = true;
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
-	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
+	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord);
+	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord);
 	parserSinStopWords->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
+//	SI USAMOS EL BIWORD HAY QUE CAMBIARLO ESTO!!
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
 
 
@@ -49,7 +51,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
+		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba, biWord);
 		parserSinStopWords->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
@@ -60,7 +62,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
-		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes);
+		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes, biWord);
 		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
 	}
@@ -72,8 +74,8 @@ int main(int argc, char* argv[]){
 	if ( correrPerceptron ) {
 		cout << "Empezando Perceptron" << endl;
 		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, false, true);
-		tron->entrenar();
-		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
+		tron->entrenar(biWord);
+		tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
 		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
 	}

@@ -27,7 +27,7 @@ bool Parser::esStopWord(string word) {
 	return ( stopWords.count(word) > 0 );
 }
 
-vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar) {
+vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar, bool biWord) {
 	vector<string> palabrasReview;
 	review.erase(0,2); // Elimino comillas y tab del comienzo
 	review.erase(review.length()-1, 1); // Elimino comillas del final
@@ -80,14 +80,24 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 			string wordAAgregar = (*iterador);
 			if ( esStopWord(wordAAgregar) ) continue;
 			if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
-			if (agregar) bag->agregar(wordAAgregar, sentiment);
+			if ( agregar ) bag->agregar(wordAAgregar, sentiment);
 			palabrasReview.push_back(wordAAgregar);
+		}
+	}
+	if (biWord){
+		unsigned int size = palabrasReview.size();
+		for (unsigned int i = 0; i < size-1; i++){
+			string word1 = palabrasReview[i];
+			string word2 = palabrasReview[i+1];
+			string concat = word1 + " " + word2;
+			if (agregar) bag->agregar(concat, sentiment);
+			palabrasReview.push_back(concat);
 		}
 	}
 	return palabrasReview;
 }
 
-BagOfWords* Parser::parsearReviews(string nombreArchivo) {
+BagOfWords* Parser::parsearReviews(string nombreArchivo, bool biWord) {
 	ifstream archivo(nombreArchivo.c_str());
 	if ( archivo.is_open() ){
 		string id, header;
@@ -99,7 +109,7 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo) {
 			if( (i+1) % 1000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
 			string review;
 			getline(archivo,review); //Leo review
-			limpiarReview(review, sentimiento, true);
+			limpiarReview(review, sentimiento, true, biWord);
 			i++;
 			if (i == CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) cout << "Ultima review a parsear para entrenamiento: " << id << endl;
 		}
@@ -207,7 +217,8 @@ vector<string> Parser::soloLetras(string word) {
 	unsigned int length = word.length();
 	vector<string> words;
 	for (unsigned int i = 0; i < length; i++){
-		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) /*or (word[i] == char(-61) ñ)*/ ) wordSoloLetras = wordSoloLetras + word[i];
+		//TODO: Ver lo de la ñ en algun momento
+		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) or (word[i] == 'ñ'/*(char)241 ñ*/) ) wordSoloLetras = wordSoloLetras + word[i];
 			else {
 				words.push_back(wordSoloLetras);
 				wordSoloLetras = "";
@@ -218,7 +229,7 @@ vector<string> Parser::soloLetras(string word) {
 	return words;
 }
 
-vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento) {
+vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento, bool biWord) {
 	ifstream archivo(nombreArchivo.c_str());
 	vector< Review >* reviews = new vector< Review >();
 	if ( archivo.is_open() ){
@@ -238,7 +249,7 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 			if( (i+1-desde) % 1000 == 0 ) cout <<  "Se parsearon " << (i+1-desde) << " reviews a predecir de " << 25000-desde << endl;
 			string review_str;
 			getline(archivo,review_str); //Leo review
-			vector<string> palabrasReview = limpiarReview(review_str, sentimiento, false);
+			vector<string> palabrasReview = limpiarReview(review_str, sentimiento, false, biWord);
 			Review review(id, palabrasReview, sentimiento);
 			reviews->push_back(review);
 			i++;
