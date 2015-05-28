@@ -62,9 +62,16 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& proba
 	}
 	//acumuladorProbaPositiva = acumuladorProbaPositiva;
 	//acumuladorProbaNegativa = acumuladorProbaNegativa;
+	numeroReal probaReviewPositiva;
+	numeroReal probaReviewNegativa;
 
-	numeroReal probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
-	numeroReal probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	if (acumuladorProbaPositiva != 0 or acumuladorProbaNegativa != 0) {
+		probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+		probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	} else {
+		probaReviewPositiva = 0.5;
+		probaReviewNegativa = 0.5;
+	}
 //	float v1 = rand() % 100;
 //	if(v1 < 30)
 //	{
