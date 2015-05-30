@@ -42,11 +42,15 @@ double Perceptron::productoInterno(vector<string> features) {
 			if (bag->estaEnBag(palabra) != -1) {
 				indice = bag->posicionEnBag(palabra);
 			}
+			if ( (usaBigramas) and (std::next(iterador, 1) != features.end()) ) { /* No me voy de rango */
+				string bigrama = *iterador + " " + *std::next(iterador, 1);
+				if (bag->estaEnBag(bigrama) != -1) { indiceBigrama = bag->posicionEnBag(bigrama); }
+			}
 		} else {
 			indice = hashFunction(palabra) % VEC_SIZE;
 			if (usaBigramas == true) {
 				if ( std::next(iterador,1) != features.end() ) { 
-					indiceBigrama = hashFunction( palabra + *std::next(iterador,1) ) % VEC_SIZE;
+					indiceBigrama = hashFunction( palabra + " " + *std::next(iterador,1) ) % VEC_SIZE;
 				}
 			}
 		}
@@ -88,6 +92,13 @@ double* Perceptron::entrenar(bool biWord) {
 						if (bag->estaEnBag(palabra) ) {
 							int j = this->bag->posicionEnBag(palabra);
 							pesos[j] += learningRate * error * log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
+						}
+						if ( (usaBigramas) and (std::next(it, 1) != features.end()) ) { /* No me voy de rango */
+							string bigrama = palabra + " " + *std::next(it, 1);
+							if (bag->estaEnBag(bigrama) ) { 
+								int indiceBigrama = bag->posicionEnBag(bigrama); 
+								pesos[indiceBigrama] += learningRate * error * log(2);
+							}
 						}
 				    } else {
 				    	int indice;
