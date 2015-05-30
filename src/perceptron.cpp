@@ -37,18 +37,18 @@ double Perceptron::productoInterno(vector<string> features) {
         hash<string> hashFunction;
 		string palabra = *iterador;
 		int indice = -1;
-		int indiceBigrama;
-		if (usaBag == true) {
-			if (bag->estaEnBag(palabra) != -1) {
+		int indiceBigrama = -1;
+		if (usaBag) {
+			if (bag->estaEnBag(palabra)) {
 				indice = bag->posicionEnBag(palabra);
 			}
 			if ( (usaBigramas) and (std::next(iterador, 1) != features.end()) ) { /* No me voy de rango */
 				string bigrama = *iterador + " " + *std::next(iterador, 1);
-				if (bag->estaEnBag(bigrama) != -1) { indiceBigrama = bag->posicionEnBag(bigrama); }
+				if (bag->estaEnBag(bigrama)) { indiceBigrama = bag->posicionEnBag(bigrama); }
 			}
 		} else {
 			indice = hashFunction(palabra) % VEC_SIZE;
-			if (usaBigramas == true) {
+			if (usaBigramas) {
 				if ( std::next(iterador,1) != features.end() ) { 
 					indiceBigrama = hashFunction( palabra + " " + *std::next(iterador,1) ) % VEC_SIZE;
 				}
@@ -58,7 +58,7 @@ double Perceptron::productoInterno(vector<string> features) {
 			pesoPalabra = pesos[indice];	
 		}
 		productoInterno += pesoPalabra * 1; // 1 es el "value" en el perceptron. 
-		if (usaBigramas) productoInterno += pesos[indiceBigrama]; 
+		if (usaBigramas and (indiceBigrama != -1)) productoInterno += pesos[indiceBigrama];
 	}
 	return productoInterno;
 }
@@ -88,7 +88,7 @@ double* Perceptron::entrenar(bool biWord) {
 				vector<string>::iterator it = features.begin();
 				for ( ; it != features.end() ; it++ ) {
 					string palabra = *it;
-					if (usaBag == true) { 
+					if (usaBag) {
 						if (bag->estaEnBag(palabra) ) {
 							int j = this->bag->posicionEnBag(palabra);
 							pesos[j] += learningRate * error * log(2); // Log(2) devuelve un numero con menos decimales que su equiv. en python.
@@ -104,7 +104,7 @@ double* Perceptron::entrenar(bool biWord) {
 				    	int indice;
 				    	indice = hashFunction(palabra) % VEC_SIZE;
 					    pesos[indice] += learningRate * error * log(2);
-				    	if (usaBigramas == true) { 
+				    	if (usaBigramas) {
 				    		if ( std::next(it,1) != features.end() ) { 
 								indice = hashFunction( palabra + *std::next(it,1) ) % VEC_SIZE;
 								pesos[indice] += learningRate * error * log(2);
