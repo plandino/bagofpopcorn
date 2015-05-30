@@ -1,7 +1,7 @@
 #include "bagofwords.h"
 
 BagOfWords::BagOfWords() {
-	this->bag = new map<string,int>();
+	this->bag = new unordered_map<string,int>();
 	this->frecuenciasPositivas = new vector<int>();
 	this->frecuenciasNegativas = new vector<int>();
 	this->pesosPositivos = new vector<int>();
