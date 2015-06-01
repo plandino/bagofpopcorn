@@ -10,7 +10,7 @@ class Network{
 
 private:
 	list<Nodo* > * listaNodos;
-	Nodo * hayNodoConPalabra(string palabra);
+
 
 public:
 
@@ -19,6 +19,7 @@ public:
 	void agregarNodo(Nodo* nodo);
 	void agregarPalabra(string palabra, string palabrasAnteriores);
 	list<Nodo* > * getListaNodos();
+	Nodo * hayNodoConPalabra(string palabra);
 
 };
 

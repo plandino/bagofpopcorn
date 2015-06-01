@@ -12,7 +12,7 @@ private:
 	string palabra;
 	list<Nodo* > * nodosQueMeApuntan;
 	list<Nodo* > * nodosQueApunto;
-	bool nodoNoEstaEnLista(int numeroDeLista, Nodo *nodo);
+//	bool nodoNoEstaEnLista(int numeroDeLista, Nodo *nodo);
 
 public:
 	Nodo(string palabra);

@@ -5,7 +5,8 @@
 
 
 int main(int argc, char** argv){
-	Network * redBayesiana = new Network();
+	Network * redPositiva = new Network();
+	Network * redNegativa = new Network();
 	Parser * parser = new Parser();
 
 	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 24995, true);
@@ -19,15 +20,24 @@ int main(int argc, char** argv){
 		vector<string> palabras = reviewAPredecir.getPalabras();
 
 		vector<string>::iterator iteradorPalabras = palabras.begin();
-		string palabraAnterior = "movie";
-		for ( ; iteradorPalabras != palabras.end() ; iteradorPalabras++){
-			string palabra = (*iteradorPalabras);
-//			cout << "MI PALABRA: " << palabra.c_str() << " palabra anterior " << palabraAnterior.c_str();
-			redBayesiana->agregarPalabra(palabra, palabraAnterior);
-			palabraAnterior.assign(palabra.c_str());
+		string palabraAnterior = "";
+
+		if(reviewAPredecir.getSentiment()){
+			for ( ; iteradorPalabras != palabras.end() ; iteradorPalabras++){
+				string palabra = (*iteradorPalabras);
+				redPositiva->agregarPalabra(palabra, palabraAnterior);
+				palabraAnterior.assign(palabra.c_str());
+			}
+		} else {
+			for ( ; iteradorPalabras != palabras.end() ; iteradorPalabras++){
+				string palabra = (*iteradorPalabras);
+				redNegativa->agregarPalabra(palabra, palabraAnterior);
+				palabraAnterior.assign(palabra.c_str());
+			}
 		}
+
 	}
-	list<Nodo* > * listaDeNodos = redBayesiana->getListaNodos();
+	list<Nodo* > * listaDeNodos = redPositiva->getListaNodos();
 	list<Nodo* >::iterator iteradorListaDeNodos = listaDeNodos->begin();
 
 	for(; iteradorListaDeNodos != listaDeNodos->end(); iteradorListaDeNodos++){
@@ -51,7 +61,8 @@ int main(int argc, char** argv){
 
 	cout << " termine" << endl;
 
-	delete redBayesiana;
+	delete redPositiva;
+	delete redNegativa;
 	delete parser;
 	return 0;
 }
