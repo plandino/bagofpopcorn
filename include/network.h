@@ -10,15 +10,13 @@ class Network{
 
 private:
 	list<Nodo* > * listaNodos;
-	bool hayNodoConPalabraEnLaLista(string palabra);
-	Nodo * buscarNodoConPalabraAnterior(string palabraAnterior);
+	Nodo * hayNodoConPalabra(string palabra);
 
 public:
 
 	Network();
 	~Network();
 	void agregarNodo(Nodo* nodo);
-	void agregarPalabra(string palabra );
 	void agregarPalabra(string palabra, string palabrasAnteriores);
 	list<Nodo* > * getListaNodos();
 

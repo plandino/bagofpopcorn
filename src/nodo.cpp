@@ -16,7 +16,7 @@ list<Nodo*>* Nodo::getNodosQueApunto() {
 }
 
 list<Nodo*>* Nodo::getNodosQueMeApuntan() {
-	list<Nodo* >::iterator iterador = nodosQueMeApuntan->begin();
+//	list<Nodo* >::iterator iterador = nodosQueMeApuntan->begin();
 //	cout << "mi word" << palabra.c_str() << (*iterador)->getPalabra().c_str() << endl;
 	return nodosQueMeApuntan;
 }
@@ -58,5 +58,6 @@ bool Nodo::nodoNoEstaEnLista(int numeroDeLista, Nodo* nodo) {
 
 string Nodo::getPalabra() {
 //	cout << "Trato de sacar palabra" << endl;
+//	cout << "Returneo esto: " << palabra << endl;
 	return this->palabra;
 }

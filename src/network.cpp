@@ -12,61 +12,32 @@ void Network::agregarNodo(Nodo* nodo) {
 	listaNodos->push_back(nodo);
 }
 
-void Network::agregarPalabra(string palabra) {
-	if(! hayNodoConPalabraEnLaLista(palabra)){
-		Nodo * nodo = new Nodo(palabra);
-//		cout << "Meto un nodo" << endl;
-		agregarNodo(nodo);
-//		cout << "Pude meter un nodo" << endl;
-//		cout << endl << " ---------------------------------------------------------------------------" << endl << endl;
-	}
-}
-
-bool Network::hayNodoConPalabraEnLaLista(string palabra) {
+Nodo * Network::hayNodoConPalabra(string palabra) {
 	list<Nodo* >::iterator iteradorNodos = listaNodos->begin();
-//	cout << "La palabra a meter: " << palabra.c_str() << endl << endl;
-	// Checkeo contra todos los nodos a ver si es igual
 	for( ; iteradorNodos != listaNodos->end(); iteradorNodos++){
 		Nodo * nodito = (*iteradorNodos);
-//		cout << "Comparo contra la palabra: " << nodito->getPalabra().c_str() << endl;
-//		cout << "La comparacion me dio: " << palabra.compare(nodito->getPalabra()) << endl;
 		if(palabra.compare(nodito->getPalabra()) == 0){
 
-			return true;
-		}
-	}
-	return false;
-}
-
-void Network::agregarPalabra(string palabra, string palabrasAnteriores) {
-	if(! hayNodoConPalabraEnLaLista(palabra)){
-		Nodo * nodo = new Nodo(palabra);
-//		cout << "Meto un nodo" << endl;
-		agregarNodo(nodo);
-		cout << "lcdtm" << endl;
-		Nodo * nodosad = buscarNodoConPalabraAnterior(palabrasAnteriores);
-		nodo->agregarNodoQueMeApunta(buscarNodoConPalabraAnterior(palabrasAnteriores));
-		cout << "Pude meter un nodo" << endl;
-//		cout << endl << " ---------------------------------------------------------------------------" << endl << endl;
-	}
-}
-
-Nodo* Network::buscarNodoConPalabraAnterior(string palabraAnterior) {
-	list<Nodo* >::iterator iteradorNodos = listaNodos->begin();
-//	cout << "La palabra a meter: " << palabraAnterior.c_str() << endl << endl;
-	// Checkeo contra todos los nodos a ver si es igual
-	for( ; iteradorNodos != listaNodos->end(); iteradorNodos++){
-		Nodo * nodito = (*iteradorNodos);
-//		cout << "Comparo contra la palabra: " << nodito->getPalabra().c_str() << endl;
-//		cout << "La comparacion me dio: " << palabraAnterior.compare(nodito->getPalabra()) << endl;
-		if( palabraAnterior.compare(nodito->getPalabra()) == 0){
-//			cout << "Encontre el nodo" << endl;
-			return nodito;
+			return nodito;	// En la red hay un nodo que contiene la misma palabra
 		}
 	}
 	return NULL;
 }
 
-list<Nodo*>* Network::getListaNodos() {
+void Network::agregarPalabra(string palabra, string palabrasAnteriores) {
+	Nodo * nodoConPalabra = hayNodoConPalabra(palabra);
+	if(nodoConPalabra == NULL){
+		Nodo * nodo = new Nodo(palabra);
+		agregarNodo(nodo);
+		Nodo * nodoConPalabraAnterior = hayNodoConPalabra(palabrasAnteriores);
+		if( nodoConPalabraAnterior != NULL){
+			nodo->agregarNodoQueMeApunta(nodoConPalabraAnterior);
+		}
+	} else {
+		nodoConPalabra->agregarNodoQueMeApunta(hayNodoConPalabra(palabrasAnteriores));
+	}
+}
+
+list<Nodo* >* Network::getListaNodos() {
 	return listaNodos;
 }

@@ -8,7 +8,7 @@ int main(int argc, char** argv){
 	Network * redBayesiana = new Network();
 	Parser * parser = new Parser();
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 24999, true);
+	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 24995, true);
 
 	vector<Review>::iterator iteradorReviews = reviews->begin();
 	unsigned int i = 0;
@@ -19,7 +19,7 @@ int main(int argc, char** argv){
 		vector<string> palabras = reviewAPredecir.getPalabras();
 
 		vector<string>::iterator iteradorPalabras = palabras.begin();
-		string palabraAnterior = "";
+		string palabraAnterior = "movie";
 		for ( ; iteradorPalabras != palabras.end() ; iteradorPalabras++){
 			string palabra = (*iteradorPalabras);
 //			cout << "MI PALABRA: " << palabra.c_str() << " palabra anterior " << palabraAnterior.c_str();
@@ -27,27 +27,25 @@ int main(int argc, char** argv){
 			palabraAnterior.assign(palabra.c_str());
 		}
 	}
-	bool inicio = true;
 	list<Nodo* > * listaDeNodos = redBayesiana->getListaNodos();
-	list<Nodo* >::iterator iteradorLista = listaDeNodos->begin();
-	for(; iteradorLista != listaDeNodos->end(); iteradorLista++){
-		Nodo* nodito = (*iteradorLista);
-		if(!nodito->getNodosQueMeApuntan()->empty() ){
-			list<Nodo* > * listaDeNodosApuntadores = nodito->getNodosQueMeApuntan();
-			list<Nodo* >::iterator iteradorApuntadores = listaDeNodosApuntadores->begin();
-			for(; iteradorApuntadores != listaDeNodosApuntadores->end(); iteradorApuntadores++){
-				Nodo* nodoApuntaadsasdasd = (*iteradorApuntadores);
-				if(inicio){
-					inicio = false;
-				}else {
-					cout << "Palabra: " << nodito->getPalabra().c_str()  << " apuntada por: " << nodoApuntaadsasdasd->getPalabra().c_str() << endl;
-				}
-//				cout << "Palabra: " << nodito->getPalabra().c_str()  << " apuntada por: " << nodoApuntaadsasdasd->getPalabra().c_str() << endl;
+	list<Nodo* >::iterator iteradorListaDeNodos = listaDeNodos->begin();
+
+	for(; iteradorListaDeNodos != listaDeNodos->end(); iteradorListaDeNodos++){
+		Nodo* nodito = (*iteradorListaDeNodos);
+
+		list<Nodo* > * nodosQueMeApuntan = nodito->getNodosQueMeApuntan();
+		list<Nodo* >::iterator iteradorNodosQueMeApuntan = nodosQueMeApuntan->begin();
+
+		cout << "Palabra: " << nodito->getPalabra().c_str()  << " apuntada por: ";
+		for(; iteradorNodosQueMeApuntan != nodosQueMeApuntan->end() ; iteradorNodosQueMeApuntan++){
+			Nodo* nodoQueMeApunta = (*iteradorNodosQueMeApuntan);
+			if(nodoQueMeApunta != NULL){
+				cout << nodoQueMeApunta->getPalabra().c_str() << ", ";
+			} else {
+				cout << " y no me apunta nadie.";
 			}
-//
-		} else {
-			cout << "Palabra: " << nodito->getPalabra().c_str() << endl;
 		}
+		cout << endl;
 
 	}
 
