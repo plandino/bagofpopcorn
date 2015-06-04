@@ -4,11 +4,15 @@ Nodo::Nodo(string palabra){
 	this->palabra = palabra;
 	this->nodosQueApunto 	= new list<Nodo* >();
 	this->nodosQueMeApuntan = new list<Nodo* >();
+	this->frecuenciasNodosQueApunto = new vector<int>();
+	this->frecuenciasNodosQueMeApuntan = new vector<int>();
 }
 
 Nodo::~Nodo(){
 	delete nodosQueApunto;
 	delete nodosQueMeApuntan;
+	delete frecuenciasNodosQueApunto;
+	delete frecuenciasNodosQueMeApuntan;
 }
 
 list<Nodo*>* Nodo::getNodosQueApunto() {
@@ -19,17 +23,28 @@ list<Nodo*>* Nodo::getNodosQueMeApuntan() {
 	return nodosQueMeApuntan;
 }
 
+vector<int>* Nodo::getFrecuenciasNodosQueApunto() {
+	return frecuenciasNodosQueApunto;
+}
+
+vector<int>* Nodo::getFrecuenciasNodosQueMeApuntan() {
+	return frecuenciasNodosQueMeApuntan;
+}
+
 void Nodo::agregarNodoQueMeApunta(Nodo *nodo) {
 	bool agregarNodo = true;
 	list<Nodo* >::iterator iteradorNodos = nodosQueMeApuntan->begin();
-	for(; iteradorNodos != nodosQueMeApuntan->end(); iteradorNodos++){
+	int i = 0;
+	for(; iteradorNodos != nodosQueMeApuntan->end(); iteradorNodos++, i++){
 		Nodo * nodito = (*iteradorNodos);
 		if( nodo->getPalabra().compare(nodito->getPalabra()) == 0){
 			agregarNodo = false;
+//			frecuenciasNodosQueMeApuntan->at(i)++;
 		}
 	}
 	if(agregarNodo){
 		nodosQueMeApuntan->push_back(nodo);
+//		frecuenciasNodosQueMeApuntan->push_back(1);
 	}
 }
 
@@ -47,35 +62,6 @@ void Nodo::apuntarANodo(Nodo *nodo) {
 	}
 }
 
-
-//bool Nodo::nodoNoEstaEnLista(int numeroDeLista, Nodo* nodo) {
-//	list<Nodo* >::iterator iteradorNodos;
-//	list<Nodo* >::iterator nodoEnd;
-//
-//	if(numeroDeLista == 0){
-//		iteradorNodos 	= nodosQueMeApuntan->begin();
-//		nodoEnd 		= nodosQueMeApuntan->end();
-//	} else if(numeroDeLista == 1){
-//		iteradorNodos 	= nodosQueApunto->begin();
-//		nodoEnd 		= nodosQueApunto->end();
-//	} else {
-//		/* numeroLista tiene que ser igual a 0 para revisar en la lista de nodos
-//		 * que me apuntan o igual a 1 para revisar en la lista de nodos a los que apunto.
-//		 */
-//		cout << "SOS UN CONCHUDO -- revisa nodo.cpp." << endl;
-//	}
-//
-//
-//	// Checkeo contra todos los nodos a ver si es igual
-//	for( ; iteradorNodos != nodoEnd; iteradorNodos++){
-//		Nodo * nodito = (*iteradorNodos);
-//		if(nodito == nodo)	return false;
-//	}
-//	return true;
-//}
-
 string Nodo::getPalabra() {
-//	cout << "Trato de sacar palabra" << endl;
-//	cout << "Returneo esto: " << palabra << endl;
 	return this->palabra;
 }

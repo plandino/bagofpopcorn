@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -12,6 +13,8 @@ private:
 	string palabra;
 	list<Nodo* > * nodosQueMeApuntan;
 	list<Nodo* > * nodosQueApunto;
+	vector<int>* frecuenciasNodosQueMeApuntan;
+	vector<int>* frecuenciasNodosQueApunto;
 //	bool nodoNoEstaEnLista(int numeroDeLista, Nodo *nodo);
 
 public:
@@ -21,6 +24,8 @@ public:
 	void apuntarANodo(Nodo *nodo);
 	list<Nodo* > * getNodosQueApunto();
 	list<Nodo* > * getNodosQueMeApuntan();
+	vector<int>* getFrecuenciasNodosQueApunto();
+	vector<int>* getFrecuenciasNodosQueMeApuntan();
 	string getPalabra();
 
 };

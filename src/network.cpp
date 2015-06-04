@@ -2,7 +2,7 @@
 
 Network::Network(){
 	networkPropia = true;
-	this->listaNodos = new list<Nodo* >();
+ 	this->listaNodos = new list<Nodo* >();
 }
 
 Network::Network(list<Nodo*>* listaDeNodos) {
@@ -14,7 +14,6 @@ Network::~Network(){
 	if(networkPropia){
 		delete listaNodos;
 	}
-
 }
 
 void Network::agregarNodo(Nodo* nodo) {
@@ -44,7 +43,6 @@ void Network::agregarPalabra(string palabra, string palabrasAnteriores) {
 		agregarNodo(nodoConPalabra);
 	}
 
-	// Si hay un nodo con la palabra anterior hago las apuntaciones
 	if(nodoConPalabraAnterior != NULL){
 		nodoConPalabra->agregarNodoQueMeApunta(nodoConPalabraAnterior);
 		nodoConPalabraAnterior->apuntarANodo(nodoConPalabra);
@@ -57,6 +55,7 @@ list<Nodo* >* Network::getListaNodos() {
 
 // Me pasan un NODO y una lista
 // Devuelvo, en la lista que me pasaron por parametro, todos los que nodos que apuntan a NODO
+
 void Network::obtenerNodosQueApuntanA(Nodo* nodo, list<Nodo* >* lista) {
 
 	// Empiezo a iterar por mi lista de nodos
@@ -67,8 +66,8 @@ void Network::obtenerNodosQueApuntanA(Nodo* nodo, list<Nodo* >* lista) {
 		Nodo * nodito = (*iteradorNodos);
 
 		// Empiezo a iterar por la lista de nodos que apunto
-		list<Nodo* >::iterator iteradorApuntadores = nodito->nodosQueApunto();
-		for(; iteradorApuntadores != nodito->nodosQueApunto->end(); iteradorApuntadores++){
+		list<Nodo* >::iterator iteradorApuntadores = nodito->getNodosQueApunto()->begin();
+		for(; iteradorApuntadores != nodito->getNodosQueApunto()->end(); iteradorApuntadores++){
 
 			// Obtengo la palabra del nodo que estoy apuntando
 			string palabraApuntada = (*iteradorApuntadores)->getPalabra();
