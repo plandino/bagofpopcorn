@@ -44,8 +44,8 @@ vector<Review>* Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vecto
 
 bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& probabilidadPositiva) {
 	int puntuacion = 0;
-	numeroReal acumuladorProbaPositiva = 1.0;
-	numeroReal acumuladorProbaNegativa = 1.0;
+	numeroReal acumuladorProbaPositiva = 0.0;
+	numeroReal acumuladorProbaNegativa = 0.0;
 	vector<string> palabras = review.getPalabras();
 
 	bool inicio = true;
@@ -57,10 +57,12 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& proba
 			numeroReal probaNegativa = bag->getProbabilidadesNegativasTradicionales() -> at( bag->posicionEnBag(palabra));
 
 			if( (probaPositiva == 0) or (probaNegativa == 0)) cout << "QUILOMBOOOO" << endl;
-			acumuladorProbaNegativa = acumuladorProbaNegativa * probaNegativa;
-			acumuladorProbaPositiva = acumuladorProbaPositiva * probaPositiva;
+			acumuladorProbaNegativa = acumuladorProbaNegativa + probaNegativa;
+			acumuladorProbaPositiva = acumuladorProbaPositiva + probaPositiva;
 		}
 	}
+	acumuladorProbaPositiva = exp(acumuladorProbaPositiva);
+	acumuladorProbaNegativa = exp(acumuladorProbaNegativa);
 	//acumuladorProbaPositiva = acumuladorProbaPositiva;
 	//acumuladorProbaNegativa = acumuladorProbaNegativa;
 	numeroReal probaReviewPositiva;
