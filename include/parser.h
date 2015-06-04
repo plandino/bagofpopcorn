@@ -20,6 +20,10 @@ const string NOMBRE_ARCHIVO_CSV_MASMENOSUNO = "data/dataout/csvProbasMASMENOSUNO
 const string NOMBRE_ARCHIVO_CSV_TRON = "data/dataout/csvProbasPERCEPTRON.csv";
 const string NOMBRE_ARCHIVO_CSV_CEROSYUNO = "data/dataout/csvCerosYUnos.csv";
 
+const string NOMBRE_ARCHIVO_CSV_MASMENOSUNO_CON_POSTA = "data/dataout/csvProbasMASMENOSUNOconPosta.csv";
+const string NOMBRE_ARCHIVO_CSV_BAYES_CON_POSTA = "data/dataout/csvProbasBAYESconPosta.csv";
+const string NOMBRE_ARCHIVO_CSV_TRON_CON_POSTA = "data/dataout/csvProbasPERCEPTRONconPosta.csv";
+
 const int CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO = 20000;
 
 class Parser {
@@ -44,6 +48,7 @@ public:
 	void generarTSV();
 	void agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, string nombreArchivoSalida);
 	void agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos);
+	void agregarAlCSV(vector<Review>* posta, vector<numeroReal>& probabilidad, string nombreArchivoSalida);
 
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
 	BagOfWords* leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo);
