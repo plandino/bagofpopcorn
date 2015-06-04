@@ -39,26 +39,29 @@ void Nodo::agregarNodoQueMeApunta(Nodo *nodo) {
 		Nodo * nodito = (*iteradorNodos);
 		if( nodo->getPalabra().compare(nodito->getPalabra()) == 0){
 			agregarNodo = false;
-//			frecuenciasNodosQueMeApuntan->at(i)++;
+			frecuenciasNodosQueMeApuntan->at(i)++;
 		}
 	}
 	if(agregarNodo){
 		nodosQueMeApuntan->push_back(nodo);
-//		frecuenciasNodosQueMeApuntan->push_back(1);
+		frecuenciasNodosQueMeApuntan->push_back(1);
 	}
 }
 
 void Nodo::apuntarANodo(Nodo *nodo) {
 	bool agregarNodo = true;
 	list<Nodo* >::iterator iteradorNodos = nodosQueApunto->begin();
-	for(; iteradorNodos != nodosQueApunto->end(); iteradorNodos++){
+	int i = 0;
+	for(; iteradorNodos != nodosQueApunto->end(); iteradorNodos++, i++){
 		Nodo * nodito = (*iteradorNodos);
 		if( nodo->getPalabra().compare(nodito->getPalabra()) == 0){
 			agregarNodo = false;
+			frecuenciasNodosQueApunto->at(i)++;
 		}
 	}
 	if(agregarNodo){
 		nodosQueApunto->push_back(nodo);
+		frecuenciasNodosQueApunto->push_back(1);
 	}
 }
 
