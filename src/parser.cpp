@@ -261,3 +261,12 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 	return reviews;
 }
 
+void Parser::agregarAlCSV(vector<Review>* posta, vector<numeroReal>& probabilidad, string nombreArchivoSalida) {
+	ofstream archivo(nombreArchivoSalida.c_str());
+	if ( archivo.is_open() ){
+		for (unsigned int i = 0; i < probabilidad.size(); i++){
+			archivo << posta->at(i).getSentiment() << ","<< std::fixed << std::setprecision(10) << probabilidad[i] << "\n";
+		}
+	}
+	archivo.close();
+}

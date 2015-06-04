@@ -106,17 +106,17 @@ bool comparador_pred(prediccion a, prediccion b) {
 }
 
 
-void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones, bool biWord) {
+vector<Review>* Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones, bool biWord) {
 	int contadorError = 0;
 	bool posONeg;
 	double dotp;
 	vector<prediccion> preds;
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
+	vector<Review>* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
 	cout << "\nTesting online\nErrors\t\tAverage\t\tNr. Samples\tSince Start" << endl;
-	vector<Review>::iterator iterador = reviews->begin();
+	vector<Review>::iterator iterador = reviewsAPredecir->begin();
 
-	for ( ; iterador != reviews->end() ; iterador++) {
+	for ( ; iterador != reviewsAPredecir->end() ; iterador++) {
 		Review rev = (*iterador);
 		vector<string> features = rev.getPalabras();
 		dotp = this->productoInterno(features);
@@ -142,7 +142,8 @@ void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& pre
 		predicciones.push_back(it->productoInternoNormalizado);
 		ids.push_back(it->id);
 	}
-	delete reviews;
+//	delete reviews;
+	return reviewsAPredecir;
 }
 
 

@@ -51,9 +51,11 @@ int main(int argc, char* argv[]){
 
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba, biWord);
+		vector<Review>* reviewsAPredecir = masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba, biWord);
+		parserSinStopWords->agregarAlCSV(reviewsAPredecir, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO_CON_POSTA);
 		parserSinStopWords->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
+		delete reviewsAPredecir;
 	}
 
 
@@ -62,9 +64,11 @@ int main(int argc, char* argv[]){
 
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
-		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes, biWord);
+		vector<Review>* reviewsAPredecir = bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes, biWord);
+		parserSinStopWords->agregarAlCSV(reviewsAPredecir, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES_CON_POSTA);
 		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
+		delete reviewsAPredecir;
 	}
 
 
@@ -75,9 +79,11 @@ int main(int argc, char* argv[]){
 		cout << "Empezando Perceptron" << endl;
 		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true);
 		tron->entrenar(biWord);
-		tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
+		vector<Review>* reviewsAPredecir = tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
+		parserConStopWords->agregarAlCSV(reviewsAPredecir, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON_CON_POSTA);
 		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
+		delete reviewsAPredecir;
 	}
 
 

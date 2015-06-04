@@ -15,7 +15,7 @@ public:
 	MasMenosUno();
 	virtual ~MasMenosUno();
 
-	void realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool pesar, bool esPrueba, bool biWord);
+	vector<Review>* realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool pesar, bool esPrueba, bool biWord);
 };
 
 #endif /* MASMENOSUNO_H_ */
