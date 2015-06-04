@@ -66,5 +66,6 @@ void Nodo::apuntarANodo(Nodo *nodo) {
 }
 
 string Nodo::getPalabra() {
+//	cout << "Voy a devolver palabra " << palabra.c_str() << endl;
 	return this->palabra;
 }

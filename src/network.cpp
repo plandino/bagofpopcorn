@@ -20,12 +20,26 @@ void Network::agregarNodo(Nodo* nodo) {
 	listaNodos->push_back(nodo);
 }
 
+Nodo * Network::hayNodoConPalabra(string palabra, unsigned int *posicion) {
+	*posicion = -1;
+	list<Nodo* >::iterator iteradorNodos = listaNodos->begin();
+	for(unsigned int i = 0 ; iteradorNodos != listaNodos->end(); iteradorNodos++, i++){
+		Nodo * nodito = (*iteradorNodos);
+//		cout << "Palabra: " << palabra.c_str() << endl;
+		if(palabra.compare(nodito->getPalabra()) == 0){
+			*posicion = i;
+			return nodito;	// En la red hay un nodo que contiene la misma palabra
+		}
+	}
+	return NULL;
+}
+
 Nodo * Network::hayNodoConPalabra(string palabra) {
 	list<Nodo* >::iterator iteradorNodos = listaNodos->begin();
-	for( ; iteradorNodos != listaNodos->end(); iteradorNodos++){
+	for(unsigned int i = 0 ; iteradorNodos != listaNodos->end(); iteradorNodos++, i++){
 		Nodo * nodito = (*iteradorNodos);
+//		cout << "Palabra: " << palabra.c_str() << endl;
 		if(palabra.compare(nodito->getPalabra()) == 0){
-
 			return nodito;	// En la red hay un nodo que contiene la misma palabra
 		}
 	}

@@ -9,7 +9,7 @@ RedBayesiana::~RedBayesiana(){
 }
 
 void RedBayesiana::realizarPrediccion(BagOfWords* bag, Parser* parser) {
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
+	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO,1, true);
 //	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 	float k = 0.7;
 //	ofstream archivoSalida("data/dataout/distintosKFino.txt");

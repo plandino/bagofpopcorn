@@ -241,7 +241,7 @@ vector<string> Parser::soloLetras(string word) {
 	return words;
 }
 
-vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento) {
+vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde, int hasta, bool tieneSentimiento) {
 	ifstream archivo(nombreArchivo.c_str());
 	vector< Review >* reviews = new vector< Review >();
 	if ( archivo.is_open() ){
@@ -249,7 +249,7 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 		int sentimiento = -1;
 		int i = 0;
 		getline(archivo,header); // Leo el header
-		while ( archivo >> id ){ //Leo id y sentimiento
+		while ( ( archivo >> id ) and (i < hasta) ){ //Leo id y sentimiento
 			if (tieneSentimiento) archivo >> sentimiento;
 			if ( i < desde ) { //Saco las primeras que no me interesan
 				string review_str;

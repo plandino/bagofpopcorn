@@ -1,7 +1,7 @@
 #include "predictorredbayesiana.h"
 
 PredictorRedBayesiana::PredictorRedBayesiana(Network* redPositiva, Network* redNegativa, Parser * parser) {
-	this->redPositva 	= redPositva;
+	this->redPositiva 	= redPositiva;
 	this->redNegativa	= redNegativa;
 	this->parser 		= parser;
 }
@@ -11,7 +11,7 @@ PredictorRedBayesiana::~PredictorRedBayesiana() {
 
 void PredictorRedBayesiana::realizarPrediccion(int cantidadDePalabrasAnteriores) {
 	// Reviews a predecir
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
+	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 24500, 25000, true);
 //	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 
 	// Objetos para crear el CSV
@@ -72,90 +72,226 @@ bool PredictorRedBayesiana::predecir(Review& review, numeroReal * probabilidadPo
 
 	// Empiezo a iterar por las palabras
 	vector<string>::iterator iteradorPalabras = vectorPalabras.begin();
-	if(vectorPalabras.size() >= 2){
-		string palabraAnterior = (*iteradorPalabras);
-		palabrasAnteriores.push_back(palabraAnterior);
-		cantidadDePalabrasAnterioresRevisadas++;
-		iteradorPalabras++;
-	}
 
-//	if(review.getSentiment()){
-//		for ( ; iteradorPalabras != vectorPalabras.end() ; iteradorPalabras++){
-//			string palabra = (*iteradorPalabras);
-////			vectorDeNodos.push_back(redPositva->hayNodoConPalabra(palabra));
-//			Nodo* nodo = redPositva->hayNodoConPalabra(palabra);
-//			list<Nodo* >* listaDeNodosQueMeApuntan = nodo->getNodosQueMeApuntan();
-//			probabilidad = 1.0 / listaDeNodosQueMeApuntan->size();
-//		}
-//	}
+	string palabrita = "";
+	Nodo* nodo;
+	Network* nodosQueMeApuntan;
+	unsigned int posicion = -1;
 
-	if(review.getSentiment() == 1){
+	// Voy iterando por las palabras
+	for(; iteradorPalabras != vectorPalabras.end(); iteradorPalabras++){
+		string palabra = (*iteradorPalabras);
+//		cout << "La palabra actual es: " << palabra.c_str() << endl;
 
-		for(; iteradorPalabras != vectorPalabras.end(); iteradorPalabras++){
+		// Obtengo el nodo con la palabra actual
+		nodo = redPositiva->hayNodoConPalabra(palabra);
+		if(nodo != NULL){
 
-			string palabraActual = (*iteradorPalabras);
+			// Si hay un nodo con la palabra actual, obtengo los nodos de las palabras que me apuntan
+			nodosQueMeApuntan = new Network(nodo->getNodosQueMeApuntan());
 
-			// Primero obtengo las palabras que apuntan a la palabra actual
+			// Me fijo si entre todas las palabras que me apuntan esta la palabra anterior
+			Nodo* nodoPalabraAnterior = nodosQueMeApuntan->hayNodoConPalabra(palabrita, &posicion);
+			if( nodoPalabraAnterior != NULL){
 
-			Nodo* 		nodoActual 			= redPositva->hayNodoConPalabra(palabraActual);
-			Network* 	nodosQueMeApuntan 	= new Network(nodoActual->getNodosQueMeApuntan());
-
-			// Ahora, de las N palabras anteriores, quiero quedarme con X palabras anteriores que me apuntan
-			// con X <= N ( De las N palabras anteriores solo tomo las que estan apuntando a la palabra actual)
-
-			vector<string>* palabrasQueMeApuntan = new vector<string>();
-//			if()
-
-			// Con esto obtengo todos los nodos a los que apunto con mis palabras anteriores
-			Nodo* nodo;
-			for(int i = 0; i < cantidadDePalabrasAnterioresRevisadas; i++){
-				nodo = redPositva->hayNodoConPalabra(palabrasAnteriores[0]);
-				vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
-				maxSize = nodo->getNodosQueApunto()->size();
-				index = 0;
-
-				for(int j = 1; j < cantidadDePalabrasAnterioresRevisadas; j++){
-					nodo = redPositva->hayNodoConPalabra(palabrasAnteriores[j]);
-					vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
-					if( maxSize < nodo->getNodosQueApunto()->size()){
-						maxSize = nodo->getNodosQueApunto()->size();
-						index = j;
-					}
-				}
-			}
-
-
-			// Primero me fijo si la palabra esta en la lista con mayor cantidad de nodos
-			if(vectorDeNodos[index]->hayNodoConPalabra(palabraActual)){
-				// Ahora voy a hacer el join de todos los nodos con todas las palabras anteriores
-				// para ver a que palabras en comun apuntan
-
-				list<Nodo* >::iterator iteradorNodos = vectorDeNodos[index]->getListaNodos()->begin();
-
-				for(; iteradorNodos != vectorDeNodos[index]->getListaNodos()->end(); iteradorNodos++){
-
-					string palabraNodo = (*iteradorNodos)->getPalabra();
-					for(unsigned int l = 0; l < vectorDeNodos[l]->getListaNodos()->size(); l++){
-						if(l != index ){
-							if(vectorDeNodos[l]->hayNodoConPalabra(palabraNodo)){
-								cantidadDeApuntadas++;
-							}
-						}
-					}
-				}
-
-				probabilidad = 1.0 / cantidadDeApuntadas;
-			} else {
-				probabilidad = probabilidad * 1.0;
-			}
-
-			palabrasAnteriores.push_back(palabraActual);
-			if(cantidadDePalabrasAnterioresRevisadas < cantidadDePalabrasAnteriores){
-				cantidadDePalabrasAnterioresRevisadas++;
-				palabrasAnteriores.erase(palabrasAnteriores.begin());
+				// Si esta la relacion entre la palabra anterior y mi palabra, la probabilidad de ir a mi palabra es
+				// 1 / # de nodos a los que puedo ir
+				acumuladorProbaPositiva = acumuladorProbaPositiva * (((*nodoPalabraAnterior->getFrecuenciasNodosQueApunto())[posicion] * 1.0 ) / nodoPalabraAnterior->getNodosQueApunto()->size());
 			}
 		}
+
+		nodo = redNegativa->hayNodoConPalabra(palabra);
+		if(nodo != NULL){
+			// Si hay un nodo con la palabra actual, obtengo los nodos de las palabras que me apuntan
+			nodosQueMeApuntan = new Network(nodo->getNodosQueMeApuntan());
+
+			// Me fijo si entre todas las palabras que me apuntan esta la palabra anterior
+			Nodo* nodoPalabraAnterior = nodosQueMeApuntan->hayNodoConPalabra(palabrita, &posicion);
+			if( nodoPalabraAnterior != NULL){
+
+				// Si esta la relacion entre la palabra anterior y mi palabra, la probabilidad de ir a mi palabra es
+				// 1 / # de nodos a los que puedo ir
+				acumuladorProbaNegativa = acumuladorProbaNegativa * (((*nodoPalabraAnterior->getFrecuenciasNodosQueApunto())[posicion] * 1.0) / nodoPalabraAnterior->getNodosQueApunto()->size());
+			}
+		}
+		palabrita = palabra;
 	}
+
+//		for(; iteradorPalabras != vectorPalabras.end(); iteradorPalabras++){
+//
+//			string palabraActual = (*iteradorPalabras);
+//
+//			// Primero obtengo las palabras que apuntan a la palabra actual
+//
+//			Nodo* 		nodoActual 			= redPositva->hayNodoConPalabra(palabraActual);
+//			list<Nodo* >* 	nodosQueMeApuntan 	= nodoActual->getNodosQueMeApuntan();
+//
+//			//  De las N palabras anteriores solo tomo las que estan apuntando a la palabra actual
+//
+////			list<Nodo* >* listaConPalabrasQueMeApuntan = new list<Nodo* >();
+////			nodosQueMeApuntan->obtenerNodosQueApuntanA(nodoActual, listaConPalabrasQueMeApuntan);
+//
+//			list<Nodo* >::iterator iterador = nodosQueMeApuntan->begin();
+//
+//			Nodo* nodo;
+//			for(; iterador != nodosQueMeApuntan->end(); iterador++){
+//				nodo = (*iterador);
+//				vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+//				maxSize = nodo->getNodosQueApunto()->size();
+//				index = 0;
+//
+//				for(unsigned int j = 1; j < cantidadDePalabrasAnterioresRevisadas; j++){
+//					nodo = (*iterador);
+//					vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+//					if( maxSize < nodo->getNodosQueApunto()->size()){
+//						maxSize = nodo->getNodosQueApunto()->size();
+//						index = j;
+//					}
+//				}
+//			}
+//
+//
+//			// Ahora voy a hacer el join de todos los nodos con todas las palabras anteriores
+//			// para ver a que palabras en comun apuntan
+//
+//			list<Nodo* >::iterator iteradorNodos = vectorDeNodos[index]->getListaNodos()->begin();
+//
+//			for(; iteradorNodos != vectorDeNodos[index]->getListaNodos()->end(); iteradorNodos++){
+//
+//				string palabraNodo = (*iteradorNodos)->getPalabra();
+//				for(unsigned int l = 0; l < listaConPalabrasQueMeApuntan->size(); l++){
+//					if(l != index ){
+//						if(vectorDeNodos[l]->hayNodoConPalabra(palabraNodo)){
+//							cantidadDeApuntadas++;
+//						}
+//					}
+//				}
+//			}
+//
+//			if(cantidadDeApuntadas == 0){
+//				cantidadDeApuntadas = 1;
+//			}
+//			acumuladorProbaPositiva = acumuladorProbaPositiva * (1.0 / cantidadDeApuntadas);
+
+
+
+//			// Con esto obtengo todos los nodos a los que apunto con mis palabras anteriores
+//			Nodo* nodo;
+//			for(int i = 0; i < cantidadDePalabrasAnterioresRevisadas; i++){
+//				nodo = redPositva->hayNodoConPalabra(palabrasAnteriores[0]);
+//				vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+//				maxSize = nodo->getNodosQueApunto()->size();
+//				index = 0;
+//
+//				for(int j = 1; j < cantidadDePalabrasAnterioresRevisadas; j++){
+//					nodo = redPositva->hayNodoConPalabra(palabrasAnteriores[j]);
+//					vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+//					if( maxSize < nodo->getNodosQueApunto()->size()){
+//						maxSize = nodo->getNodosQueApunto()->size();
+//						index = j;
+//					}
+//				}
+//			}
+//
+//
+//			// Primero me fijo si la palabra esta en la lista con mayor cantidad de nodos
+//			if(vectorDeNodos[index]->hayNodoConPalabra(palabraActual)){
+//				// Ahora voy a hacer el join de todos los nodos con todas las palabras anteriores
+//				// para ver a que palabras en comun apuntan
+//
+//				list<Nodo* >::iterator iteradorNodos = vectorDeNodos[index]->getListaNodos()->begin();
+//
+//				for(; iteradorNodos != vectorDeNodos[index]->getListaNodos()->end(); iteradorNodos++){
+//
+//					string palabraNodo = (*iteradorNodos)->getPalabra();
+//					for(unsigned int l = 0; l < vectorDeNodos[l]->getListaNodos()->size(); l++){
+//						if(l != index ){
+//							if(vectorDeNodos[l]->hayNodoConPalabra(palabraNodo)){
+//								cantidadDeApuntadas++;
+//							}
+//						}
+//					}
+//				}
+//
+//				probabilidad = 1.0 / cantidadDeApuntadas;
+//			} else {
+//				probabilidad = probabilidad * 1.0;
+//			}
+
+//			palabrasAnteriores.push_back(palabraActual);
+//			if(cantidadDePalabrasAnterioresRevisadas < cantidadDePalabrasAnteriores){
+//				cantidadDePalabrasAnterioresRevisadas++;
+//				palabrasAnteriores.erase(palabrasAnteriores.begin());
+//			}
+//		}
+////	}
+//
+//		acumuladorProbaNegativa = 1.0 - acumuladorProbaPositiva;
+//	if(review.getSentiment() == 0){
+//
+//			for(; iteradorPalabras != vectorPalabras.end(); iteradorPalabras++){
+//
+//				string palabraActual = (*iteradorPalabras);
+//
+//				// Primero obtengo las palabras que apuntan a la palabra actual
+//
+//				Nodo* 		nodoActual 			= redNegativa->hayNodoConPalabra(palabraActual);
+//				Network* 	nodosQueMeApuntan 	= new Network(nodoActual->getNodosQueMeApuntan());
+//
+//				//  De las N palabras anteriores solo tomo las que estan apuntando a la palabra actual
+//
+//				list<Nodo* >* listaConPalabrasQueMeApuntan = new list<Nodo* >();
+//				nodosQueMeApuntan->obtenerNodosQueApuntanA(nodoActual, listaConPalabrasQueMeApuntan);
+//
+//				list<Nodo* >::iterator iterador = listaConPalabrasQueMeApuntan->begin();
+//
+//				Nodo* nodo;
+//				for(; iterador != listaConPalabrasQueMeApuntan->end(); iterador++){
+//					nodo = (*iterador);
+//					vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+//					maxSize = nodo->getNodosQueApunto()->size();
+//					index = 0;
+//
+//					for(unsigned int j = 1; j < cantidadDePalabrasAnterioresRevisadas; j++){
+//						nodo = (*iterador);
+//						vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+//						if( maxSize < nodo->getNodosQueApunto()->size()){
+//							maxSize = nodo->getNodosQueApunto()->size();
+//							index = j;
+//						}
+//					}
+//				}
+//
+//
+//				// Ahora voy a hacer el join de todos los nodos con todas las palabras anteriores
+//				// para ver a que palabras en comun apuntan
+//
+//				list<Nodo* >::iterator iteradorNodos = vectorDeNodos[index]->getListaNodos()->begin();
+//
+//				for(; iteradorNodos != vectorDeNodos[index]->getListaNodos()->end(); iteradorNodos++){
+//
+//					string palabraNodo = (*iteradorNodos)->getPalabra();
+//					for(unsigned int l = 0; l < listaConPalabrasQueMeApuntan->size(); l++){
+//						if(l != index ){
+//							if(vectorDeNodos[l]->hayNodoConPalabra(palabraNodo)){
+//								cantidadDeApuntadas++;
+//							}
+//						}
+//					}
+//				}
+//
+//				if(cantidadDeApuntadas == 0){
+//					cantidadDeApuntadas = 1;
+//				}
+//				acumuladorProbaNegativa = acumuladorProbaNegativa * (1.0 / cantidadDeApuntadas);
+//
+//				palabrasAnteriores.push_back(palabraActual);
+//				if(cantidadDePalabrasAnterioresRevisadas < cantidadDePalabrasAnteriores){
+//					cantidadDePalabrasAnterioresRevisadas++;
+//					palabrasAnteriores.erase(palabrasAnteriores.begin());
+//				}
+//			}
+//		}
 
 
 
@@ -190,6 +326,14 @@ bool PredictorRedBayesiana::predecir(Review& review, numeroReal * probabilidadPo
 //	if ( ( (probaReviewPositiva >= probaReviewNegativa) and (review.getSentiment() == 1) ) or ( (probaReviewPositiva < probaReviewNegativa) and (review.getSentiment() == 0) ) ) return true;
 //	else return false;
 
+
+	numeroReal probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	numeroReal probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	*probabilidadPostiva = probaReviewPositiva;
+
+	//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
+	if ( ( (probaReviewPositiva >= probaReviewNegativa) and (review.getSentiment() == 1) ) or ( (probaReviewPositiva < probaReviewNegativa) and (review.getSentiment() == 0) ) ) return true;
+	else return false;
 
 
 	return true;

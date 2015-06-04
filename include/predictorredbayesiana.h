@@ -14,7 +14,7 @@ using namespace std;
 class PredictorRedBayesiana{
 
 private:
-	Network* redPositva;
+	Network* redPositiva;
 	Network* redNegativa;
 	Parser*  parser;
 

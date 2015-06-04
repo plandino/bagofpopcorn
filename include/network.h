@@ -21,7 +21,9 @@ public:
 	void agregarPalabra(string palabra, string palabrasAnteriores);
 	list<Nodo* > * getListaNodos();
 	void obtenerNodosQueApuntanA(Nodo* nodo, list<Nodo* >* lista);
+	Nodo * hayNodoConPalabra(string palabra, unsigned int *posicion);
 	Nodo * hayNodoConPalabra(string palabra);
+
 
 };
 

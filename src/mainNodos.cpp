@@ -1,5 +1,6 @@
 #include "network.h"
 #include "parser.h"
+#include "predictorredbayesiana.h"
 
 //const string NOMBRE_ARCHIVO_LABELED_REVIEWS = "data/datain/labeledTrainData.tsv";
 
@@ -9,18 +10,20 @@ int main(int argc, char** argv){
 	Network * redNegativa = new Network();
 	Parser * parser = new Parser();
 
-	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 24997, true);
+	int desde = 0;
+	vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, desde, 4000, true);
 
 	vector<Review>::iterator iteradorReviews = reviews->begin();
-	unsigned int i = 0;
+	unsigned int i = desde;
 	for ( ; iteradorReviews != reviews->end() ; iteradorReviews++){
 
 		Review reviewAPredecir = (*iteradorReviews);
-		if (i == 0) cout << "La primer review a parsear es " << reviewAPredecir.getId() << endl;
+		if (i == desde) cout << "La primer review para crear el grafo es " << reviewAPredecir.getId() << endl;
 		vector<string> palabras = reviewAPredecir.getPalabras();
 
 		vector<string>::iterator iteradorPalabras = palabras.begin();
 		string palabraAnterior = "";
+		vector<string> palabrasAnteriores;
 
 		if(reviewAPredecir.getSentiment()){
 			for ( ; iteradorPalabras != palabras.end() ; iteradorPalabras++){
@@ -36,6 +39,7 @@ int main(int argc, char** argv){
 			}
 		}
 		i++;
+		if( (i+1-desde) % 1000 == 0 ) cout <<  "Se creo el grafo con " << (i+1-desde) << " reviews, de " << 25000-desde << endl;
 
 	}
 	list<Nodo* > * listaDeNodosPositiva = redPositiva->getListaNodos();
@@ -90,6 +94,9 @@ int main(int argc, char** argv){
 	}
 
 	cout << " termine" << endl;
+
+	PredictorRedBayesiana* predictorRedBayesiana = new PredictorRedBayesiana(redPositiva, redNegativa, parser);
+	predictorRedBayesiana->realizarPrediccion(1);
 
 	delete redPositiva;
 	delete redNegativa;
