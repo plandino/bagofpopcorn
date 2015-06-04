@@ -3,11 +3,11 @@
 #include "perceptron.h"
 
 int main(int argc, char* argv[]){
-	bool sinStopWords = true;
+	const bool biWord = true;
+	const bool sinStopWords = true;
 	Parser* parserSinStopWords = new Parser(sinStopWords);
 	Parser* parserConStopWords = new Parser(not sinStopWords);
 
-	const bool biWord = true;
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
 	parserSinStopWords->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
-//	SI USAMOS EL BIWORD HAY QUE CAMBIARLO ESTO!!
+//	WARNING: SI USAMOS EL BIWORD HAY QUE CAMBIARLO ESTO!!
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
 
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrPerceptron ) {
 		cout << "Empezando Perceptron" << endl;
-		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true, true);
+		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true);
 		tron->entrenar(biWord);
 		tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
 		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);

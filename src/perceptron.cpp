@@ -2,11 +2,10 @@
 #include <iomanip>
 
 
-Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag, bool usaBigramas)  {
+Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag)  {
 	this->bag = bag;
 	this->parser = parser;
 	this->usaBag = usaBag;
-	this->usaBigramas = usaBigramas;
 	this->pesos = new double[VEC_SIZE];
 	//Inicializo el vector de pesos en 0.
 	for (int i=0; i < VEC_SIZE; i++) {
