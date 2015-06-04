@@ -95,6 +95,17 @@ bool PredictorRedBayesiana::predecir(Review& review, numeroReal * probabilidadPo
 
 			string palabraActual = (*iteradorPalabras);
 
+			// Primero obtengo las palabras que apuntan a la palabra actual
+
+			Nodo* 		nodoActual 			= redPositva->hayNodoConPalabra(palabraActual);
+			Network* 	nodosQueMeApuntan 	= nodoActual->getNodosQueMeApuntan();
+
+			// Ahora, de las N palabras anteriores, quiero quedarme con X palabras anteriores que me apuntan
+			// con X <= N ( De las N palabras anteriores solo tomo las que estan apuntando a la palabra actual)
+
+			vector<string>* palabrasQueMeApuntan = new vector<string>();
+//			if()
+
 			// Con esto obtengo todos los nodos a los que apunto con mis palabras anteriores
 			Nodo* nodo;
 			for(int i = 0; i < cantidadDePalabrasAnterioresRevisadas; i++){
