@@ -253,7 +253,7 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 			Review review(id, palabrasReview, sentimiento);
 			reviews->push_back(review);
 			i++;
-			if (i == 25000) cout << "Ultima review a parsear para predecir: " << review.getId() << endl;
+			if (i == 20000) cout << "Ultima review a parsear para predecir: " << review.getId() << endl;
 		}
 	}
 	cout << "Se terminaron de parsear las reviews para predecir." << endl << endl;

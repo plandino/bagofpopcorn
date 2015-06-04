@@ -11,7 +11,7 @@ const string NOMBRE_ARCHIVO_STOPWORDS2 = "data/datain/stopwordsdictionary2.txt";
 const string NOMBRE_ARCHIVO_STOPWORDS_PYHTON = "data/datain/stopwords_english_python_nltk.txt";
 
 const string NOMBRE_ARCHIVO_LABELED_REVIEWS = "data/datain/labeledTrainData.tsv";
-const string NOMBRE_ARCHIVO_TEST_DATA = "data/datain/testData.tsv";
+const string NOMBRE_ARCHIVO_TEST_DATA = "data/datain/cortado.tsv";
 
 const string NOMBRE_ARCHIVO_CSV_PROBABILIDADES = "data/dataout/csvProbas.csv";
 const string NOMBRE_ARCHIVO_CSV_PONDERADO = "data/dataout/csvProbasPONDERADO.csv";
@@ -20,7 +20,7 @@ const string NOMBRE_ARCHIVO_CSV_MASMENOSUNO = "data/dataout/csvProbasMASMENOSUNO
 const string NOMBRE_ARCHIVO_CSV_TRON = "data/dataout/csvProbasPERCEPTRON.csv";
 const string NOMBRE_ARCHIVO_CSV_CEROSYUNO = "data/dataout/csvCerosYUnos.csv";
 
-const int CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO = 25000;
+const int CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO = 20000;
 
 class Parser {
 
