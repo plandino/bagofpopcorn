@@ -9,7 +9,7 @@ PredictorRedBayesiana::PredictorRedBayesiana(Network* redPositiva, Network* redN
 PredictorRedBayesiana::~PredictorRedBayesiana() {
 }
 
-void PredictorRedBayesiana::realizarPrediccion() {
+void PredictorRedBayesiana::realizarPrediccion(int cantidadDePalabrasAnteriores) {
 	// Reviews a predecir
 	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
 //	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
@@ -32,7 +32,7 @@ void PredictorRedBayesiana::realizarPrediccion() {
 		if (i == 0) cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
 
 		// Si predigo bien sumo uno al contador
-		if ( predecir(reviewAPredecir, &probabilidadPositiva) ) contador++;
+		if ( predecir(reviewAPredecir, &probabilidadPositiva, cantidadDePalabrasAnteriores) ) contador++;
 
 //		vectorIds.push_back(reviewAPredecir.getId());
 //		vectorProbabilidades.push_back(probabilidadPositiva);
@@ -49,13 +49,23 @@ void PredictorRedBayesiana::realizarPrediccion() {
 	delete reviewsAPredecir;
 }
 
-bool PredictorRedBayesiana::predecir(Review& review, numeroReal * probabilidadPostiva) {
+bool PredictorRedBayesiana::predecir(Review& review, numeroReal * probabilidadPostiva, int cantidadDePalabrasAnteriores) {
 
 	// Declaro probabilidades inciales
 	numeroReal acumuladorProbaPositiva = 1.0;
 	numeroReal acumuladorProbaNegativa = 1.0;
 
 	numeroReal probabilidad;
+
+
+	// Declaro vectores y cosas
+	int cantidadDePalabrasAnterioresRevisadas = 0;
+	unsigned int maxSize;
+	unsigned int index;
+	string palabraActual;
+	unsigned int cantidadDeApuntadas = 0;
+	vector<Network* > vectorDeNodos;
+	vector<string> palabrasAnteriores;
 
 	// Obtengo las palabras de la review
 	vector<string> vectorPalabras = review.getPalabras();
@@ -64,18 +74,83 @@ bool PredictorRedBayesiana::predecir(Review& review, numeroReal * probabilidadPo
 	vector<string>::iterator iteradorPalabras = vectorPalabras.begin();
 	if(vectorPalabras.size() >= 2){
 		string palabraAnterior = (*iteradorPalabras);
+		palabrasAnteriores.push_back(palabraAnterior);
+		cantidadDePalabrasAnterioresRevisadas++;
 		iteradorPalabras++;
 	}
 
-	if(review.getSentiment()){
-		for ( ; iteradorPalabras != vectorPalabras.end() ; iteradorPalabras++){
-			string palabra = (*iteradorPalabras);
-			Nodo* nodo = redPositva->hayNodoConPalabra(palabra);
-			list<Nodo* >* listaDeNodosQueMeApuntan = nodo->getNodosQueMeApuntan();
-			probabilidad = 1.0 / listaDeNodosQueMeApuntan->size();
+//	if(review.getSentiment()){
+//		for ( ; iteradorPalabras != vectorPalabras.end() ; iteradorPalabras++){
+//			string palabra = (*iteradorPalabras);
+////			vectorDeNodos.push_back(redPositva->hayNodoConPalabra(palabra));
+//			Nodo* nodo = redPositva->hayNodoConPalabra(palabra);
+//			list<Nodo* >* listaDeNodosQueMeApuntan = nodo->getNodosQueMeApuntan();
+//			probabilidad = 1.0 / listaDeNodosQueMeApuntan->size();
+//		}
+//	}
 
+	if(review.getSentiment() == 1){
+
+		for(; iteradorPalabras != vectorPalabras.end(); iteradorPalabras++){
+
+			string palabraActual = (*iteradorPalabras);
+
+			// Con esto obtengo todos los nodos a los que apunto con mis palabras anteriores
+			Nodo* nodo;
+			for(int i = 0; i < cantidadDePalabrasAnterioresRevisadas; i++){
+				nodo = redPositva->hayNodoConPalabra(palabrasAnteriores[0]);
+				vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+				maxSize = nodo->getNodosQueApunto()->size();
+				index = 0;
+
+				for(int j = 1; j < cantidadDePalabrasAnterioresRevisadas; j++){
+					nodo = redPositva->hayNodoConPalabra(palabrasAnteriores[j]);
+					vectorDeNodos.push_back(new Network(nodo->getNodosQueApunto()));
+					if( maxSize < nodo->getNodosQueApunto()->size()){
+						maxSize = nodo->getNodosQueApunto()->size();
+						index = j;
+					}
+				}
+			}
+
+
+			// Primero me fijo si la palabra esta en la lista con mayor cantidad de nodos
+			if(vectorDeNodos[index]->hayNodoConPalabra(palabraActual)){
+				// Ahora voy a hacer el join de todos los nodos con todas las palabras anteriores
+				// para ver a que palabras en comun apuntan
+
+				list<Nodo* >::iterator iteradorNodos = vectorDeNodos[index]->getListaNodos()->begin();
+
+				for(; iteradorNodos != vectorDeNodos[index]->getListaNodos()->end(); iteradorNodos++){
+
+					string palabraNodo = (*iteradorNodos)->getPalabra();
+					for(unsigned int l = 0; l < vectorDeNodos[l]->getListaNodos()->size(); l++){
+						if(l != index ){
+							if(vectorDeNodos[l]->hayNodoConPalabra(palabraNodo)){
+								cantidadDeApuntadas++;
+							}
+						}
+					}
+				}
+
+				probabilidad = 1.0 / cantidadDeApuntadas;
+			} else {
+				probabilidad = probabilidad * 1.0;
+			}
+
+			palabrasAnteriores.push_back(palabraActual);
+			if(cantidadDePalabrasAnterioresRevisadas < cantidadDePalabrasAnteriores){
+				cantidadDePalabrasAnterioresRevisadas++;
+				palabrasAnteriores.erase(palabrasAnteriores.begin());
+			}
 		}
 	}
+
+
+
+	// Me fijo si mi palabra esta entre los nodos en comun
+
+	// Luego calculo la probabilidad de que una palabra este en todo ese nodo
 
 
 //		if ( bag->estaEnBag(palabra) ){
