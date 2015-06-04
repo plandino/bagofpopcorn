@@ -46,7 +46,7 @@ public:
 	void agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos);
 
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
-	BagOfWords* leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo);
+	void leerCsvProbas(string nombreArchivo, vector<numeroReal>& vectorProbabilidades, vector<string>& vectorIds);
 };
 
 #endif /* PARSER_H_ */

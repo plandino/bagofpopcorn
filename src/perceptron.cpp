@@ -13,7 +13,7 @@ Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag)  {
 	}
 	numeroPasadas = 80;
 	toleranciaErrores = 0;
-	learningRate = 0.05;
+	learningRate = 0.038;
 }
 
 
