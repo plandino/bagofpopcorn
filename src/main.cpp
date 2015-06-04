@@ -74,16 +74,16 @@ int main(int argc, char* argv[]){
 
 	vector<string> vectorIdsTron;
 	vector<numeroReal> vectorProbabilidadesTron;
+	vector<Review>* reviewsAPredecir;
 
 	if ( correrPerceptron ) {
 		cout << "Empezando Perceptron" << endl;
 		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true);
 		tron->entrenar(biWord);
-		vector<Review>* reviewsAPredecir = tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
+		reviewsAPredecir = tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
 		parserConStopWords->agregarAlCSV(reviewsAPredecir, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON_CON_POSTA);
 		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
-		delete reviewsAPredecir;
 	}
 
 
@@ -104,8 +104,10 @@ int main(int argc, char* argv[]){
 				idsFinales.push_back(vectorIdsMasMenosUno[i]);
 			}
 			parserSinStopWords->agregarAlCSV(idsFinales, probabilidadesFinales, NOMBRE_ARCHIVO_CSV_PONDERADO);
+			parserSinStopWords->agregarAlCSV(reviewsAPredecir,probabilidadesFinales,NOMBRE_ARCHIVO_CSV_PONDERADO_CON_POSTA);
 		}
 	}
+	delete reviewsAPredecir;
 
 
 	delete parserSinStopWords;

@@ -23,6 +23,7 @@ const string NOMBRE_ARCHIVO_CSV_CEROSYUNO = "data/dataout/csvCerosYUnos.csv";
 const string NOMBRE_ARCHIVO_CSV_MASMENOSUNO_CON_POSTA = "data/dataout/csvProbasMASMENOSUNOconPosta.csv";
 const string NOMBRE_ARCHIVO_CSV_BAYES_CON_POSTA = "data/dataout/csvProbasBAYESconPosta.csv";
 const string NOMBRE_ARCHIVO_CSV_TRON_CON_POSTA = "data/dataout/csvProbasPERCEPTRONconPosta.csv";
+const string NOMBRE_ARCHIVO_CSV_PONDERADO_CON_POSTA = "data/dataout/csvProbasPONDERADOconPosta.csv";
 
 const int CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO = 20000;
 
