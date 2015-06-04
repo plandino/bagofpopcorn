@@ -103,7 +103,7 @@ vector<Review>* MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser,
 	vector<Review>* reviewsAPredecir;
 	if (esPrueba) probar(bag, parser, pesar, biWord);
 	else {
-		reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
+		reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, true, biWord);
 		double paso = 0.001;
 		double potencia = 10.0;
 		double k = 0.7;

@@ -112,7 +112,7 @@ vector<Review>* Perceptron::predecir(std::vector<string>& ids, std::vector<numer
 	double dotp;
 	vector<prediccion> preds;
 
-	vector<Review>* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
+	vector<Review>* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, true, biWord);
 	cout << "\nTesting online\nErrors\t\tAverage\t\tNr. Samples\tSince Start" << endl;
 	vector<Review>::iterator iterador = reviewsAPredecir->begin();
 
