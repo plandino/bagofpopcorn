@@ -4,6 +4,8 @@
 #include <string>
 #include <list>
 #include <iostream>
+//#include <queue>          // std::queue
+
 #include "network.h"
 #include "parser.h"
 
@@ -19,8 +21,8 @@ private:
 public:
 	PredictorRedBayesiana(Network * redPositva, Network* redNegativa, Parser * parser);
 	~PredictorRedBayesiana();
-	void realizarPrediccion();
-	bool predecir(Review& reviewAPRedecir, numeroReal * probabilidadPostiva);
+	void realizarPrediccion(int cantidadDePalabrasAnteriores);
+	bool predecir(Review& reviewAPRedecir, numeroReal * probabilidadPostiva, int cantidadDePalabrasAnteriores);
 
 };
 

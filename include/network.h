@@ -10,11 +10,13 @@ class Network{
 
 private:
 	list<Nodo* > * listaNodos;
+	bool networkPropia;
 
 
 public:
 
 	Network();
+	Network(list<Nodo* >* listaDeNodos);
 	~Network();
 	void agregarNodo(Nodo* nodo);
 	void agregarPalabra(string palabra, string palabrasAnteriores);

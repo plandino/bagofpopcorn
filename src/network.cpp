@@ -1,11 +1,20 @@
 #include "network.h"
 
 Network::Network(){
+	networkPropia = true;
 	this->listaNodos = new list<Nodo* >();
 }
 
+Network::Network(list<Nodo*>* listaDeNodos) {
+	networkPropia = false;
+	this->listaNodos = listaDeNodos;
+}
+
 Network::~Network(){
-	delete listaNodos;
+	if(networkPropia){
+		delete listaNodos;
+	}
+
 }
 
 void Network::agregarNodo(Nodo* nodo) {
@@ -25,19 +34,32 @@ Nodo * Network::hayNodoConPalabra(string palabra) {
 }
 
 void Network::agregarPalabra(string palabra, string palabrasAnteriores) {
+	// Encuentro los nodos de la palabra actual y de la palabra anterior
 	Nodo * nodoConPalabra = hayNodoConPalabra(palabra);
+	Nodo * nodoConPalabraAnterior = hayNodoConPalabra(palabrasAnteriores);
+
+	// Si no hay un nodo con la palabra anterior, agrego un nodo con esa palabra
 	if(nodoConPalabra == NULL){
-		Nodo * nodo = new Nodo(palabra);
-		agregarNodo(nodo);
-		Nodo * nodoConPalabraAnterior = hayNodoConPalabra(palabrasAnteriores);
-		if( nodoConPalabraAnterior != NULL){
-			nodo->agregarNodoQueMeApunta(nodoConPalabraAnterior);
-		}
-	} else {
-		nodoConPalabra->agregarNodoQueMeApunta(hayNodoConPalabra(palabrasAnteriores));
+		nodoConPalabra = new Nodo(palabra);
+		agregarNodo(nodoConPalabra);
+//		if( nodoConPalabraAnterior != NULL){
+//			nodoConPalabra->agregarNodoQueMeApunta(nodoConPalabraAnterior);
+//		}
+//	} else {
+//		if(nodoConPalabraAnterior != NULL){
+//
+//		}
+	}
+
+	// Si hay un nodo con la palabra anterior hago las apuntaciones
+	if(nodoConPalabraAnterior != NULL){
+		nodoConPalabra->agregarNodoQueMeApunta(nodoConPalabraAnterior);
+		nodoConPalabraAnterior->apuntarANodo(nodoConPalabra);
 	}
 }
 
 list<Nodo* >* Network::getListaNodos() {
 	return listaNodos;
 }
+
+
