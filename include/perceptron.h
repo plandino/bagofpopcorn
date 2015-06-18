@@ -19,7 +19,7 @@ struct prediccion {
 class Perceptron {
 
     private:
-        double* pesos ; //TODO: Ver 2 ** 25, posiciones del vector
+        double* pesos;
         BagOfWords* bag;
         Parser* parser;
         double productoInterno(vector<string> features);
@@ -29,7 +29,7 @@ class Perceptron {
         bool usaBag;
     public:
         Perceptron(BagOfWords* bag, Parser* parser, bool usaBag);
-        double* entrenar(); //Devuelve el vector de pesos con los valores que resultan.
+        double* entrenar();
         void predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones);
         virtual ~Perceptron();
         void tirarACSV(const vector<prediccion>& predicciones);
