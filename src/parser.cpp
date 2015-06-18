@@ -31,16 +31,10 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 	vector<string> palabrasReview;
 	review.erase(0,2); // Elimino comillas y tab del comienzo
 	review.erase(review.length()-1, 1); // Elimino comillas del final
-//	replace(review.begin(), review.end(), '.', ' '); // Reemplazo los . por espacios
-//	replace(review.begin(), review.end(), '-', ' ');
-//	replace(review.begin(), review.end(), ',', ' ');
-//	replace(review.begin(), review.end(), '?', ' ');
-//	replace(review.begin(), review.end(), '!', ' ');
 	transform(review.begin(), review.end(), review.begin(), ::tolower);
 	istringstream iss(review);
 	string word;
 	bool anteriorEsSaltoDeLinea = false;
-//	char chars[] = "ºª!|\"@·#$%&¬/()='?¡¿[]^*ç`'\\{},;.:-_<>";
 	while(iss >> word) {
 		//Elimino los <br />
 		if (anteriorEsSaltoDeLinea){
@@ -80,15 +74,37 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 			string wordAAgregar = (*iterador);
 			if ( esStopWord(wordAAgregar) ) continue;
 			if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
-			if (agregar) bag->agregar(wordAAgregar, sentiment);
+			if ( agregar ) bag->agregar(wordAAgregar, sentiment);
 			palabrasReview.push_back(wordAAgregar);
+		}
+	}
+	unsigned int size = palabrasReview.size();
+	if (biWord){
+		for (unsigned int i = 0; i < size-1; i++){
+			string word1 = palabrasReview[i];
+			string word2 = palabrasReview[i+1];
+			string concat = word1 + " " + word2;
+			if (agregar) bag->agregar(concat, sentiment);
+			palabrasReview.push_back(concat);
+		}
+	}
+	if (triWord){
+		for (unsigned int i = 0; i < size-2; i++){
+			string word1 = palabrasReview[i];
+			string word2 = palabrasReview[i+1];
+			string word3 = palabrasReview[i+2];
+			string concat = word1 + " " + word2 + " " + word3;
+			if (agregar) bag->agregar(concat, sentiment);
+			palabrasReview.push_back(concat);
 		}
 	}
 	return palabrasReview;
 }
 
-BagOfWords* Parser::parsearReviews(string nombreArchivo) {
+BagOfWords* Parser::parsearReviews(string nombreArchivo, bool biWord, bool triWord) {
 	ifstream archivo(nombreArchivo.c_str());
+	this->biWord = biWord;
+	this->triWord = triWord;
 	if ( archivo.is_open() ){
 		string id, header;
 		int sentimiento;
@@ -165,25 +181,6 @@ BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
 	return bag;
 }
 
-BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo) {
-	ifstream archivo(nombreArchivo.c_str());
-	if ( archivo.is_open() ){
-		string word, header, linea;
-		int frecPos, frecNeg;
-		getline(archivo,header); // Leo el header
-		while ( getline(archivo,linea) ){ //Leo palabra y frecuencias
-			replace(linea.begin(), linea.end(), ',', ' ');
-			istringstream iss(linea);
-			iss >> frecNeg >> frecPos >> word;
-			bag->agregar(word, frecPos, frecNeg);
-		}
-	}
-	cout << "Se cargo el archivo de palabras y frecuencias generado en python." << endl;
-	archivo.close();
-	bag->crearVectorConProbabilidades();
-	return bag;
-}
-
 string Parser::eliminarURL(string word, bool &continuar) {
 	unsigned int length = word.length();
 	string wordSinURL = "";
@@ -207,7 +204,8 @@ vector<string> Parser::soloLetras(string word) {
 	unsigned int length = word.length();
 	vector<string> words;
 	for (unsigned int i = 0; i < length; i++){
-		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) /*or (word[i] == char(-61) ñ)*/ ) wordSoloLetras = wordSoloLetras + word[i];
+		//TODO: Ver lo de la ñ en algun momento
+		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) or (word[i] == 'ñ'/*(char)241 ñ*/) ) wordSoloLetras = wordSoloLetras + word[i];
 			else {
 				words.push_back(wordSoloLetras);
 				wordSoloLetras = "";
@@ -250,3 +248,19 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 	return reviews;
 }
 
+void Parser::leerCsvProbas(string nombreArchivo, vector<numeroReal>& vectorProbabilidades, vector<string>& vectorIds) {
+	ifstream archivo(nombreArchivo.c_str());
+	if ( archivo.is_open() ){
+		string header, linea, id;
+		double probabilidad;
+		getline(archivo,header); // Leo el header
+		while ( getline(archivo,linea) ){ //Leo id y probabilidad
+			replace(linea.begin(), linea.end(), ',', ' ');
+			istringstream iss(linea);
+			iss >> id >> probabilidad;
+			vectorProbabilidades.push_back(probabilidad);
+			vectorIds.push_back(id);
+		}
+	}
+	archivo.close();
+}

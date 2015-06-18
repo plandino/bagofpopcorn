@@ -3,35 +3,32 @@
 #include "perceptron.h"
 
 int main(int argc, char* argv[]){
-	bool sinStopWords = true;
+	const bool biWord = true;
+	const bool triWord = true;
+	const bool sinStopWords = true;
 	Parser* parserSinStopWords = new Parser(sinStopWords);
 	Parser* parserConStopWords = new Parser(not sinStopWords);
 
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
-	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS);
-	parserSinStopWords->generarTSV();
+	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, not triWord);
+	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, triWord);
+	parserConStopWords->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
+//	WARNING: SI USAMOS EL BIWORD HAY QUE CAMBIARLO ESTO!!
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
 
 
 
-//	Con esto genero el TSV desde el CSV de salida de python -> Solo sirve si se usan 15000 para entrenar y 10000 para predecir
-//	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeCSVPython("data/dataout/Bag_of_Words_model.csv");
-//	parser->generarTSV();
-
-//	Con esto leo frecuencias desde el TSV generado a partir del CSV de python -> Solo sirve si se usan 15000 para entrenar y 10000 para predecir
-//	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV("data/dataout/frecuencias_python.tsv");
-
-
-
 //	Para facilitar el activar o desactivar de correr uno y/u otro algoritmo
-	bool correrMasMenosUno = true;
+	bool correrMasMenosUno = false;
+	bool levantarCsvMasMenosUno = true;
 	bool correrBayes = true;
+	bool levantarCsvBayes = false;
 	bool correrPerceptron = true;
+	bool levantarCsvPerceptron = false;
 	bool ponderar = true;
 
 //	PARA MASMENOSUNO:
@@ -53,6 +50,9 @@ int main(int argc, char* argv[]){
 		parserSinStopWords->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
+	if (levantarCsvMasMenosUno){
+		parserSinStopWords->leerCsvProbas(NOMBRE_ARCHIVO_CSV_MASMENOSUNO, vectorProbabilidadesMasMenosUno, vectorIdsMasMenosUno);
+	}
 
 
 	vector<string> vectorIdsBayes;
@@ -64,27 +64,31 @@ int main(int argc, char* argv[]){
 		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
 	}
+	if (levantarCsvBayes){
+		parserSinStopWords->leerCsvProbas(NOMBRE_ARCHIVO_CSV_BAYES, vectorProbabilidadesBayes, vectorIdsBayes);
+	}
 
 
 	vector<string> vectorIdsTron;
 	vector<numeroReal> vectorProbabilidadesTron;
 
 	if ( correrPerceptron ) {
-		cout << "Empezando Perceptron" << endl;
-		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, false, true);
+		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true);
 		tron->entrenar();
 		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
 		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
 	}
-
+	if (levantarCsvPerceptron){
+		parserSinStopWords->leerCsvProbas(NOMBRE_ARCHIVO_CSV_TRON, vectorProbabilidadesTron, vectorIdsTron);
+	}
 
 
 	if (ponderar) {
 		vector<numeroReal> probabilidadesFinales;
 		vector<string> idsFinales;
-		const double pesoTron = 0.9;
-		const double pesoBayes = 0.07;
+		const double pesoTron = 0.84;
+		const double pesoBayes = 0.0;
 		if ( ( vectorProbabilidadesMasMenosUno.size() == vectorIdsBayes.size() ) and ( vectorIdsBayes.size() == vectorIdsTron.size() ) ){
 			for (unsigned int i = 0; i < vectorProbabilidadesMasMenosUno.size(); i++){
 				numeroReal probabilidadFinal = ( (vectorProbabilidadesMasMenosUno[i] * (1-pesoTron-pesoBayes)) + (vectorProbabilidadesBayes[i] * pesoBayes) + (vectorProbabilidadesTron[i] * pesoTron) );

@@ -32,12 +32,14 @@ private:
 	vector<string> soloLetras(string word);
 	map<string, int> stopWords;
 	BagOfWords* bag;
+	bool biWord;
+	bool triWord;
 
 public:
 	Parser(bool sinStopWords);
 	virtual ~Parser();
 
-	BagOfWords* parsearReviews(string nombreArchivo);
+	BagOfWords* parsearReviews(string nombreArchivo, bool biWord, bool triWord);
 	vector<Review>* parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento);
 
 
@@ -46,7 +48,7 @@ public:
 	void agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos);
 
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
-	BagOfWords* leerPalabrasYFrecuenciasDesdeCSVPython(string nombreArchivo);
+	void leerCsvProbas(string nombreArchivo, vector<numeroReal>& vectorProbabilidades, vector<string>& vectorIds);
 };
 
 #endif /* PARSER_H_ */

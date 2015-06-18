@@ -1,7 +1,7 @@
 #include "bagofwords.h"
 
 BagOfWords::BagOfWords() {
-	this->bag = new map<string,int>();
+	this->bag = new unordered_map<string,int>();
 	this->frecuenciasPositivas = new vector<int>();
 	this->frecuenciasNegativas = new vector<int>();
 	this->pesosPositivos = new vector<int>();
@@ -165,8 +165,8 @@ void BagOfWords::crearVectorConProbabilidades() {
 	for(int i = 0; i < lenght; i++){
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
-		probabilidadesPositivasTrad->push_back(frecPositiva / frecuenciaTodaLaBagPos); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
-		probabilidadesNegativasTrad->push_back(frecNegativa / frecuenciaTodaLaBagNeg); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
+		probabilidadesPositivasTrad->push_back(log(frecPositiva / frecuenciaTodaLaBagPos)); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
+		probabilidadesNegativasTrad->push_back(log(frecNegativa / frecuenciaTodaLaBagNeg)); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
 	}
 
 }
@@ -208,6 +208,7 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 				}
 			}
 		}
+		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " de los positivos." << endl;
 	}
 
 	vector<int>::iterator iteradorNeg = frecuenciasNegativas->begin();
@@ -227,5 +228,6 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 				}
 			}
 		}
+		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " de los negativos." << endl;
 	}
 }

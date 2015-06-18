@@ -43,8 +43,8 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& 
 
 bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& probabilidadPositiva) {
 	int puntuacion = 0;
-	numeroReal acumuladorProbaPositiva = 1.0;
-	numeroReal acumuladorProbaNegativa = 1.0;
+	numeroReal acumuladorProbaPositiva = 0.0;
+	numeroReal acumuladorProbaNegativa = 0.0;
 	vector<string> palabras = review.getPalabras();
 
 	bool inicio = true;
@@ -56,15 +56,24 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& proba
 			numeroReal probaNegativa = bag->getProbabilidadesNegativasTradicionales() -> at( bag->posicionEnBag(palabra));
 
 			if( (probaPositiva == 0) or (probaNegativa == 0)) cout << "QUILOMBOOOO" << endl;
-			acumuladorProbaNegativa = acumuladorProbaNegativa * probaNegativa;
-			acumuladorProbaPositiva = acumuladorProbaPositiva * probaPositiva;
+			acumuladorProbaNegativa = acumuladorProbaNegativa + probaNegativa;
+			acumuladorProbaPositiva = acumuladorProbaPositiva + probaPositiva;
 		}
 	}
+	acumuladorProbaPositiva = exp(acumuladorProbaPositiva);
+	acumuladorProbaNegativa = exp(acumuladorProbaNegativa);
 	//acumuladorProbaPositiva = acumuladorProbaPositiva;
 	//acumuladorProbaNegativa = acumuladorProbaNegativa;
+	numeroReal probaReviewPositiva;
+	numeroReal probaReviewNegativa;
 
-	numeroReal probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
-	numeroReal probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	if (acumuladorProbaPositiva != 0 or acumuladorProbaNegativa != 0) {
+		probaReviewPositiva = acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaPositiva / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+		probaReviewNegativa = acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa); //acumuladorProbaNegativa / (acumuladorProbaPositiva + acumuladorProbaNegativa);
+	} else {
+		probaReviewPositiva = 0.5;
+		probaReviewNegativa = 0.5;
+	}
 //	float v1 = rand() % 100;
 //	if(v1 < 30)
 //	{

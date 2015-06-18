@@ -36,3 +36,6 @@
 
 #Data Out
 /data/dataout
+
+#Settings folder
+/.settings
