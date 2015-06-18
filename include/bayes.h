@@ -11,7 +11,7 @@ private:
 public:
 	Bayes();
 	~Bayes();
-	void realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool biWord);
+	void realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades);
 };
 
 #endif /*BAYES_H_*/

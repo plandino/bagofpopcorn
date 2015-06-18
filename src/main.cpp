@@ -4,6 +4,7 @@
 
 int main(int argc, char* argv[]){
 	const bool biWord = true;
+	const bool triWord = true;
 	const bool sinStopWords = true;
 	Parser* parserSinStopWords = new Parser(sinStopWords);
 	Parser* parserConStopWords = new Parser(not sinStopWords);
@@ -11,9 +12,9 @@ int main(int argc, char* argv[]){
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
-	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord);
-	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord);
-	parserSinStopWords->generarTSV();
+	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, not triWord);
+	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, triWord);
+	parserConStopWords->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
 //	WARNING: SI USAMOS EL BIWORD HAY QUE CAMBIARLO ESTO!!
@@ -24,8 +25,8 @@ int main(int argc, char* argv[]){
 //	Para facilitar el activar o desactivar de correr uno y/u otro algoritmo
 	bool correrMasMenosUno = false;
 	bool levantarCsvMasMenosUno = true;
-	bool correrBayes = false;
-	bool levantarCsvBayes = true;
+	bool correrBayes = true;
+	bool levantarCsvBayes = false;
 	bool correrPerceptron = true;
 	bool levantarCsvPerceptron = false;
 	bool ponderar = true;
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba, biWord);
+		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
 		parserSinStopWords->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
@@ -59,7 +60,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
-		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes, biWord);
+		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes);
 		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
 	}
@@ -73,8 +74,8 @@ int main(int argc, char* argv[]){
 
 	if ( correrPerceptron ) {
 		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true);
-		tron->entrenar(biWord);
-		tron->predecir(vectorIdsTron, vectorProbabilidadesTron, biWord);
+		tron->entrenar();
+		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
 		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
 		delete tron;
 	}

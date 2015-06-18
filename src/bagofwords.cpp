@@ -165,8 +165,8 @@ void BagOfWords::crearVectorConProbabilidades() {
 	for(int i = 0; i < lenght; i++){
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
-		probabilidadesPositivasTrad->push_back(frecPositiva / frecuenciaTodaLaBagPos); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
-		probabilidadesNegativasTrad->push_back(frecNegativa / frecuenciaTodaLaBagNeg); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
+		probabilidadesPositivasTrad->push_back(log(frecPositiva / frecuenciaTodaLaBagPos)); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
+		probabilidadesNegativasTrad->push_back(log(frecNegativa / frecuenciaTodaLaBagNeg)); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
 	}
 
 }

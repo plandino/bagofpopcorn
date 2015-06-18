@@ -8,9 +8,9 @@ Bayes::~Bayes(){
 
 }
 
-void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool biWord) {
+void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades) {
 //	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false, biWord);
+	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 	float k = 0.7;
 //	ofstream archivoSalida("data/dataout/distintosKFino.txt");
 //	int resultadoMayor = 0;
@@ -43,8 +43,8 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& 
 
 bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& probabilidadPositiva) {
 	int puntuacion = 0;
-	numeroReal acumuladorProbaPositiva = 1.0;
-	numeroReal acumuladorProbaNegativa = 1.0;
+	numeroReal acumuladorProbaPositiva = 0.0;
+	numeroReal acumuladorProbaNegativa = 0.0;
 	vector<string> palabras = review.getPalabras();
 
 	bool inicio = true;
@@ -56,10 +56,12 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, float k, numeroReal& proba
 			numeroReal probaNegativa = bag->getProbabilidadesNegativasTradicionales() -> at( bag->posicionEnBag(palabra));
 
 			if( (probaPositiva == 0) or (probaNegativa == 0)) cout << "QUILOMBOOOO" << endl;
-			acumuladorProbaNegativa = acumuladorProbaNegativa * probaNegativa;
-			acumuladorProbaPositiva = acumuladorProbaPositiva * probaPositiva;
+			acumuladorProbaNegativa = acumuladorProbaNegativa + probaNegativa;
+			acumuladorProbaPositiva = acumuladorProbaPositiva + probaPositiva;
 		}
 	}
+	acumuladorProbaPositiva = exp(acumuladorProbaPositiva);
+	acumuladorProbaNegativa = exp(acumuladorProbaNegativa);
 	//acumuladorProbaPositiva = acumuladorProbaPositiva;
 	//acumuladorProbaNegativa = acumuladorProbaNegativa;
 	numeroReal probaReviewPositiva;
