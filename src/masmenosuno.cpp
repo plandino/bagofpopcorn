@@ -1,4 +1,3 @@
-
 #include "masmenosuno.h"
 
 MasMenosUno::MasMenosUno() {
@@ -23,7 +22,7 @@ int MasMenosUno::iterarPorReviews(float k, vector<Review>* reviewsAPredecir, Bag
 		if ( contar and ( ( (probabilidadPositiva > 0.5) and (reviewAPredecir.getSentiment() == 1) )
 						or ( (probabilidadPositiva < 0.5) and (reviewAPredecir.getSentiment() == 0) ) ) ) contador++;
 		if (i == 0)	cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
-		if ((i + 1) % 1000 == 0) cout << "Ya se predijeron " << (i + 1) << " reviews de " << reviewsAPredecir->size() << endl;
+		if ((i + 1) % 5000 == 0) cout << "Ya se predijeron " << (i + 1) << " reviews de " << reviewsAPredecir->size() << endl;
 		i++;
 		if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
 	}
@@ -108,9 +107,9 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<str
 		double k = 0.7;
 
 		if (pesar){
-			cout << "Pesando bag..." << endl;
+			cout << "Pesando bag..." << endl << endl;
 			bag->pesarBag(paso,potencia,false);
-			cout << "Pesaje terminado" << endl;
+			cout << endl << "Pesaje terminado" << endl << endl;
 		}
 		iterarPorReviews(k, reviewsAPredecir, bag, vectorIds, vectorProbabilidades, false);
 

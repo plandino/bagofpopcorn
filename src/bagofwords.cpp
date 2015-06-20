@@ -28,14 +28,18 @@ BagOfWords::~BagOfWords() {
 	delete this->words;
 }
 
-// Agrega una nueva key al bag, mismo caso que bow simple
+/*
+ *  Agrega una key al bag.
+ *  Si ya se encuentra en la bag, aumenta las frecuencias dependiendo de su sentiment.
+ *  En caso contrario, ademas la agrega al vector de palabras y actualiza los vectores de pesos.
+ */
 void BagOfWords::agregar(string key, int sentiment) {
-	if ( this->estaEnBag(key) ){
+	if ( this->estaEnBag(key) ) {
 		if (sentiment == 0) this->frecuenciasNegativas->at( this->bag->at(key) ) += 1;
 			else this->frecuenciasPositivas->at( this->bag->at(key) ) += 1;
 	} else {
 		bag->insert(pair<string, int>(key, contador));
-		if (sentiment == 0){
+		if (sentiment == 0) {
 			this->frecuenciasPositivas->push_back(0);
 			this->frecuenciasNegativas->push_back(1);
 		} else {
@@ -49,8 +53,10 @@ void BagOfWords::agregar(string key, int sentiment) {
 	}
 }
 
-// Agrega una nueva key al bag, con una frecuencia positiva y otra negativa.
-// Sirve pàra cuando se levantan las palabras directamente desde el TSV.
+/*
+ *  Agrega una nueva key al bag, con una frecuencia positiva y otra negativa.
+ *  Sirve para cuando se levantan las palabras directamente desde el TSV.
+ */
 void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	bag->insert(pair<string, int>(key, contador));
 	this->frecuenciasNegativas->push_back(frecNeg);
@@ -61,26 +67,34 @@ void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	contador++;
 }
 
-// Devuelve la frecuencia con la que aparece una key
+/*
+ *  Devuelve la frecuencia con la que aparece una key.
+ */
 int BagOfWords::frecuencia(string key, int sentiment) {
-	if ( this->estaEnBag(key) ){
+	if ( this->estaEnBag(key) ) {
 		if (sentiment == 0) return this->frecuenciasNegativas->at( this->bag->at(key) );
 			else return this->frecuenciasPositivas->at( this->bag->at(key) );
 	} else return 0;
 }
 
-// Devuelve true si la key esta en el bag
+/*
+ *  Devuelve true si la key esta en el bag.
+ */
 bool BagOfWords::estaEnBag(string key) {
 	return (this->bag->count(key) > 0);
 }
 
-// Devuelve la posicion del vector de frecuencias en la que se encuentra la key
+/*
+ *  Devuelve la posicion del vector de frecuencias asginado para la key.
+ */
 int BagOfWords::posicionEnBag(string key) {
 	if ( estaEnBag(key) ) return bag->at(key);
 		else return -1;
 }
 
-// Devuelve el vector con las frecuencias
+/*
+ *  Devuelve el vector con las frecuencias dependiendo del sentiment que se requiera.
+ */
 vector<int>* BagOfWords::getFrecuencias(int sentiment) {
 	if (sentiment == 0) return this->frecuenciasNegativas;
 		else return this->frecuenciasPositivas;
@@ -99,30 +113,23 @@ vector<string>* BagOfWords::getWords() {
 }
 
 int BagOfWords::cantidadDePalabrasNegativas() {
-
 	return (bag->size() - this->cantidadDePalabrasPositivas() - this->cantidadDePalabrasConFrecuenciaIgualPosyNeg());
 }
 
 int BagOfWords::cantidadDePalabrasPositivas() {
-
 	int contadorPositivas = 0;
-	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++)
-	{
-		if((*frecuenciasNegativas)[i] < (*frecuenciasPositivas)[i])
-		{
-					contadorPositivas++;
+	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++) {
+		if((*frecuenciasNegativas)[i] < (*frecuenciasPositivas)[i]) {
+			contadorPositivas++;
 		}
 	}
 	return contadorPositivas;
 }
 
 int BagOfWords::cantidadDePalabrasConFrecuenciaIgualPosyNeg() {
-
 	int contadorIguales = 0;
-	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++)
-	{
-		if((*frecuenciasNegativas)[i] == (*frecuenciasPositivas)[i])
-		{
+	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++) {
+		if((*frecuenciasNegativas)[i] == (*frecuenciasPositivas)[i]) {
 			contadorIguales++;
 		}
 	}
@@ -165,10 +172,9 @@ void BagOfWords::crearVectorConProbabilidades() {
 	for(int i = 0; i < lenght; i++){
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
-		probabilidadesPositivasTrad->push_back(log(frecPositiva / frecuenciaTodaLaBagPos)); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
-		probabilidadesNegativasTrad->push_back(log(frecNegativa / frecuenciaTodaLaBagNeg)); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
+		probabilidadesPositivasTrad->push_back(log(frecPositiva / frecuenciaTodaLaBagPos)); 
+		probabilidadesNegativasTrad->push_back(log(frecNegativa / frecuenciaTodaLaBagNeg));
 	}
-
 }
 
 vector<numeroReal>* BagOfWords::getProbabilidadesPositivas() {

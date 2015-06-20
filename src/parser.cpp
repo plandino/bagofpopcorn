@@ -112,7 +112,7 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo, bool biWord, bool triWo
 		getline(archivo,header); // Leo el header
 		while ( (archivo >> id >> sentimiento) and (i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) ){ //Leo id y sentimiento
 			if (i == 0) cout << "Primer review a parsear para entrenamiento: " << id << endl;
-			if( (i+1) % 1000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
+			if( (i+1) % 5000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
 			string review;
 			getline(archivo,review); //Leo review
 			limpiarReview(review, sentimiento, true);
@@ -233,7 +233,7 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 				continue;
 			}
 			if (i == desde) cout << "Primer review a parsear para predecir: " << id << endl;
-			if( (i+1-desde) % 1000 == 0 ) cout <<  "Se parsearon " << (i+1-desde) << " reviews a predecir de " << 25000-desde << endl;
+			if( (i+1-desde) % 5000 == 0 ) cout <<  "Se parsearon " << (i+1-desde) << " reviews a predecir de " << 25000-desde << endl;
 			string review_str;
 			getline(archivo,review_str); //Leo review
 			vector<string> palabrasReview = limpiarReview(review_str, sentimiento, false);

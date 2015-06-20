@@ -29,7 +29,7 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& 
 		vectorIds.push_back(reviewAPredecir.getId());
 		vectorProbabilidades.push_back(probabilidadPositiva);
 
-		if ( (i+1) % 1000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << endl;
+		if ( (i+1) % 5000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << endl;
 		i++;
 		if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
 	}
