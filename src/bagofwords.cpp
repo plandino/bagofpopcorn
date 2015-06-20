@@ -15,7 +15,6 @@ BagOfWords::BagOfWords() {
 }
 
 BagOfWords::~BagOfWords() {
-	//TODO: Delete de vectores y map?
 	delete this->bag;
 	delete this->frecuenciasNegativas;
 	delete this->frecuenciasPositivas;
@@ -61,14 +60,6 @@ void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	contador++;
 }
 
-// Devuelve la frecuencia con la que aparece una key
-int BagOfWords::frecuencia(string key, int sentiment) {
-	if ( this->estaEnBag(key) ){
-		if (sentiment == 0) return this->frecuenciasNegativas->at( this->bag->at(key) );
-			else return this->frecuenciasPositivas->at( this->bag->at(key) );
-	} else return 0;
-}
-
 // Devuelve true si la key esta en el bag
 bool BagOfWords::estaEnBag(string key) {
 	return (this->bag->count(key) > 0);
@@ -98,54 +89,18 @@ vector<string>* BagOfWords::getWords() {
 	return this->words;
 }
 
-int BagOfWords::cantidadDePalabrasNegativas() {
-
-	return (bag->size() - this->cantidadDePalabrasPositivas() - this->cantidadDePalabrasConFrecuenciaIgualPosyNeg());
-}
-
-int BagOfWords::cantidadDePalabrasPositivas() {
-
-	int contadorPositivas = 0;
-	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++)
-	{
-		if((*frecuenciasNegativas)[i] < (*frecuenciasPositivas)[i])
-		{
-					contadorPositivas++;
-		}
-	}
-	return contadorPositivas;
-}
-
-int BagOfWords::cantidadDePalabrasConFrecuenciaIgualPosyNeg() {
-
-	int contadorIguales = 0;
-	for( unsigned int i = 0; i < frecuenciasNegativas->size() ; i++)
-	{
-		if((*frecuenciasNegativas)[i] == (*frecuenciasPositivas)[i])
-		{
-			contadorIguales++;
-		}
-	}
-	return contadorIguales;
-}
-
-int BagOfWords::cantidadDePalabrasTotales() {
-	return bag->size();
-}
-
 bool pred(const int a, const int b) {
 	return a < b;
 }
 
 void BagOfWords::crearVectorConProbabilidades() {
 	// FALTA HACER QUE USE LAS PONDERACIONES DE LOS PESOS
-	//	this->pesarBag(0.001, 10);
 	// Con esto calculo la probabilidad de que una palabra sea pos o neg
-	int lenght = this->cantidadDePalabrasTotales();
+	int length = this->bag->size();
 	numeroReal frecPositiva = 0;
 	numeroReal frecNegativa = 0;
 	numeroReal frecTotal = 0;
-	for(int i = 0; i < lenght; i++){
+	for(int i = 0; i < length; i++){
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
 		frecTotal = frecPositiva + frecNegativa;
@@ -156,27 +111,19 @@ void BagOfWords::crearVectorConProbabilidades() {
 	// Con esto calculo la probabilidad de que una palabra este adentro de un determinado bag
 	numeroReal frecuenciaTodaLaBagPos = 0;
 	numeroReal frecuenciaTodaLaBagNeg = 0;
-	for(int i = 0; i < lenght; i++){
+	for(int i = 0; i < length; i++){
 		frecuenciaTodaLaBagPos += (*frecuenciasPositivas)[i];
 		frecuenciaTodaLaBagNeg += (*frecuenciasNegativas)[i];
 	}
-	frecuenciaTodaLaBagPos += lenght;
-	frecuenciaTodaLaBagNeg += lenght;
-	for(int i = 0; i < lenght; i++){
+	frecuenciaTodaLaBagPos += length;
+	frecuenciaTodaLaBagNeg += length;
+	for(int i = 0; i < length; i++){
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
 		probabilidadesPositivasTrad->push_back(log(frecPositiva / frecuenciaTodaLaBagPos)); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
 		probabilidadesNegativasTrad->push_back(log(frecNegativa / frecuenciaTodaLaBagNeg)); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
 	}
 
-}
-
-vector<numeroReal>* BagOfWords::getProbabilidadesPositivas() {
-	return probabilidadesPositivas;
-}
-
-vector<numeroReal>* BagOfWords::getProbabilidadesNegativas() {
-	return probabilidadesNegativas;
 }
 
 vector<numeroReal>* BagOfWords::getProbabilidadesPositivasTradicionales() {
@@ -208,7 +155,7 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 				}
 			}
 		}
-		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " de los positivos." << endl;
+		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " elementos positivos de la bag." << endl;
 	}
 
 	vector<int>::iterator iteradorNeg = frecuenciasNegativas->begin();
@@ -228,6 +175,6 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 				}
 			}
 		}
-		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " de los negativos." << endl;
+		if ( (i+1) % 100000 == 0 ) cout << "Pesados " << i+1 << " elementos negativos de la bag." << endl;
 	}
 }

@@ -12,19 +12,21 @@ int main(int argc, char* argv[]){
 
 
 //	Con esto parseo con el nuevo parser todas las reviews y genero el TSV
+	cout << "-------------------------Bag Of Words sin stopwords-------------------------" << endl;
 	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, not triWord);
+	cout << "-------------------------Bag Of Words con stopwords-------------------------" << endl;
 	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, triWord);
 	parserConStopWords->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
-//	WARNING: SI USAMOS EL BIWORD HAY QUE CAMBIARLO ESTO!!
+//	WARNING: HAY QUE CAMBIAR ESTO PARA QUE LEA BIWORDS!!
 //	BagOfWords* bag = parser->leerPalabrasYFrecuenciasDesdeTSV(NOMBRE_ARCHIVO_FRECUENCIAS);
 
 
 
 //	Para facilitar el activar o desactivar de correr uno y/u otro algoritmo
-	bool correrMasMenosUno = false;
-	bool levantarCsvMasMenosUno = true;
+	bool correrMasMenosUno = true;
+	bool levantarCsvMasMenosUno = false;
 	bool correrBayes = true;
 	bool levantarCsvBayes = false;
 	bool correrPerceptron = true;
@@ -46,6 +48,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrMasMenosUno ) {
 		MasMenosUno* masMenosUno = new MasMenosUno();
+		cout << endl << endl << "------------------------------ MAS MENOS UNO ------------------------------" << endl;
 		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
 		parserSinStopWords->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
@@ -60,6 +63,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrBayes ) {
 		Bayes* bayes = new Bayes();
+		cout << endl << endl << "------------------------------ BAYES ------------------------------" << endl;
 		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes);
 		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
@@ -74,6 +78,7 @@ int main(int argc, char* argv[]){
 
 	if ( correrPerceptron ) {
 		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true);
+		cout << endl << endl << "------------------------------ PERCEPTRON ------------------------------" << endl;
 		tron->entrenar();
 		tron->predecir(vectorIdsTron, vectorProbabilidadesTron);
 		parserConStopWords->agregarAlCSV(vectorIdsTron, vectorProbabilidadesTron, NOMBRE_ARCHIVO_CSV_TRON);
@@ -87,15 +92,14 @@ int main(int argc, char* argv[]){
 	if (ponderar) {
 		vector<numeroReal> probabilidadesFinales;
 		vector<string> idsFinales;
-		const double pesoTron = 0.84;
+		const double pesoTron = 0.87;
 		const double pesoBayes = 0.0;
 		if ( ( vectorProbabilidadesMasMenosUno.size() == vectorIdsBayes.size() ) and ( vectorIdsBayes.size() == vectorIdsTron.size() ) ){
 			for (unsigned int i = 0; i < vectorProbabilidadesMasMenosUno.size(); i++){
 				numeroReal probabilidadFinal = ( (vectorProbabilidadesMasMenosUno[i] * (1-pesoTron-pesoBayes)) + (vectorProbabilidadesBayes[i] * pesoBayes) + (vectorProbabilidadesTron[i] * pesoTron) );
 				probabilidadesFinales.push_back(probabilidadFinal);
 				if ( ( vectorIdsMasMenosUno[i] != vectorIdsBayes[i] ) or ( vectorIdsMasMenosUno[i] != vectorIdsTron[i] ) or ( vectorIdsBayes[i] != vectorIdsTron[i] ) ){
-					cout << "TODO MAL GUACHIN" << endl;
-					exit(1);
+					cout << "ERROR: LOS IDS NO COINCIDEN AL PONDERAR." << endl;
 				}
 				idsFinales.push_back(vectorIdsMasMenosUno[i]);
 			}

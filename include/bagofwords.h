@@ -5,11 +5,10 @@
 #include <fstream> //files
 #include <sstream> //stringstream
 #include <algorithm> //toLower y remove
-#include <map>
 #include <unordered_map>
+#include <map>
 #include <vector>
-#include <math.h>
-#include "string.h"
+#include <string>
 #include <cmath>
 
 // Esto lo hago para cambiar entre double y float por la precision en la multiciplicacion
@@ -43,13 +42,6 @@ public:
 
 	void agregar(string key, int sentiment);
 	void agregar(string key, int frecPos, int frecNeg);
-	// Devuelve cuantas palabras solo aparecen en reviews positivas o negativas.
-	// Si hay igual frecuencia en las dos, no cuenta para ninguna.
-	int cantidadDePalabrasPositivas();
-	int cantidadDePalabrasNegativas();
-	int cantidadDePalabrasConFrecuenciaIgualPosyNeg();
-	int cantidadDePalabrasTotales();
-	int frecuencia(string key, int sentiment);
 	bool estaEnBag(string key);
 	int posicionEnBag(string key);
 
@@ -58,8 +50,6 @@ public:
 	vector<int>* getFrecuencias(int sentiment);
 	vector<int>* getPesosPositivos();
 	vector<int>* getPesosNegativos();
-	vector<numeroReal>* getProbabilidadesPositivas();
-	vector<numeroReal>* getProbabilidadesNegativas();
 	vector<numeroReal>* getProbabilidadesPositivasTradicionales();
 	vector<numeroReal>* getProbabilidadesNegativasTradicionales();
 	vector<string>* getWords();

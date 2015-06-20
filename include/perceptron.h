@@ -6,7 +6,6 @@
 #include "parser.h"
 #include "string.h"
 #include "review.h"
-#include <cmath>
 
 using namespace std;
 
@@ -19,20 +18,19 @@ struct prediccion {
 class Perceptron {
 
     private:
+        double productoInterno(vector<string> features);
         double* pesos;
         BagOfWords* bag;
         Parser* parser;
-        double productoInterno(vector<string> features);
         int toleranciaErrores;
         int numeroPasadas;
         double learningRate;
         bool usaBag;
+
     public:
         Perceptron(BagOfWords* bag, Parser* parser, bool usaBag);
         double* entrenar();
         void predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones);
         virtual ~Perceptron();
-        void tirarACSV(const vector<prediccion>& predicciones);
-        double* getPesos();
 };
 

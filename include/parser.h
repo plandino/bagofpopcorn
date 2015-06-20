@@ -42,12 +42,9 @@ public:
 	BagOfWords* parsearReviews(string nombreArchivo, bool biWord, bool triWord);
 	vector<Review>* parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento);
 
-
 	void generarTSV();
-	void agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, string nombreArchivoSalida);
-	void agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos);
-
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
+	void agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, string nombreArchivoSalida);
 	void leerCsvProbas(string nombreArchivo, vector<numeroReal>& vectorProbabilidades, vector<string>& vectorIds);
 };
 

@@ -6,7 +6,7 @@
 
 class Bayes{
 private:
-	bool predecir(Review& review, BagOfWords* bag, float k, numeroReal& probabilidadPositiva);
+	bool predecir(Review& review, BagOfWords* bag, numeroReal& probabilidadPositiva);
 
 public:
 	Bayes();

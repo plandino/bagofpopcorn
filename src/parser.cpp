@@ -68,7 +68,6 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 		//Separo en todas las palabras que estan incluidas en la word y las dejo solo con letras
 		vector<string> words = soloLetras(wordSinURL);
 
-		//TODO: Algun algoritmo para que, por ejemplo, considere palabras terminadas en s, ed, ing, ly sean lo mismo. Ejemplo: terrible, terribled, terribly, terribles (?
 		vector<string>::iterator iterador = words.begin();
 		for ( ; iterador != words.end() ; iterador++){
 			string wordAAgregar = (*iterador);
@@ -111,13 +110,11 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo, bool biWord, bool triWo
 		int i = 0;
 		getline(archivo,header); // Leo el header
 		while ( (archivo >> id >> sentimiento) and (i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) ){ //Leo id y sentimiento
-			if (i == 0) cout << "Primer review a parsear para entrenamiento: " << id << endl;
 			if( (i+1) % 1000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
 			string review;
 			getline(archivo,review); //Leo review
 			limpiarReview(review, sentimiento, true);
 			i++;
-			if (i == CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) cout << "Ultima review a parsear para entrenamiento: " << id << endl;
 		}
 	}
 	cout << "Se terminaron de parsear las palabras para el entrenamiento." << endl << endl;
@@ -152,18 +149,8 @@ void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, 
 	archivo.close();
 }
 
-void Parser::agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos){
-	ofstream archivo(NOMBRE_ARCHIVO_CSV_CEROSYUNO.c_str());
-	if ( archivo.is_open() ){
-		archivo << "\"id\",\"sentiment\"" << "\n";
-		for (unsigned int i = 0; i < cerosYUnos.size(); i++){
-			archivo << id[i].c_str() << "," << cerosYUnos[i] << "\n";
-		}
-	}
-	archivo.close();
-}
-
 BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
+	// CAMBIAR PARA QUE LEA BIWORDS!!
 	ifstream archivo(nombreArchivo.c_str());
 	int i = 0;
 	if ( archivo.is_open() ){
@@ -175,7 +162,7 @@ BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
 			i++;
 		}
 	}
-	cout << "Se cargo el archivo de palabras y frecuencias, con un total de " << i << " | "<< bag->cantidadDePalabrasTotales() << " palabras." << endl;
+	cout << "Se cargo el archivo de palabras y frecuencias, con un total de " << i << " palabras." << endl;
 	archivo.close();
 	bag->crearVectorConProbabilidades();
 	return bag;
@@ -186,7 +173,6 @@ string Parser::eliminarURL(string word, bool &continuar) {
 	string wordSinURL = "";
 	for (unsigned int i = 0; i < length; i++){
 		if (not ( (i == 0) and ( (word[i] == '<') or (word[i] == '(') or (word[i] == ')') or (word[i] == ':') ))) wordSinURL = wordSinURL + word[i]; //Solo si es la primera letra
-//		if ( (word[i] != '<') and (word[i] != '(') and (word[i] != ')') ) wordSinURL = wordSinURL + word[i];
 	}
 
 	string http = wordSinURL.substr(0,7);
@@ -205,7 +191,7 @@ vector<string> Parser::soloLetras(string word) {
 	vector<string> words;
 	for (unsigned int i = 0; i < length; i++){
 		//TODO: Ver lo de la ñ en algun momento
-		if ( ( (word[i] >= 'a') and (word[i] <= 'z') ) or (word[i] == 'ñ'/*(char)241 ñ*/) ) wordSoloLetras = wordSoloLetras + word[i];
+		if ( (word[i] >= 'a') and (word[i] <= 'z') ) wordSoloLetras = wordSoloLetras + word[i];
 			else {
 				words.push_back(wordSoloLetras);
 				wordSoloLetras = "";
@@ -232,7 +218,6 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 				i++;
 				continue;
 			}
-			if (i == desde) cout << "Primer review a parsear para predecir: " << id << endl;
 			if( (i+1-desde) % 1000 == 0 ) cout <<  "Se parsearon " << (i+1-desde) << " reviews a predecir de " << 25000-desde << endl;
 			string review_str;
 			getline(archivo,review_str); //Leo review
@@ -240,7 +225,6 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 			Review review(id, palabrasReview, sentimiento);
 			reviews->push_back(review);
 			i++;
-			if (i == 25000) cout << "Ultima review a parsear para predecir: " << review.getId() << endl;
 		}
 	}
 	cout << "Se terminaron de parsear las reviews para predecir." << endl << endl;

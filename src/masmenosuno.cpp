@@ -19,13 +19,10 @@ int MasMenosUno::iterarPorReviews(float k, vector<Review>* reviewsAPredecir, Bag
 		double probabilidadPositiva = predecir(reviewAPredecir, bag, k);
 		vectorIds.push_back(reviewAPredecir.getId());
 		vectorProbabilidades.push_back(probabilidadPositiva);
-		//TODO: MUCHO OJO CON ESTO QUE EL MENOR/MAYOR O IGUAL CAMBIA BASTANTE LOS RESULTADOS!
 		if ( contar and ( ( (probabilidadPositiva > 0.5) and (reviewAPredecir.getSentiment() == 1) )
 						or ( (probabilidadPositiva < 0.5) and (reviewAPredecir.getSentiment() == 0) ) ) ) contador++;
-		if (i == 0)	cout << "La primer review a predecir es " << reviewAPredecir.getId() << endl;
-		if ((i + 1) % 1000 == 0) cout << "Ya se predijeron " << (i + 1) << " reviews de " << reviewsAPredecir->size() << endl;
+		if ((i + 1) % 1000 == 0) cout << "Ya se predijeron " << (i + 1) << " reviews de " << reviewsAPredecir->size() << " para Mas Menos Uno."<< endl;
 		i++;
-		if (i == reviewsAPredecir->size()) cout << "Ultima review a parsear para predecir: " << reviewAPredecir.getId() << endl << endl;
 	}
 	return contador;
 }
