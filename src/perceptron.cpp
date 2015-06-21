@@ -162,4 +162,3 @@ void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& pre
     }
     delete reviews;
 }
-

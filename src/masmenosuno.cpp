@@ -82,7 +82,7 @@ double MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 	vector<string>::iterator iterador = palabras.begin();
 	for ( ; iterador != palabras.end() ; iterador++){
 		string palabra = (*iterador);
-		if ( bag->estaEnBag(palabra) ){
+		if ( bag->estaEnBag(palabra) ) {
 			int frecPos = ( bag->getFrecuencias(1) )->at( bag->posicionEnBag(palabra) );
 			int frecNeg = ( bag->getFrecuencias(0) )->at( bag->posicionEnBag(palabra) );
 			int frecTotal = frecPos + frecNeg;
@@ -98,10 +98,10 @@ double MasMenosUno::predecir(Review& review, BagOfWords* bag, float k) {
 	return probabilidad;
 }
 
-void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool pesar, bool esPrueba) {
+void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector< Review >* reviewsAPredecir, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades, bool pesar, bool esPrueba) {
 	if (esPrueba) probar(bag, parser, pesar);
 	else {
-		vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+		//vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 		double paso = 0.001;
 		double potencia = 10.0;
 		double k = 0.7;
@@ -113,6 +113,6 @@ void MasMenosUno::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<str
 		}
 		iterarPorReviews(k, reviewsAPredecir, bag, vectorIds, vectorProbabilidades, false);
 
-		delete reviewsAPredecir;
+		//delete reviewsAPredecir;
 	}
 }

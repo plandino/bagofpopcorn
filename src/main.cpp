@@ -41,10 +41,13 @@ int main(int argc, char* argv[]) {
 	vector<string> vectorIdsMasMenosUno;
 	vector<numeroReal> vectorProbabilidadesMasMenosUno;
 
+//  Solo para Mas Menos Uno y Bayes
+	vector< Review >* reviewsAPredecir = parserSinStopWords->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+
 	if ( correrMasMenosUno ) {
 		cout << endl << "	Comenzando Mas Menos Uno..." << endl << endl;
 		MasMenosUno* masMenosUno = new MasMenosUno();
-		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
+		masMenosUno->realizarPrediccion(bagSinStopWords, parserSinStopWords, reviewsAPredecir, vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, pesarBag, esPrueba);
 		parserSinStopWords->agregarAlCSV(vectorIdsMasMenosUno, vectorProbabilidadesMasMenosUno, NOMBRE_ARCHIVO_CSV_MASMENOSUNO);
 		delete masMenosUno;
 	}
@@ -58,7 +61,7 @@ int main(int argc, char* argv[]) {
 	if ( correrBayes ) {
 		cout << endl << "	Comenzando Bayes..." << endl << endl;
 		Bayes* bayes = new Bayes();
-		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes);
+		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, reviewsAPredecir, vectorIdsBayes, vectorProbabilidadesBayes);
 		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
 		delete bayes;
 	}
@@ -80,7 +83,7 @@ int main(int argc, char* argv[]) {
 		delete tron;
 	}
 	if (levantarCsvPerceptron){
-		parserSinStopWords->leerCsvProbas(NOMBRE_ARCHIVO_CSV_TRON, vectorProbabilidadesTron, vectorIdsTron);
+		parserConStopWords->leerCsvProbas(NOMBRE_ARCHIVO_CSV_TRON, vectorProbabilidadesTron, vectorIdsTron);
 	}
 
 	if ( ponderar ) {
@@ -100,9 +103,12 @@ int main(int argc, char* argv[]) {
 				idsFinales.push_back(vectorIdsMasMenosUno[i]);
 			}
 			parserSinStopWords->agregarAlCSV(idsFinales, probabilidadesFinales, NOMBRE_ARCHIVO_CSV_PONDERADO);
+			parserSinStopWords->agregarAlCSVfinal(probabilidadesFinales, NOMBRE_ARCHIVO_CSV_PONDERADO_FINAL);
 		}
 	}
 
+	cout << endl << "	Se ha generado el archivo de probabilidades." << endl << endl;
+	delete reviewsAPredecir;
 	delete parserSinStopWords;
 	delete parserConStopWords;
 	return 0;

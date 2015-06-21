@@ -152,6 +152,17 @@ void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, 
 	archivo.close();
 }
 
+void Parser::agregarAlCSVfinal(vector<numeroReal>& probabilidad, string nombreArchivoSalida){
+	ofstream archivo(nombreArchivoSalida.c_str());
+	if ( archivo.is_open() ){
+		archivo << "\"sentiment\"" << "\n";
+		for (unsigned int i = 0; i < probabilidad.size(); i++){
+			archivo << std::fixed << std::setprecision(10) << probabilidad[i] << "\n";
+		}
+	}
+	archivo.close();
+}
+
 void Parser::agregarAlCSV(vector<string>& id, vector<int>& cerosYUnos){
 	ofstream archivo(NOMBRE_ARCHIVO_CSV_CEROSYUNO.c_str());
 	if ( archivo.is_open() ){
