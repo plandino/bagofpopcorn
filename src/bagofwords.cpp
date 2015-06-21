@@ -33,7 +33,7 @@ BagOfWords::~BagOfWords() {
  *  En caso contrario, ademas la agrega al vector de palabras y actualiza los vectores de pesos.
  */
 void BagOfWords::agregar(string key, int sentiment) {
-	if ( this->estaEnBag(key) ){
+	if ( this->estaEnBag(key) ) {
 		if (sentiment == 0) this->frecuenciasNegativas->at( this->bag->at(key) ) += 1;
 			else this->frecuenciasPositivas->at( this->bag->at(key) ) += 1;
 	} else {
@@ -112,7 +112,7 @@ void BagOfWords::crearVectorConProbabilidades() {
 	numeroReal frecPositiva = 0;
 	numeroReal frecNegativa = 0;
 	numeroReal frecTotal = 0;
-	for(int i = 0; i < length; i++) {
+	for (int i = 0; i < length; i++) {
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
 		frecTotal = frecPositiva + frecNegativa;
@@ -123,17 +123,17 @@ void BagOfWords::crearVectorConProbabilidades() {
 	// Con esto calculo la probabilidad de que una palabra este adentro de un determinado bag
 	numeroReal frecuenciaTodaLaBagPos = 0;
 	numeroReal frecuenciaTodaLaBagNeg = 0;
-	for(int i = 0; i < length; i++){
+	for (int i = 0; i < length; i++) {
 		frecuenciaTodaLaBagPos += (*frecuenciasPositivas)[i];
 		frecuenciaTodaLaBagNeg += (*frecuenciasNegativas)[i];
 	}
 	frecuenciaTodaLaBagPos += length;
 	frecuenciaTodaLaBagNeg += length;
-	for(int i = 0; i < length; i++){
+	for (int i = 0; i < length; i++) {
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
-		probabilidadesPositivasTrad->push_back(log(frecPositiva / frecuenciaTodaLaBagPos)); // / frecPositiva);	//frecPositiva / frecuenciaTodaLaBagPos));
-		probabilidadesNegativasTrad->push_back(log(frecNegativa / frecuenciaTodaLaBagNeg)); // / frecNegativa);	//frecNegativa / frecuenciaTodaLaBagNeg));
+		probabilidadesPositivasTrad->push_back(log(frecPositiva / frecuenciaTodaLaBagPos));
+		probabilidadesNegativasTrad->push_back(log(frecNegativa / frecuenciaTodaLaBagNeg));
 	}
 
 }
@@ -152,7 +152,7 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 
 	vector<int>::iterator iteradorPos = frecuenciasPositivas->begin();
 	int i = 0;
-	for ( ; iteradorPos != frecuenciasPositivas->end() ; iteradorPos++, i++){
+	for ( ; iteradorPos != frecuenciasPositivas->end() ; iteradorPos++, i++) {
 		int frecuencia = (*iteradorPos);
 		for (double j = 0; j < 1; j+=paso){
 			if (exponencial) {
@@ -172,9 +172,9 @@ void BagOfWords::pesarBag(double paso, double potencia, bool exponencial) {
 
 	vector<int>::iterator iteradorNeg = frecuenciasNegativas->begin();
 	i = 0;
-	for ( ; iteradorNeg != frecuenciasNegativas->end() ; iteradorNeg++, i++){
+	for ( ; iteradorNeg != frecuenciasNegativas->end() ; iteradorNeg++, i++) {
 		int frecuencia = (*iteradorNeg);
-		for (double j = 0; j < 1; j+=paso){
+		for (double j = 0; j < 1; j+=paso) {
 			if (exponencial) {
 				if (((exp(pow(j, potencia))-1)*maxNeg/(exp(1)-1) < frecuencia) and ((exp(pow(j+paso, potencia))-1)*maxNeg/(exp(1)-1) >= frecuencia)) {
 					pesosNegativos->at(i) = ((j+paso)/paso);

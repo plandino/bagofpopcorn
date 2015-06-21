@@ -14,9 +14,9 @@ Parser::~Parser() {
 
 void Parser::cargarDiccionarioStopWords(string nombreArchivo) {
 	ifstream archivo(nombreArchivo.c_str());
-	if ( archivo.is_open() ){
+	if ( archivo.is_open() ) {
 		string stopWord;
-		while ( getline(archivo,stopWord) ){
+		while ( getline(archivo,stopWord) ) {
 			stopWords.insert(pair<string, int>(stopWord, 1));
 		}
 	}
@@ -37,7 +37,7 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 	bool anteriorEsSaltoDeLinea = false;
 	while(iss >> word) {
 		//Elimino los <br />
-		if (anteriorEsSaltoDeLinea){
+		if (anteriorEsSaltoDeLinea) {
 			if (word == "/>") {
 				anteriorEsSaltoDeLinea = false;
 				continue;
@@ -69,7 +69,7 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 		vector<string> words = soloLetras(wordSinURL);
 
 		vector<string>::iterator iterador = words.begin();
-		for ( ; iterador != words.end() ; iterador++){
+		for ( ; iterador != words.end() ; iterador++) {
 			string wordAAgregar = (*iterador);
 			if ( esStopWord(wordAAgregar) ) continue;
 			if ( (wordAAgregar.length() == 1) or (wordAAgregar.length() == 0) ) continue;
@@ -78,8 +78,8 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 		}
 	}
 	unsigned int size = palabrasReview.size();
-	if (biWord){
-		for (unsigned int i = 0; i < size-1; i++){
+	if ( biWord ) {
+		for (unsigned int i = 0; i < size-1; i++) {
 			string word1 = palabrasReview[i];
 			string word2 = palabrasReview[i+1];
 			string concat = word1 + " " + word2;
@@ -87,8 +87,8 @@ vector<string> Parser::limpiarReview(string review, int sentiment, bool agregar)
 			palabrasReview.push_back(concat);
 		}
 	}
-	if (triWord){
-		for (unsigned int i = 0; i < size-2; i++){
+	if ( triWord ) {
+		for (unsigned int i = 0; i < size-2; i++) {
 			string word1 = palabrasReview[i];
 			string word2 = palabrasReview[i+1];
 			string word3 = palabrasReview[i+2];
@@ -104,12 +104,12 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo, bool biWord, bool triWo
 	ifstream archivo(nombreArchivo.c_str());
 	this->biWord = biWord;
 	this->triWord = triWord;
-	if ( archivo.is_open() ){
+	if ( archivo.is_open() ) {
 		string id, header;
 		int sentimiento;
 		int i = 0;
 		getline(archivo,header); // Leo el header
-		while ( (archivo >> id >> sentimiento) and (i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) ){ //Leo id y sentimiento
+		while ( (archivo >> id >> sentimiento) and (i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) ) { //Leo id y sentimiento
 			if( (i+1) % 5000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
 			string review;
 			getline(archivo,review); //Leo review
@@ -123,66 +123,32 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo, bool biWord, bool triWo
 	return bag;
 }
 
-void Parser::generarTSV() {
-	ofstream archivo(NOMBRE_ARCHIVO_FRECUENCIAS.c_str());
-	if ( archivo.is_open() ){
-		vector<string>* words = bag->getWords();
-		vector<int>* frecPos = bag->getFrecuencias(1);
-		vector<int>* frecNeg = bag->getFrecuencias(0);
-		int length = words->size();
-		archivo << "palabra" << "\t" << "frecPos" << "\t" << "frecNeg" << "\n";
-		for (int i = 0; i < length; i++){
-			archivo << words->at(i) << "\t" << frecPos->at(i) << "\t" << frecNeg->at(i) << "\n";
-		}
-	}
-	archivo.close();
-}
-
-void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, string nombreArchivoSalida){
+void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, string nombreArchivoSalida) {
 	ofstream archivo(nombreArchivoSalida.c_str());
-	if ( archivo.is_open() ){
+	if ( archivo.is_open() ) {
 		archivo << "\"id\",\"sentiment\"" << "\n";
-		for (unsigned int i = 0; i < probabilidad.size(); i++){
+		for (unsigned int i = 0; i < probabilidad.size(); i++) {
 			archivo << id[i].c_str() << ","<< std::fixed << std::setprecision(10) << probabilidad[i] << "\n";
 		}
 	}
 	archivo.close();
 }
 
-void Parser::agregarAlCSVfinal(vector<numeroReal>& probabilidad, string nombreArchivoSalida){
+void Parser::agregarAlCSVfinal(vector<numeroReal>& probabilidad, string nombreArchivoSalida) {
 	ofstream archivo(nombreArchivoSalida.c_str());
-	if ( archivo.is_open() ){
+	if ( archivo.is_open() ) {
 		archivo << "\"sentiment\"" << "\n";
-		for (unsigned int i = 0; i < probabilidad.size(); i++){
+		for (unsigned int i = 0; i < probabilidad.size(); i++) {
 			archivo << std::fixed << std::setprecision(10) << probabilidad[i] << "\n";
  		}
  	}
  	archivo.close();
 }
 
-BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
-	// CAMBIAR PARA QUE LEA BIWORDS!!
-	ifstream archivo(nombreArchivo.c_str());
-	int i = 0;
-	if ( archivo.is_open() ){
-		string word, header;
-		int frecPos, frecNeg;
-		getline(archivo,header); // Leo el header
-		while ( archivo >> word >> frecPos >> frecNeg ){ //Leo palabra y frecuencias
-			bag->agregar(word, frecPos, frecNeg);
-			i++;
-		}
-	}
-	cout << "Se cargo el archivo de palabras y frecuencias, con un total de " << i << " palabras." << endl;
-	archivo.close();
-	bag->crearVectorConProbabilidades();
-	return bag;
-}
-
 string Parser::eliminarURL(string word, bool &continuar) {
 	unsigned int length = word.length();
 	string wordSinURL = "";
-	for (unsigned int i = 0; i < length; i++){
+	for (unsigned int i = 0; i < length; i++) {
 		if (not ( (i == 0) and ( (word[i] == '<') or (word[i] == '(') or (word[i] == ')') or (word[i] == ':') ))) wordSinURL = wordSinURL + word[i]; //Solo si es la primera letra
 	}
 
@@ -216,12 +182,12 @@ vector<string> Parser::soloLetras(string word) {
 vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desde, bool tieneSentimiento) {
 	ifstream archivo(nombreArchivo.c_str());
 	vector< Review >* reviews = new vector< Review >();
-	if ( archivo.is_open() ){
+	if ( archivo.is_open() ) {
 		string id, header;
 		int sentimiento = -1;
 		int i = 0;
 		getline(archivo,header); // Leo el header
-		while ( archivo >> id ){ //Leo id y sentimiento
+		while ( archivo >> id ) { //Leo id y sentimiento
 			if (tieneSentimiento) archivo >> sentimiento;
 			if ( i < desde ) { //Saco las primeras que no me interesan
 				string review_str;
@@ -245,11 +211,11 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 
 void Parser::leerCsvProbas(string nombreArchivo, vector<numeroReal>& vectorProbabilidades, vector<string>& vectorIds) {
 	ifstream archivo(nombreArchivo.c_str());
-	if ( archivo.is_open() ){
+	if ( archivo.is_open() ) {
 		string header, linea, id;
 		double probabilidad;
 		getline(archivo,header); // Leo el header
-		while ( getline(archivo,linea) ){ //Leo id y probabilidad
+		while ( getline(archivo,linea) ) { //Leo id y probabilidad
 			replace(linea.begin(), linea.end(), ',', ' ');
 			istringstream iss(linea);
 			iss >> id >> probabilidad;

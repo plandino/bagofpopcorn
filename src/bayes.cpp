@@ -1,22 +1,22 @@
 #include "bayes.h"
 
-Bayes::Bayes(){
+Bayes::Bayes() {
 
 }
 
-Bayes::~Bayes(){
+Bayes::~Bayes() {
 
 }
 
-void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades) {
+void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector< Review >* reviewsAPredecir, vector<string>& vectorIds, vector<numeroReal>& vectorProbabilidades) {
 //	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO, true);
-	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+//	vector< Review >* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
 
 	int contador = 0; // Cuenta la cantidad que coincidieron
 	numeroReal probabilidadPositiva;
 	vector<Review>::iterator iterador = reviewsAPredecir->begin();
 	unsigned int i = 0;
-	for ( ; iterador != reviewsAPredecir->end() ; iterador++){
+	for ( ; iterador != reviewsAPredecir->end() ; iterador++) {
 		Review reviewAPredecir = (*iterador);
 		if ( this->predecir(reviewAPredecir, bag, probabilidadPositiva) ) contador++;
 
@@ -28,7 +28,7 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& 
 	}
 //	float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);
 
-	delete reviewsAPredecir;
+//	delete reviewsAPredecir;
 }
 
 bool Bayes::predecir(Review& review, BagOfWords* bag, numeroReal& probabilidadPositiva) {
@@ -37,9 +37,9 @@ bool Bayes::predecir(Review& review, BagOfWords* bag, numeroReal& probabilidadPo
 	vector<string> palabras = review.getPalabras();
 
 	vector<string>::iterator iterador = palabras.begin();
-	for ( ; iterador != palabras.end() ; iterador++){
+	for ( ; iterador != palabras.end() ; iterador++) {
 		string palabra = (*iterador);
-		if ( bag->estaEnBag(palabra) ){
+		if ( bag->estaEnBag(palabra) ) {
 			numeroReal probaPositiva = bag->getProbabilidadesPositivasTradicionales() -> at( bag->posicionEnBag(palabra));
 			numeroReal probaNegativa = bag->getProbabilidadesNegativasTradicionales() -> at( bag->posicionEnBag(palabra));
 

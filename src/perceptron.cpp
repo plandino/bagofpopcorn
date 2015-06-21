@@ -61,7 +61,7 @@ double Perceptron::productoInterno(vector<string> features) {
  * -Repetir hasta que la cantidad de errores sea <= toleranciaErrores o la cantidad de pasadas == numeroPasadas.    
  */
 double* Perceptron::entrenar() {
-    vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true);
+    vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true); //Se utiliza el metodo parsearReviewsAPredecir aunque sean las labeled
     cout << "Pasada\t\tErrores\t" << endl;
     for (int pasada = 0; pasada < numeroPasadas; pasada++) {
         int contadorError = 0;
@@ -129,11 +129,11 @@ void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& pre
     double dotp;
     vector<prediccion> preds;
 
-    vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
+    vector<Review>* reviewsAPredecir = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
     cout << "Perceptron prediciendo..." << endl << endl;
-    vector<Review>::iterator iterador = reviews->begin();
+    vector<Review>::iterator iterador = reviewsAPredecir->begin();
 
-    for ( ; iterador != reviews->end() ; iterador++) {
+    for ( ; iterador != reviewsAPredecir->end() ; iterador++) {
         Review rev = (*iterador);
         vector<string> features = rev.getPalabras();
         dotp = this->productoInterno(features);
@@ -159,5 +159,5 @@ void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& pre
         predicciones.push_back(it->productoInternoNormalizado);
         ids.push_back(it->id);
     }
-    delete reviews;
+    delete reviewsAPredecir;
 }
