@@ -110,7 +110,7 @@ BagOfWords* Parser::parsearReviews(string nombreArchivo, bool biWord, bool triWo
 		int i = 0;
 		getline(archivo,header); // Leo el header
 		while ( (archivo >> id >> sentimiento) and (i < CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO) ){ //Leo id y sentimiento
-			if( (i+1) % 1000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
+			if( (i+1) % 5000 == 0 )cout <<  "Se parsearon " << (i+1) << " reviews de " << CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO << " para el entrenamiento."<< endl;
 			string review;
 			getline(archivo,review); //Leo review
 			limpiarReview(review, sentimiento, true);
@@ -147,6 +147,17 @@ void Parser::agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, 
 		}
 	}
 	archivo.close();
+}
+
+void Parser::agregarAlCSVfinal(vector<numeroReal>& probabilidad, string nombreArchivoSalida){
+	ofstream archivo(nombreArchivoSalida.c_str());
+	if ( archivo.is_open() ){
+		archivo << "\"sentiment\"" << "\n";
+		for (unsigned int i = 0; i < probabilidad.size(); i++){
+			archivo << std::fixed << std::setprecision(10) << probabilidad[i] << "\n";
+ 		}
+ 	}
+ 	archivo.close();
 }
 
 BagOfWords* Parser::leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo) {
@@ -218,7 +229,7 @@ vector< Review >* Parser::parsearReviewsAPredecir(string nombreArchivo, int desd
 				i++;
 				continue;
 			}
-			if( (i+1-desde) % 1000 == 0 ) cout <<  "Se parsearon " << (i+1-desde) << " reviews a predecir de " << 25000-desde << endl;
+			if( (i+1-desde) % 5000 == 0 ) cout <<  "Se parsearon " << (i+1-desde) << " reviews a predecir de " << 25000-desde << endl;
 			string review_str;
 			getline(archivo,review_str); //Leo review
 			vector<string> palabrasReview = limpiarReview(review_str, sentimiento, false);

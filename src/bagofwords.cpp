@@ -27,14 +27,18 @@ BagOfWords::~BagOfWords() {
 	delete this->words;
 }
 
-// Agrega una nueva key al bag, mismo caso que bow simple
+/*
+ *  Agrega una key a la bag.
+ *  Si ya se encuentra en la bag, aumenta las frecuencias dependiendo de su sentiment.
+ *  En caso contrario, ademas la agrega al vector de palabras y actualiza los vectores de pesos.
+ */
 void BagOfWords::agregar(string key, int sentiment) {
 	if ( this->estaEnBag(key) ){
 		if (sentiment == 0) this->frecuenciasNegativas->at( this->bag->at(key) ) += 1;
 			else this->frecuenciasPositivas->at( this->bag->at(key) ) += 1;
 	} else {
 		bag->insert(pair<string, int>(key, contador));
-		if (sentiment == 0){
+		if (sentiment == 0) {
 			this->frecuenciasPositivas->push_back(0);
 			this->frecuenciasNegativas->push_back(1);
 		} else {
@@ -48,8 +52,10 @@ void BagOfWords::agregar(string key, int sentiment) {
 	}
 }
 
-// Agrega una nueva key al bag, con una frecuencia positiva y otra negativa.
-// Sirve pàra cuando se levantan las palabras directamente desde el TSV.
+/*
+ *  Agrega una nueva key al bag, con una frecuencia positiva y otra negativa.
+ *  Sirve para cuando se levantan las palabras directamente desde el TSV.
+ */
 void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	bag->insert(pair<string, int>(key, contador));
 	this->frecuenciasNegativas->push_back(frecNeg);
@@ -60,18 +66,24 @@ void BagOfWords::agregar(string key, int frecPos, int frecNeg) {
 	contador++;
 }
 
-// Devuelve true si la key esta en el bag
+/*
+ *  Devuelve true si la key esta en el bag.
+ */
 bool BagOfWords::estaEnBag(string key) {
 	return (this->bag->count(key) > 0);
 }
 
-// Devuelve la posicion del vector de frecuencias en la que se encuentra la key
+/*
+ *  Devuelve la posicion del vector de frecuencias asginado para la key.
+ */
 int BagOfWords::posicionEnBag(string key) {
 	if ( estaEnBag(key) ) return bag->at(key);
 		else return -1;
 }
 
-// Devuelve el vector con las frecuencias
+/*
+ *  Devuelve el vector con las frecuencias dependiendo del sentiment que se requiera.
+ */
 vector<int>* BagOfWords::getFrecuencias(int sentiment) {
 	if (sentiment == 0) return this->frecuenciasNegativas;
 		else return this->frecuenciasPositivas;
@@ -100,7 +112,7 @@ void BagOfWords::crearVectorConProbabilidades() {
 	numeroReal frecPositiva = 0;
 	numeroReal frecNegativa = 0;
 	numeroReal frecTotal = 0;
-	for(int i = 0; i < length; i++){
+	for(int i = 0; i < length; i++) {
 		frecPositiva = (*frecuenciasPositivas)[i] + 1;
 		frecNegativa = (*frecuenciasNegativas)[i] + 1;
 		frecTotal = frecPositiva + frecNegativa;

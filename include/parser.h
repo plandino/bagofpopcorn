@@ -15,6 +15,7 @@ const string NOMBRE_ARCHIVO_TEST_DATA = "data/datain/testData.tsv";
 
 const string NOMBRE_ARCHIVO_CSV_PROBABILIDADES = "data/dataout/csvProbas.csv";
 const string NOMBRE_ARCHIVO_CSV_PONDERADO = "data/dataout/csvProbasPONDERADO.csv";
+const string NOMBRE_ARCHIVO_CSV_PONDERADO_FINAL = "data/dataout/grupo7_probs.csv";
 const string NOMBRE_ARCHIVO_CSV_BAYES = "data/dataout/csvProbasBAYES.csv";
 const string NOMBRE_ARCHIVO_CSV_MASMENOSUNO = "data/dataout/csvProbasMASMENOSUNO.csv";
 const string NOMBRE_ARCHIVO_CSV_TRON = "data/dataout/csvProbasPERCEPTRON.csv";
@@ -45,6 +46,7 @@ public:
 	void generarTSV();
 	BagOfWords* leerPalabrasYFrecuenciasDesdeTSV(string nombreArchivo);
 	void agregarAlCSV(vector<string>& id, vector<numeroReal>& probabilidad, string nombreArchivoSalida);
+	void agregarAlCSVfinal(vector<numeroReal>& probabilidad, string nombreArchivoSalida);
 	void leerCsvProbas(string nombreArchivo, vector<numeroReal>& vectorProbabilidades, vector<string>& vectorIds);
 };
 

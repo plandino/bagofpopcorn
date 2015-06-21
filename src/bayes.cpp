@@ -23,7 +23,7 @@ void Bayes::realizarPrediccion(BagOfWords* bag, Parser* parser, vector<string>& 
 		vectorIds.push_back(reviewAPredecir.getId());
 		vectorProbabilidades.push_back(probabilidadPositiva);
 
-		if ( (i+1) % 1000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << " para Bayes." << endl;
+		if ( (i+1) % 5000 == 0 ) cout <<  "Ya se predijeron " << (i+1) << " reviews de " << reviewsAPredecir->size() << " para Bayes." << endl;
 		i++;
 	}
 //	float porcentaje = (contador * 100.0) / (25000 - CANTIDAD_REVIEWS_A_CONSIDERAR_PARA_PARSEO);

@@ -5,7 +5,7 @@
  *  usaBag: Determina si el perceptron va a utilizar una Bag of Words para determinar el indice de una palabra en el
  *  vector de pesos. Si es FALSE se utiliza una funcion de hashing por defecto. 
  */
-Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag)  {
+Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag) {
     this->bag = bag;
     this->parser = parser;
     this->usaBag = usaBag;
@@ -19,10 +19,10 @@ Perceptron::Perceptron(BagOfWords* bag, Parser* parser, bool usaBag)  {
     learningRate = 0.035;
 }
 
-
 Perceptron::~Perceptron() { 
     delete [] pesos;
 }
+
 /*
  *  SPOILER ALERT: No hay ningun producto interno.
  *  El metodo se encarga de calcular el resultado final para una review, sumando los pesos de 
@@ -51,17 +51,15 @@ double Perceptron::productoInterno(vector<string> features) {
     return productoInterno;
 }
 
-
 /* 
  * Metodo de aprendizaje supervisado que calcula los valores del vector de pesos.
  * Se siguen los siguientes pasos:
- * -Se predice un resultado para una review (cuyo resultado se conoce).
+ * -Se predice un resultado para una review (cuyo resultado real se conoce).
  *  Si el resultado es incorrecto, se modifica el vector de pesos (con el parametro learningRate )
  *      en aquellos indices que se utilizaron para tomar la decision.
  *  Si el resultado es correcto, el vector de pesos no se modifica.
  * -Repetir hasta que la cantidad de errores sea <= toleranciaErrores o la cantidad de pasadas == numeroPasadas.    
  */
-
 double* Perceptron::entrenar() {
     vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true);
     cout << "\nPasada\t\tErrores\t" << endl;
@@ -113,11 +111,9 @@ double* Perceptron::entrenar() {
     return pesos;
 }
 
-
 bool comparador_pred(prediccion a, prediccion b) {
     return a.productoInterno < b.productoInterno;
 }
-
 
 /*
  * Metodo final del ciclo de vida del perceptron.
@@ -127,7 +123,6 @@ bool comparador_pred(prediccion a, prediccion b) {
  *  Los parametros que se piden son aquellos vectores donde se escriben los resultados finales, para ser manejados 
  *  luego por la ponderacion.
  */
-
 void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& predicciones) {
     int contadorError = 0;
     bool posONeg;
@@ -135,20 +130,20 @@ void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& pre
     vector<prediccion> preds;
 
     vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_TEST_DATA, 0, false);
-    cout << "\nPrediciendo..." << endl;
+    cout << "Perceptron prediciendo..." << endl << endl;
     vector<Review>::iterator iterador = reviews->begin();
 
     for ( ; iterador != reviews->end() ; iterador++) {
         Review rev = (*iterador);
         vector<string> features = rev.getPalabras();
         dotp = this->productoInterno(features);
-        posONeg = dotp > 0.5;
+        posONeg = dotp > 0.5; // Si es mayor, la prediccion es 1. Caso contrario, es 0.
         prediccion pred;
         pred.id = rev.getId();
         pred.productoInterno = dotp;
         preds.push_back(pred);
 
-        if ( ( rev.getSentiment()- posONeg)!= 0) {
+        if ( (rev.getSentiment() - posONeg)!= 0) {
             contadorError += 1;
         }
     }
@@ -166,4 +161,3 @@ void Perceptron::predecir(std::vector<string>& ids, std::vector<numeroReal>& pre
     }
     delete reviews;
 }
-
