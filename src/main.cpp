@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 	BagOfWords* bagSinStopWords = parserSinStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, triWord);
 	cout << endl << "	Parseando reviews con stop words..." << endl << endl;
 	BagOfWords* bagConStopWords = parserConStopWords->parsearReviews(NOMBRE_ARCHIVO_LABELED_REVIEWS, biWord, triWord);
-	parserConStopWords->generarTSV();
+//	parserConStopWords->generarTSV();
 
 //	Con esto leo frecuencias desde el TSV generado por el parser de C++
 //	WARNING: HAY QUE CAMBIAR ESTO PARA QUE LEA BIWORDS!!
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 	vector<numeroReal> vectorProbabilidadesBayes;
 
 	if ( correrBayes ) {
-		cout << endl << "	Comenzando Bayes..." << endl << endl;
+		cout << endl << endl << "	Comenzando Bayes..." << endl << endl;
 		Bayes* bayes = new Bayes();
 		bayes->realizarPrediccion(bagSinStopWords, parserSinStopWords, vectorIdsBayes, vectorProbabilidadesBayes);
 		parserSinStopWords->agregarAlCSV(vectorIdsBayes, vectorProbabilidadesBayes, NOMBRE_ARCHIVO_CSV_BAYES);
@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 	vector<numeroReal> vectorProbabilidadesTron;
 
 	if ( correrPerceptron ) {
-		cout << endl << "	Comenzando Perceptron..." << endl << endl;
+		cout << endl << endl << "	Comenzando Perceptron..." << endl << endl;
 		Perceptron* tron = new Perceptron(bagConStopWords, parserConStopWords, true);
 		cout << "Etapa de entrenamiento" << endl << endl;
 		tron->entrenar();

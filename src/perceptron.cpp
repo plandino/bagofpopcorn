@@ -62,7 +62,7 @@ double Perceptron::productoInterno(vector<string> features) {
  */
 double* Perceptron::entrenar() {
     vector<Review>* reviews = parser->parsearReviewsAPredecir(NOMBRE_ARCHIVO_LABELED_REVIEWS, 0, true);
-    cout << "\nPasada\t\tErrores\t" << endl;
+    cout << "Pasada\t\tErrores\t" << endl;
     for (int pasada = 0; pasada < numeroPasadas; pasada++) {
         int contadorError = 0;
         bool productoInterno;
